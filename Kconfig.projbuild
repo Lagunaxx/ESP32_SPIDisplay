@@ -1,0 +1,108 @@
+menu "SPI Display"
+
+choice SPIDISPLAY_SETUP
+    bool "Select display"
+    default SPIDISPLAY_SETUP_NON
+    help
+        Specify setup with display.
+
+    config SPIDISPLAY_SETUP_TTGO_T_Display
+      bool "TTGO-T-Display board"
+    config SPIDISPLAY_SETUP_Setup1_ILI9341
+      bool "ILI9341"
+    config SPIDISPLAY_SETUP_Setup2_ST7735
+      bool "ST7735"
+    config SPIDISPLAY_SETUP_Setup3_ILI9163
+      bool "ILI9163"
+    config SPIDISPLAY_SETUP_Setup4_S6D02A1
+      bool "S6D02A1"
+    config SPIDISPLAY_SETUP_Setup5_RPi_ILI9486
+      bool "RPi TFT"
+    config SPIDISPLAY_SETUP_Setup6_RPi_Wr_ILI9486
+      bool "modified RPi TFT"
+    config SPIDISPLAY_SETUP_Setup7_ST7735_128x128
+      bool "ST7735 128x128 display"
+    config SPIDISPLAY_SETUP_Setup8_ILI9163_128x128
+      bool "ILI9163 128x128 display"
+    config SPIDISPLAY_SETUP_Setup9_ST7735_Overlap
+      bool "ST7735 Overlap"
+    config SPIDISPLAY_SETUP_Setup10_RPi_touch_ILI9486
+      bool "ESP8266 and RPi TFT with touch"
+    config SPIDISPLAY_SETUP_Setup11_RPi_touch_ILI9486
+      bool "ESP32 and RPi TFT with touch"
+    config SPIDISPLAY_SETUP_Setup12_M5Stack
+      bool "ESP32 based M5Stack"
+    config SPIDISPLAY_SETUP_Setup13_ILI9481_Parallel
+      bool "ILI9481 ESP32 with parallel bus TFT"
+    config SPIDISPLAY_SETUP_Setup14_ILI9341_Parallel
+      bool "ILI9341 ESP32 with parallel bus TFT"
+    config SPIDISPLAY_SETUP_Setup15_HX8357D
+      bool "HX8357D (untested)"
+    config SPIDISPLAY_SETUP_Setup16_ILI9488_Parallel
+      bool "ILI9488 ESP32 with parallel bus TFT"
+    config SPIDISPLAY_SETUP_Setup17_ePaper
+      bool "Waveshare ePaper display"
+    config SPIDISPLAY_SETUP_Setup18_ST7789
+      bool "ST7789 ?"
+    config SPIDISPLAY_SETUP_Setup19_RM68140_Parallel
+      bool "RM68140 with parallel bus"
+    config SPIDISPLAY_SETUP_Setup20_ILI9488
+      bool "ILI9488 ESP8266 SPI bus TFT"
+    config SPIDISPLAY_SETUP_Setup21_ILI9488
+      bool "ILI9488 ESP32 SPI bus TFT"
+    config SPIDISPLAY_SETUP_Setup22_TTGO_T4
+      bool "ESP32 and TTGO T4 (BTC) ILI9341 SPI bus TFT"
+    config SPIDISPLAY_SETUP_Setup23_TTGO_TM
+      bool "ESP32 and TTGO TM ST7789 SPI bus TFT"
+    config SPIDISPLAY_SETUP_Setup24_ST7789
+      bool "ST7789 240 x 240"
+    config SPIDISPLAY_SETUP_Setup43_ST7735
+      bool "ST7735S 80x160"
+    config SPIDISPLAY_SETUP_Setup135_ST7789
+      bool "ESP8266 and ST7789 125 x 240 TFT"
+    config SPIDISPLAY_SETUP_NON
+        bool "Manual selection"
+endchoice
+    
+choice SPIDISPLAY_COLOR_ORDERING
+    bool "Colour ordering"
+    default SPIDISPLAY_COLOR_ORDERING_RGB
+    depends on SPIDISPLAY_SETUP_NON
+    help
+        Specify setup with display.
+
+    config SPIDISPLAY_COLOR_ORDERING_RGB
+      bool "Colour order Red-Green-Blue"
+    config SPIDISPLAY_COLOR_ORDERING_BGR
+      bool "Colour order Blue-Green-Red"
+endchoice
+    
+    
+config SPIDISPLAY_ARDUHAL_LOG_DEFAULT_LEVEL
+    int
+    default 0 if ARDUHAL_LOG_DEFAULT_LEVEL_NONE
+    default 1 if ARDUHAL_LOG_DEFAULT_LEVEL_ERROR
+    default 2 if ARDUHAL_LOG_DEFAULT_LEVEL_WARN
+    default 3 if ARDUHAL_LOG_DEFAULT_LEVEL_INFO
+    default 4 if ARDUHAL_LOG_DEFAULT_LEVEL_DEBUG
+    default 5 if ARDUHAL_LOG_DEFAULT_LEVEL_VERBOSE
+
+config SPIDISPLAY_ARDUHAL_LOG_COLORS
+    bool "Use ANSI terminal colors in log output"
+    default "n"
+    help
+        Enable ANSI terminal color codes in bootloader output.
+        In order to view these, your terminal program must support ANSI color codes.
+
+config SPIDISPLAY_ARDUHAL_ESP_LOG
+    bool "Forward ESP_LOGx to Arduino log output"
+    default "n"
+    help
+        This option will redefine the ESP_LOGx macros to Arduino's log_x macros.
+        To enable for your application, add the follwing after your includes:
+        #ifdef ARDUINO_ARCH_ESP32
+        #include "esp32-hal-log.h"
+        #endif
+
+endmenu
+

@@ -10,6 +10,8 @@
 ** Function name:           loadFont
 ** Description:             loads parameters from a new font vlw file
 *************************************************************************************x*/
+#include <TFT_eSPI.h>
+
 void TFT_eSPI::loadFont(String fontName, fs::FS &ffs)
 {
   fontFS = ffs;

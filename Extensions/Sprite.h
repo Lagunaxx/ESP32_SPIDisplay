@@ -4,7 +4,10 @@
 // from the TFT_eSPI class. Some functions are overridden by this class so that the
 // graphics are written to the Sprite rather than the TFT.
 ***************************************************************************************/
+#ifndef ESPRITE_CLASS_DEFINATION
+#define ESPRITE_CLASS_DEFINATION
 
+#include "TFT_eSPI.h"
 class TFT_eSprite : public TFT_eSPI {
 
  public:
@@ -144,3 +147,4 @@ class TFT_eSprite : public TFT_eSPI {
   int32_t  _bitwidth;         // Sprite image bit width for drawPixel (for <8bpp Sprites, not swapped)
 
 };
+#endif
