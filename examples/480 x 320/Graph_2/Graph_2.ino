@@ -7,14 +7,14 @@
   1       12-24-2015  kasprzak    initial creation
 
   Updated by Bodmer to be an example for the library here:
-  https://github.com/Bodmer/TFT_eSPI
+  https://github.com/Bodmer/Screen
   
 */
 
-#include <TFT_eSPI.h> // Hardware-specific library
 #include <SPI.h>
+#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library
 
-TFT_eSPI tft = TFT_eSPI();                   // Invoke custom library with default width and height
+Screen tft = Screen();                   // Invoke custom library with default width and height
 
 
 #define LTBLUE    0xB6DF
@@ -92,7 +92,7 @@ double ox = -999, oy = -999; // Force them to be off screen
 */
 
 
-void Graph(TFT_eSPI &tft, double x, double y, byte dp,
+void Graph(Screen &tft, double x, double y, byte dp,
                            double gx, double gy, double w, double h,
                            double xlo, double xhi, double xinc,
                            double ylo, double yhi, double yinc,
@@ -185,7 +185,7 @@ void Graph(TFT_eSPI &tft, double x, double y, byte dp,
 
 }
 
-void Trace(TFT_eSPI &tft, double x,  double y,  byte dp,
+void Trace(Screen &tft, double x,  double y,  byte dp,
            double gx, double gy,
            double w, double h,
            double xlo, double xhi, double xinc,

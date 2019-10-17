@@ -86,7 +86,7 @@
 #define TFT_INIT_DELAY 0x80
 
 
-// Generic commands used by TFT_eSPI.cpp
+// Generic commands used by Screen.cpp
 #define TFT_NOP     0x00
 #define TFT_SWRST   0x01
 

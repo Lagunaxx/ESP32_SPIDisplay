@@ -7,7 +7,7 @@
  Needs fonts 2, 4, 6, 7 and 8
 
  Make sure all the display driver and pin comnenctions are correct by
- editting the User_Setup.h file in the TFT_eSPI library folder.
+ editting the User_Setup.h file in the Screen library folder.
 
  Note that yield() or delay(0) must be called in long duration for/while
  loops to stop the ESP8266 watchdog triggering.
@@ -18,10 +18,10 @@
  */
 
 
-#include <TFT_eSPI.h> // Graphics and font library for ILI9341 driver chip
 #include <SPI.h>
+#include "../../../ESP32-SPIDisplay.h" // Graphics and font library for ILI9341 driver chip
 
-TFT_eSPI tft = TFT_eSPI();  // Invoke library, pins defined in User_Setup.h
+Screen tft = Screen();  // Invoke library, pins defined in User_Setup.h
 
 unsigned long drawTime = 0;
 

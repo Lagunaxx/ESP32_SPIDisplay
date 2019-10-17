@@ -1,8 +1,8 @@
 /*
   This sketch has been written to test the Processing screenshot client.
 
-  It has been created to work with the TFT_eSPI library here:
-  https://github.com/Bodmer/TFT_eSPI
+  It has been created to work with the Screen library here:
+  https://github.com/Bodmer/Screen
 
   It sends screenshots to a PC running a Processing client sketch.
 
@@ -16,7 +16,7 @@
   This sketch uses the GLCD, 2, 4, 6 fonts only.
 
   Make sure all the display driver and pin comnenctions are correct by
-  editting the User_Setup.h file in the TFT_eSPI library folder.
+  editting the User_Setup.h file in the Screen library folder.
 
   Maximum recommended SPI clock rate is 27MHz when reading pixels, 40MHz
   seems to be OK with ILI9341 displays but this is above the manufacturers
@@ -41,10 +41,10 @@
 
 // MIT licence applies, all text above must be included in derivative works
 
-#include <TFT_eSPI.h> // Hardware-specific library
 #include <SPI.h>
+#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library
 
-TFT_eSPI tft = TFT_eSPI(); // Invoke custom library
+Screen tft = Screen(); // Invoke custom library
 
 unsigned long targetTime = 0;
 byte red = 0x1F;

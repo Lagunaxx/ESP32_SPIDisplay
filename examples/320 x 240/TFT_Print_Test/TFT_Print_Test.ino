@@ -4,7 +4,7 @@
  This sketch used font 2, 4, 7
 
  Make sure all the display driver and pin comnenctions are correct by
- editting the User_Setup.h file in the TFT_eSPI library folder.
+ editting the User_Setup.h file in the Screen library folder.
 
  #########################################################################
  ###### DON'T FORGET TO UPDATE THE User_Setup.h FILE IN THE LIBRARY ######
@@ -12,12 +12,12 @@
  */
 
 
-#include <TFT_eSPI.h> // Graphics and font library for ILI9341 driver chip
 #include <SPI.h>
+#include "../../../ESP32-SPIDisplay.h" // Graphics and font library for ILI9341 driver chip
 
 #define TFT_GREY 0x5AEB // New colour
 
-TFT_eSPI tft = TFT_eSPI();  // Invoke library
+Screen tft = Screen();  // Invoke library
 
 
 void setup(void) {

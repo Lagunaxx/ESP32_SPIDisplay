@@ -3,8 +3,8 @@
 // The sketch is a client that requests TFT screenshots from an Arduino board.
 // The Arduino must call a screenshot server function to respond with pixels.
 
-// It has been created to work with the TFT_eSPI library here:
-// https://github.com/Bodmer/TFT_eSPI
+// It has been created to work with the Screen library here:
+// https://github.com/Bodmer/Screen
 
 // The sketch must only be run when the designated serial port is available and enumerated
 // otherwise the screenshot window may freeze and that process will need to be terminated
@@ -508,7 +508,7 @@ void buttonClicked()
     System.err.println("Stopped - click 'Run' button: ");
     //noStroke();
     //fill(50);
-    //rect( (width - tft_width)/2, y_offset, tft_width, tft_height);
+    //rect( (width - width)/2, y_offset, width, height);
     beginTime = millis() + 500;
     dimmed = false;
     state = 4;

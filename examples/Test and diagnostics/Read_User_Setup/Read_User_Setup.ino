@@ -1,8 +1,8 @@
 /*
   This sketch reads the user setup information from the processor via the Serial Port
 
-  It is a support and diagnostic sketch for the TFT_eSPI library:
-  https://github.com/Bodmer/TFT_eSPI
+  It is a support and diagnostic sketch for the Screen library:
+  https://github.com/Bodmer/Screen
 
   The output is essentially a copy of the User_Setep configuration so can be used to
   verify the correct settings are being picked up by the compiler.
@@ -14,15 +14,15 @@
 */
 
 #include <SPI.h>
-#include <TFT_eSPI.h>      // Graphics library
+#include "../../../ESP32-SPIDisplay.h"      // Graphics library
 
-TFT_eSPI tft = TFT_eSPI(); // Invoke library
+Screen tft = Screen(); // Invoke library
 
 #ifdef ESP8266
   ADC_MODE(ADC_VCC); // Read the supply voltage
 #endif
 
-setup_t user; // The library defines the type "setup_t" as a struct
+T_DisplaySettings user; // The library defines the type "T_DisplaySettings" as a struct
               // Calling tft.getSetup(user) populates it with the settings
 //------------------------------------------------------------------------------------------
 
@@ -54,13 +54,13 @@ Serial.printf("Interface    = %s \n",   (user.serial ==  1) ? "SPI" : "Parallel"
 if (user.serial ==  1)
 Serial.printf("SPI overlap  = %s \n\n", (user.overlap == 1) ? "Yes" : "No");
 #endif
-if (user.tft_driver != 0xE9D) // For ePaper displays the size is defined in the sketch
+if (user.driver != 0xE9D) // For ePaper displays the size is defined in the sketch
 {
-  Serial.printf("Display driver = "); Serial.println(user.tft_driver, HEX); // Hexadecimal code
-  Serial.printf("Display width  = %i \n",   user.tft_width);  // Rotation 0 width and height
-  Serial.printf("Display height = %i \n\n", user.tft_height);
+  Serial.printf("Display driver = "); Serial.println(user.driver, HEX); // Hexadecimal code
+  Serial.printf("Display width  = %i \n",   user.width);  // Rotation 0 width and height
+  Serial.printf("Display height = %i \n\n", user.height);
 }
-else if (user.tft_driver == 0xE9D) Serial.printf("Display driver = ePaper\n\n");
+else if (user.driver == 0xE9D) Serial.printf("Display driver = ePaper\n\n");
 
 if (user.r0_x_offset  != 0)  Serial.printf("R0 x offset = %i \n",   user.r0_x_offset); // Offsets, not all used yet
 if (user.r0_y_offset  != 0)  Serial.printf("R0 y offset = %i \n",   user.r0_y_offset);
@@ -71,9 +71,9 @@ if (user.r2_y_offset  != 0)  Serial.printf("R2 y offset = %i \n",   user.r2_y_of
 if (user.r3_x_offset  != 0)  Serial.printf("R3 x offset = %i \n",   user.r3_x_offset);
 if (user.r3_y_offset  != 0)  Serial.printf("R3 y offset = %i \n\n", user.r3_y_offset);
 
-if (user.pin_tft_mosi != -1) Serial.printf("MOSI    = D%i (GPIO %i)\n",   getPinName(user.pin_tft_mosi), user.pin_tft_mosi);
-if (user.pin_tft_miso != -1) Serial.printf("MISO    = D%i (GPIO %i)\n",   getPinName(user.pin_tft_miso), user.pin_tft_miso);
-if (user.pin_tft_clk  != -1) Serial.printf("SCK     = D%i (GPIO %i)\n",   getPinName(user.pin_tft_clk), user.pin_tft_clk);
+if (user.pin_mosi != -1) Serial.printf("MOSI    = D%i (GPIO %i)\n",   getPinName(user.pin_mosi), user.pin_mosi);
+if (user.pin_miso != -1) Serial.printf("MISO    = D%i (GPIO %i)\n",   getPinName(user.pin_miso), user.pin_miso);
+if (user.pin_clk  != -1) Serial.printf("SCK     = D%i (GPIO %i)\n",   getPinName(user.pin_clk), user.pin_clk);
 
 #ifdef ESP8266
 if (user.overlap == true)
@@ -88,23 +88,23 @@ if (user.overlap == true)
   Serial.printf("TFT_DC and TFT_RST pins can be user defined\n");
 }
 #endif
-if (user.pin_tft_cs   != -1) Serial.printf("TFT_CS   = D%i (GPIO %i)\n",   getPinName(user.pin_tft_cs), user.pin_tft_cs);
-if (user.pin_tft_dc   != -1) Serial.printf("TFT_DC   = D%i (GPIO %i)\n",   getPinName(user.pin_tft_dc), user.pin_tft_dc);
-if (user.pin_tft_rst  != -1) Serial.printf("TFT_RST  = D%i (GPIO %i)\n\n", getPinName(user.pin_tft_rst), user.pin_tft_rst);
+if (user.pin_cs   != -1) Serial.printf("TFT_CS   = D%i (GPIO %i)\n",   getPinName(user.pin_cs), user.pin_cs);
+if (user.pin_dc   != -1) Serial.printf("TFT_DC   = D%i (GPIO %i)\n",   getPinName(user.pin_dc), user.pin_dc);
+if (user.pin_rst  != -1) Serial.printf("TFT_RST  = D%i (GPIO %i)\n\n", getPinName(user.pin_rst), user.pin_rst);
 
 if (user.pin_tch_cs   != -1) Serial.printf("TOUCH_CS = D%i (GPIO %i)\n\n", getPinName(user.pin_tch_cs), user.pin_tch_cs);
 
-if (user.pin_tft_wr   != -1) Serial.printf("TFT_WR   = D%i (GPIO %i)\n",   getPinName(user.pin_tft_wr), user.pin_tft_wr);
-if (user.pin_tft_rd   != -1) Serial.printf("TFT_RD   = D%i (GPIO %i)\n\n", getPinName(user.pin_tft_rd), user.pin_tft_rd);
+if (user.pin_wr   != -1) Serial.printf("TFT_WR   = D%i (GPIO %i)\n",   getPinName(user.pin_wr), user.pin_wr);
+if (user.pin_rd   != -1) Serial.printf("TFT_RD   = D%i (GPIO %i)\n\n", getPinName(user.pin_rd), user.pin_rd);
 
-if (user.pin_tft_d0   != -1) Serial.printf("TFT_D0   = D%i (GPIO %i)\n",   getPinName(user.pin_tft_d0), user.pin_tft_d0);
-if (user.pin_tft_d1   != -1) Serial.printf("TFT_D1   = D%i (GPIO %i)\n",   getPinName(user.pin_tft_d1), user.pin_tft_d1);
-if (user.pin_tft_d2   != -1) Serial.printf("TFT_D2   = D%i (GPIO %i)\n",   getPinName(user.pin_tft_d2), user.pin_tft_d2);
-if (user.pin_tft_d3   != -1) Serial.printf("TFT_D3   = D%i (GPIO %i)\n",   getPinName(user.pin_tft_d3), user.pin_tft_d3);
-if (user.pin_tft_d4   != -1) Serial.printf("TFT_D4   = D%i (GPIO %i)\n",   getPinName(user.pin_tft_d4), user.pin_tft_d4);
-if (user.pin_tft_d5   != -1) Serial.printf("TFT_D5   = D%i (GPIO %i)\n",   getPinName(user.pin_tft_d5), user.pin_tft_d5);
-if (user.pin_tft_d6   != -1) Serial.printf("TFT_D6   = D%i (GPIO %i)\n",   getPinName(user.pin_tft_d6), user.pin_tft_d6);
-if (user.pin_tft_d7   != -1) Serial.printf("TFT_D7   = D%i (GPIO %i)\n\n", getPinName(user.pin_tft_d7), user.pin_tft_d7);
+if (user.pin_d0   != -1) Serial.printf("TFT_D0   = D%i (GPIO %i)\n",   getPinName(user.pin_d0), user.pin_d0);
+if (user.pin_d1   != -1) Serial.printf("TFT_D1   = D%i (GPIO %i)\n",   getPinName(user.pin_d1), user.pin_d1);
+if (user.pin_d2   != -1) Serial.printf("TFT_D2   = D%i (GPIO %i)\n",   getPinName(user.pin_d2), user.pin_d2);
+if (user.pin_d3   != -1) Serial.printf("TFT_D3   = D%i (GPIO %i)\n",   getPinName(user.pin_d3), user.pin_d3);
+if (user.pin_d4   != -1) Serial.printf("TFT_D4   = D%i (GPIO %i)\n",   getPinName(user.pin_d4), user.pin_d4);
+if (user.pin_d5   != -1) Serial.printf("TFT_D5   = D%i (GPIO %i)\n",   getPinName(user.pin_d5), user.pin_d5);
+if (user.pin_d6   != -1) Serial.printf("TFT_D6   = D%i (GPIO %i)\n",   getPinName(user.pin_d6), user.pin_d6);
+if (user.pin_d7   != -1) Serial.printf("TFT_D7   = D%i (GPIO %i)\n\n", getPinName(user.pin_d7), user.pin_d7);
 
 uint16_t fonts = tft.fontsLoaded();
 if (fonts & (1 << 1))        Serial.printf("Font GLCD   loaded\n");
@@ -118,7 +118,7 @@ if (fonts & (1 << 8))        Serial.printf("Font 8      loaded\n");
 if (fonts & (1 << 15))       Serial.printf("Smooth font enabled\n");
 Serial.printf("\n");
 
-if (user.serial==1)          Serial.printf("Display SPI frequency = %2.1f MHz \n", user.tft_spi_freq/10.0);
+if (user.serial==1)          Serial.printf("Display SPI frequency = %2.1f MHz \n", user.spi_freq/10.0);
 if (user.pin_tch_cs != -1)   Serial.printf("Touch SPI frequency   = %2.1f MHz \n", user.tch_spi_freq/10.0);
 
 Serial.printf("[/code]\n");

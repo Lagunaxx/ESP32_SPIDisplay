@@ -6,17 +6,17 @@
 
 /*
  Make sure all the display driver and pin comnenctions are correct by
- editting the User_Setup.h file in the TFT_eSPI library folder.
+ editting the User_Setup.h file in the Screen library folder.
 
  #########################################################################
  ###### DON'T FORGET TO UPDATE THE User_Setup.h FILE IN THE LIBRARY ######
  #########################################################################
 */
 
-#include <TFT_eSPI.h> // Hardware-specific library
 #include <SPI.h>
+#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library
 
-TFT_eSPI tft = TFT_eSPI();       // Invoke custom library
+Screen tft = Screen();       // Invoke custom library
 
 #define TEXT_HEIGHT 8 // Height of text to be printed and scrolled
 #define BOT_FIXED_AREA 0  // Number of lines in bottom fixed area (lines counted from bottom of screen)

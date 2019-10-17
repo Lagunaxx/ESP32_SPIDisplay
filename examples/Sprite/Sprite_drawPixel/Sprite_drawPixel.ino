@@ -5,7 +5,7 @@
   the display screen.
 
   Example for library:
-  https://github.com/Bodmer/TFT_eSPI
+  https://github.com/Bodmer/Screen
 
   A Sprite is notionally an invisible graphics screen that is
   kept in the processors RAM. Graphics can be drawn into the
@@ -32,9 +32,9 @@
 #define WIDTH  128
 #define HEIGHT 128
 
-#include <TFT_eSPI.h>                 // Include the graphics library (this includes the sprite functions)
+#include "../../../ESP32-SPIDisplay.h"                 // Include the graphics library (this includes the sprite functions)
 
-TFT_eSPI    tft = TFT_eSPI();         // Declare object "tft"
+Screen    tft = Screen();         // Declare object "tft"
 
 TFT_eSprite spr = TFT_eSprite(&tft);  // Declare Sprite object "spr" with pointer to "tft" object
 

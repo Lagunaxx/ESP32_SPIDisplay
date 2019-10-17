@@ -1,5 +1,5 @@
 // This sketch draws BMP images pulled from SPIFFS onto the TFT. It is an
-// an example from this library: https://github.com/Bodmer/TFT_eSPI
+// an example from this library: https://github.com/Bodmer/Screen
 
 // Images in SPIFFS must be put in the root folder (top level) to be found
 // Use the SPIFFS library example to verify SPIFFS works!
@@ -24,10 +24,10 @@
 #endif
 
 // Call up the TFT library
-#include <TFT_eSPI.h> // Hardware-specific library for ESP8266
+#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library for ESP8266
 
 // Invoke TFT library
-TFT_eSPI tft = TFT_eSPI();
+Screen tft = Screen();
 
 //====================================================================================
 //                                    Setup

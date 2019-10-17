@@ -6,18 +6,18 @@
  This sketch uses the GLCD font only.
 
  Make sure all the display driver and pin comnenctions are correct by
- editting the User_Setup.h file in the TFT_eSPI library folder.
+ editting the User_Setup.h file in the Screen library folder.
 
  #########################################################################
  ###### DON'T FORGET TO UPDATE THE User_Setup.h FILE IN THE LIBRARY ######
  #########################################################################
  */
 
+#include "../../../ESP32-SPIDisplay.h"
 #include "SPI.h"
-#include "TFT_eSPI.h"
 
 // Use hardware SPI
-TFT_eSPI tft = TFT_eSPI();
+Screen tft = Screen();
 
 unsigned long total = 0;
 unsigned long tn = 0;
@@ -347,7 +347,7 @@ uint32_t testHaD()
 
 		const uint8_t *cmp = &HaD_240x320[0];
 
-		tft.startWrite();
+		tft.SPIStartWrite();
 		while (cmp < &HaD_240x320[sizeof(HaD_240x320)])
 		{
 			cnt = pgm_read_byte(cmp++);
@@ -355,7 +355,7 @@ uint32_t testHaD()
 			tft.pushColor(curcolor, cnt);	// PDQ_GFX has count
 			curcolor ^= color;
 		}
-		tft.endWrite();
+		tft.SPIEndWrite();
 	}
 
 	uint32_t t = micros() - start;
@@ -434,7 +434,7 @@ uint32_t testPixels()
 	int32_t	h = tft.height();
 
 	uint32_t start = micros_start();
-	tft.startWrite();
+	tft.SPIStartWrite();
 	for (uint16_t y = 0; y < h; y++)
 	{
 		for (uint16_t x = 0; x < w; x++)
@@ -442,7 +442,7 @@ uint32_t testPixels()
 			tft.drawPixel(x, y, tft.color565(x<<3, y<<3, x*y));
 		}
 	}
-	tft.endWrite();
+	tft.SPIEndWrite();
 	return micros() - start;
 }
 

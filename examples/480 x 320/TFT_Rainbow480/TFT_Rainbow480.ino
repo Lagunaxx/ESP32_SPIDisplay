@@ -5,7 +5,7 @@
  This sketch uses the GLCD, 2, 4, 6 fonts only.
 
  Make sure all the required fonts are loaded by editting the
- User_Setup.h file in the TFT_eSPI library folder.
+ User_Setup.h file in the Screen library folder.
 
 
   #########################################################################
@@ -16,9 +16,9 @@
 
 #include <SPI.h>
 
-#include <TFT_eSPI.h> // Hardware-specific library
+#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library
 
-TFT_eSPI tft = TFT_eSPI();       // Invoke custom library
+Screen tft = Screen();       // Invoke custom library
 
 unsigned long targetTime = 0;
 byte red = 31;

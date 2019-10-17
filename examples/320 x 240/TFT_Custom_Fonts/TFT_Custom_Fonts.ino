@@ -1,5 +1,5 @@
 /*
-  Example for TFT_eSPI library
+  Example for Screen library
 
   Created by Bodmer 11/03/17
 
@@ -23,15 +23,15 @@
 #define TEXT "abc MWy 123 |" // Text that will be printed on screen in any font
 
 #include "SPI.h"
-#include "TFT_eSPI.h"
+#include "../../../ESP32-SPIDisplay.h"
 
 // Stock font and GFXFF reference handle
 #define GFXFF 1
 #define FF18 &FreeSans12pt7b
 
-// Custom are fonts added to library "TFT_eSPI\Fonts\Custom" folder
+// Custom are fonts added to library "Screen\Fonts\Custom" folder
 // a #include must also be added to the "User_Custom_Fonts.h" file
-// in the "TFT_eSPI\User_Setups" folder. See example entries.
+// in the "Screen\User_Setups" folder. See example entries.
 #define CF_OL24 &Orbitron_Light_24
 #define CF_OL32 &Orbitron_Light_32
 #define CF_RT24 &Roboto_Thin_24
@@ -40,7 +40,7 @@
 
 
 // Use hardware SPI
-TFT_eSPI tft = TFT_eSPI();
+Screen tft = Screen();
 
 void setup(void) {
 
@@ -82,7 +82,7 @@ void loop() {
   tft.setTextDatum(MC_DATUM);
 
   // Set text colour to white with black background
-  // Unlike the stock Adafruit_GFX library, the TFT_eSPI library DOES draw the background
+  // Unlike the stock Adafruit_GFX library, the Screen library DOES draw the background
   // for the custom and Free Fonts
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
 

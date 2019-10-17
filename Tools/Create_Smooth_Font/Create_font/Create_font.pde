@@ -38,9 +38,9 @@ Software License Agreement (FreeBSD License)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-// This is a processing sketch to create font files for the TFT_eSPI library:
+// This is a processing sketch to create font files for the Screen library:
 
-// https://github.com/Bodmer/TFT_eSPI
+// https://github.com/Bodmer/Screen
 
 // Coded by Bodmer January 2018, updated 10/2/19
 // Version 0.8
@@ -66,7 +66,7 @@ Software License Agreement (FreeBSD License)
 // the end due to the buffering and file seeking overhead.
 
 // The inclusion of "non-existant" characters in a font may give unpredicatable results
-// when rendering with the TFT_eSPI library. The Processing sketch window that pops up
+// when rendering with the Screen library. The Processing sketch window that pops up
 // to show the font characters will print "boxes" (also known as Tofu!) for non existant
 // characters.
 
@@ -103,7 +103,7 @@ Software License Agreement (FreeBSD License)
  
  http://www.google.com/get/noto/
  
- https://github.com/Bodmer/TFT_eSPI
+ https://github.com/Bodmer/Screen
  https://github.com/esp8266/arduino-esp8266fs-plugin
  https://github.com/me-no-dev/arduino-esp32fs-plugin
  
@@ -133,7 +133,7 @@ String fontType = ".ttf";
 //String fontType = ".otf";
 
 
-// Define the font size in points for the TFT_eSPI font file
+// Define the font size in points for the Screen font file
 int  fontSize = 20;
 
 // Font size to use in the Processing sketch display window that pops up (can be different to above)
@@ -333,7 +333,7 @@ static final int[] specificUnicodes = {
     0x0070,                                                         // p
  //*/
 
-  // More characters for TFT_eSPI test sketches, change next line to //* to use
+  // More characters for Screen test sketches, change next line to //* to use
   /*
     0x0102, 0x0103, 0x0104, 0x0105, 0x0106, 0x0107, 0x010C, 0x010D,
     0x010E, 0x010F, 0x0110, 0x0111, 0x0118, 0x0119, 0x011A, 0x011B,

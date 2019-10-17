@@ -16,17 +16,17 @@
   display. Modification of this sketch may lead to problems
   unless the ILI9341 data sheet has been understood!
 
-  Updated by Bodmer 21/12/16 for TFT_eSPI library:
-  https://github.com/Bodmer/TFT_eSPI
+  Updated by Bodmer 21/12/16 for Screen library:
+  https://github.com/Bodmer/Screen
   
   BSD license applies, all text above must be included in any
   redistribution
  *************************************************************/
 
-#include <TFT_eSPI.h> // Hardware-specific library
 #include <SPI.h>
+#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library
 
-TFT_eSPI tft = TFT_eSPI();       // Invoke custom library
+Screen tft = Screen();       // Invoke custom library
 
 // The scrolling area must be a integral multiple of TEXT_HEIGHT
 #define TEXT_HEIGHT 16 // Height of text to be printed and scrolled

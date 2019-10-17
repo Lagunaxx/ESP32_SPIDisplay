@@ -17,10 +17,10 @@
 
 #include "alert.h" // Out of range alert icon
 
-#include <TFT_eSPI.h> // Hardware-specific library
+#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library
 #include <SPI.h>
 
-TFT_eSPI tft = TFT_eSPI(); // Invoke custom library with default width and height
+Screen tft = Screen(); // Invoke custom library with default width and height
 
 uint32_t runTime = -99999;       // time for next update
 
@@ -251,7 +251,7 @@ void drawIcon(const unsigned short* icon, int16_t x, int16_t y, int8_t width, in
 
   uint16_t  pix_buffer[BUFF_SIZE];   // Pixel buffer (16 bits per pixel)
 
-  tft.startWrite();
+  tft.SPIStartWrite();
 
   // Set up a window the right size to stream pixels into
   tft.setAddrWindow(x, y, width, height);
@@ -276,6 +276,6 @@ void drawIcon(const unsigned short* icon, int16_t x, int16_t y, int8_t width, in
     tft.pushColors(pix_buffer, np);
   }
 
-  tft.endWrite();
+  tft.SPIEndWrite();
 }
 

@@ -1,8 +1,8 @@
 
 //   Diagnostic test for the displayed colour order
 //
-// Writen by Bodmer 17/2/19 for the TFT_eSPI library:
-// https://github.com/Bodmer/TFT_eSPI
+// Writen by Bodmer 17/2/19 for the Screen library:
+// https://github.com/Bodmer/Screen
 
 /* 
  Different hardware manufacturers use different colour order
@@ -50,9 +50,9 @@
 
 #include <SPI.h>
 
-#include <TFT_eSPI.h>       // Hardware-specific library
+#include "../../../ESP32-SPIDisplay.h"       // Hardware-specific library
 
-TFT_eSPI tft = TFT_eSPI();  // Invoke custom library
+Screen tft = Screen();  // Invoke custom library
 
 void setup(void) {
   tft.init();

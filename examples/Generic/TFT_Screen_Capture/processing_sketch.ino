@@ -11,8 +11,8 @@
 // The sketch is a client that requests TFT screenshots from an Arduino board.
 // The Arduino must call a screenshot server function to respond with pixels.
 
-// It has been created to work with the TFT_eSPI library here:
-// https://github.com/Bodmer/TFT_eSPI
+// It has been created to work with the Screen library here:
+// https://github.com/Bodmer/Screen
 
 // The sketch must only be run when the designated serial port is available and enumerated
 // otherwise the screenshot window may freeze and that process will need to be terminated
@@ -61,8 +61,8 @@ int max_allowed  = 1000; // Maximum number of save images allowed before a resta
 // ###########################################################################################
 
 // These are default values, this sketch obtains the actual values from the Arduino board
-int tft_width  = 480;    // default TFT width  (automatic - sent by Arduino)
-int tft_height = 480;    // default TFT height (automatic - sent by Arduino)
+int width  = 480;    // default TFT width  (automatic - sent by Arduino)
+int height = 480;    // default TFT height (automatic - sent by Arduino)
 int color_bytes = 2;     // 2 for 16 bit, 3 for three RGB bytes (automatic - sent by Arduino)
 
 import processing.serial.*;
@@ -93,7 +93,7 @@ int indexBlue  = 2;
 
 int n = 0;
 
-int x_offset = (500 - tft_width) /2; // Image offsets in the window
+int x_offset = (500 - width) /2; // Image offsets in the window
 int y_offset = 20;
 
 int xpos = 0, ypos = 0; // Current pixel position
@@ -294,11 +294,11 @@ boolean getSize()
     println();
     char code = (char)serial.read();
     if (code == 'W') {
-      tft_width = serial.read()<<8 | serial.read();
+      width = serial.read()<<8 | serial.read();
     }
     code = (char)serial.read();
     if (code == 'H') {
-      tft_height = serial.read()<<8 | serial.read();
+      height = serial.read()<<8 | serial.read();
     }
     code = (char)serial.read();
     if (code == 'Y') {
@@ -310,11 +310,11 @@ boolean getSize()
     if (code == '?') {
       drawWindow();
 
-      x_offset = (500 - tft_width) /2;
+      x_offset = (500 - width) /2;
       tint(0, 0, 0, 255);
       noStroke();
       fill(frameColor);
-      rect((width - tft_width)/2 - border, y_offset - border, tft_width + 2 * border, tft_height + 2 * border);
+      rect((width - width)/2 - border, y_offset - border, width + 2 * border, height + 2 * border);
       return true;
     }
   }
@@ -331,10 +331,10 @@ void saveScreenshot()
   println("Saving image as \"" + filename + "\"");
   if (save_border)
   {
-    PImage partialSave = get(x_offset - border, y_offset - border, tft_width + 2*border, tft_height + 2*border);
+    PImage partialSave = get(x_offset - border, y_offset - border, width + 2*border, height + 2*border);
     partialSave.save(filename);
   } else {
-    PImage partialSave = get(x_offset, y_offset, tft_width, tft_height);
+    PImage partialSave = get(x_offset, y_offset, width, height);
     partialSave.save(filename);
   }
 
@@ -415,11 +415,11 @@ int renderPixels()
 
         lastPixelTime = millis();
         xpos++;
-        if (xpos >= tft_width) {
+        if (xpos >= width) {
           xpos = 0; 
           progressBar();
           ypos++;
-          if (ypos>=tft_height) {
+          if (ypos>=height) {
             ypos = 0;
             if ((int)percentage <100) {
               while (progress_bar++ < 64) print(" ");
@@ -439,7 +439,7 @@ int renderPixels()
       System.err.println(pixelWaitTime + "ms time-out for pixels exceeded...");
       if (pixel_count > 0) {
         bad_image_count++;
-        System.err.print("Pixels missing = " + (tft_width * tft_height - pixel_count));
+        System.err.print("Pixels missing = " + (width * height - pixel_count));
         System.err.println(", corrupted image not saved");
         System.err.println("Good image count = " + saved_image_count);
         System.err.println(" Bad image count = " + bad_image_count);
@@ -457,7 +457,7 @@ void progressBar()
   if (progress_bar >63)
   {
     progress_bar = 0;
-    percentage = 0.5 + 100 * pixel_count/(0.001 + tft_width * tft_height);
+    percentage = 0.5 + 100 * pixel_count/(0.001 + width * height);
     percent(percentage);
   }
 }
@@ -484,7 +484,7 @@ boolean fadedImage()
     //image(tft_img, x_offset, y_offset);
     noStroke();
     fill(50, 50, 50, opacity);
-    rect( (width - tft_width)/2, y_offset, tft_width, tft_height);
+    rect( (width - width)/2, y_offset, width, height);
     delay(10);
   }
   if (opacity > 50)       // End fade after 50 cycles
@@ -516,7 +516,7 @@ void buttonClicked()
     System.err.println("Stopped - click 'Run' button: ");
     //noStroke();
     //fill(50);
-    //rect( (width - tft_width)/2, y_offset, tft_width, tft_height);
+    //rect( (width - width)/2, y_offset, width, height);
     beginTime = millis() + 500;
     dimmed = false;
     state = 4;

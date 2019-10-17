@@ -24,8 +24,8 @@
 
 //  Close the IDE and open again to see the new menu option.
 
-// A processing sketch to create new fonts can be found in the Tools folder of TFT_eSPI
-// https://github.com/Bodmer/TFT_eSPI/tree/master/Tools/Create_Smooth_Font/Create_font
+// A processing sketch to create new fonts can be found in the Tools folder of Screen
+// https://github.com/Bodmer/Screen/tree/master/Tools/Create_Smooth_Font/Create_font
 
 // This sketch uses font files created from the Noto family of fonts:
 // https://www.google.com/get/noto/
@@ -37,9 +37,9 @@
 #include <FS.h>
 
 #include <SPI.h>
-#include <TFT_eSPI.h>       // Hardware-specific library
+#include "../../../ESP32-SPIDisplay.h"       // Hardware-specific library
 
-TFT_eSPI    tft = TFT_eSPI();
+Screen    tft = Screen();
 TFT_eSprite spr = TFT_eSprite(&tft); // Sprite class needs to be invoked
 
 void setup(void) {

@@ -2,7 +2,7 @@
   Display "flicker free" scrolling text and updating number
 
   Example for library:
-  https://github.com/Bodmer/TFT_eSPI
+  https://github.com/Bodmer/Screen
 
   The sketch has been tested on a 320x240 ILI9341 based TFT, it
   coule be adapted for other screen sizes.
@@ -36,9 +36,9 @@
 // Pause in milliseconds to set scroll speed
 #define WAIT 0
 
-#include <TFT_eSPI.h>                 // Include the graphics library (this includes the sprite functions)
+#include "../../../ESP32-SPIDisplay.h"                 // Include the graphics library (this includes the sprite functions)
 
-TFT_eSPI    tft = TFT_eSPI();         // Create object "tft"
+Screen    tft = Screen();         // Create object "tft"
 
 TFT_eSprite img = TFT_eSprite(&tft);  // Create Sprite object "img" with pointer to "tft" object
 //                                    // the pointer is used by pushSprite() to push it onto the TFT

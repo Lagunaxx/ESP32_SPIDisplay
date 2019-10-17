@@ -1,7 +1,7 @@
 // This sketch if for an ESP32, it draws Jpeg images pulled from an SD Card
 // onto the TFT.
 
-// As well as the TFT_eSPI library you will need the JPEG Decoder library.
+// As well as the Screen library you will need the JPEG Decoder library.
 // A copy can be downloaded here, it is based on the library by Makoto Kurauchi.
 // https://github.com/Bodmer/JPEGDecoder
 
@@ -17,8 +17,8 @@
 #include <FS.h>
 #include <SD.h>
 
-#include <TFT_eSPI.h>
-TFT_eSPI tft = TFT_eSPI();
+#include "../../../ESP32-SPIDisplay.h"
+Screen tft = Screen();
 
 // JPEG decoder library
 #include <JPEGDecoder.h>

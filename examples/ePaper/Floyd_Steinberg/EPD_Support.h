@@ -2,8 +2,8 @@
  *  These tailor the library and screen settings
  *  Must be a header file to ensure #defines are established first
  *  
- *  Created by Bodmer 30/3/18 for TFT_eSPI library:
- *  https://github.com/Bodmer/TFT_eSPI
+ *  Created by Bodmer 30/3/18 for Screen library:
+ *  https://github.com/Bodmer/Screen
  */
 
 /*

@@ -28,10 +28,10 @@ code	color
 
  */
 
-#include <TFT_eSPI.h> // Graphics and font library for ST7735 driver chip
 #include <SPI.h>
+#include "../../../ESP32-SPIDisplay.h" // Graphics and font library for ST7735 driver chip
 
-TFT_eSPI tft = TFT_eSPI();  // Invoke library, pins defined in User_Setup.h
+Screen tft = Screen();  // Invoke library, pins defined in User_Setup.h
 
 uint32_t targetTime = 0;       // for next 1 second timeout
 

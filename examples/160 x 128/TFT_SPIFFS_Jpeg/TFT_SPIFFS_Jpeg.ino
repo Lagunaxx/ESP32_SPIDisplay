@@ -55,12 +55,12 @@
 #include <SPI.h>
 
 // Call up the TFT library
-#include <TFT_eSPI.h> // Hardware-specific library for ESP8266
+#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library for ESP8266
 // The TFT control pins are set in the User_Setup.h file <<<<<<<<<<<<<<<<< NOTE!
 // that can be found in the "src" folder of the library
 
 // Invoke TFT library
-TFT_eSPI tft = TFT_eSPI();
+Screen tft = Screen();
 
 //====================================================================================
 //                                    Setup

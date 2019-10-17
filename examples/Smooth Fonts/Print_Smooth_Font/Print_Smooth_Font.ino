@@ -22,7 +22,7 @@
   https://en.wikipedia.org/wiki/Plane_(Unicode)#Basic_Multilingual_Plane
 
   Make sure all the display driver and pin connenctions are correct by
-  editting the User_Setup.h file in the TFT_eSPI library folder.
+  editting the User_Setup.h file in the Screen library folder.
 
   #########################################################################
   ###### DON'T FORGET TO UPDATE THE User_Setup.h FILE IN THE LIBRARY ######
@@ -34,10 +34,10 @@
 #include <FS.h>
 
 // Graphics and font library
-#include <TFT_eSPI.h>
+#include "../../../ESP32-SPIDisplay.h"
 #include <SPI.h>
 
-TFT_eSPI tft = TFT_eSPI();  // Invoke library
+Screen tft = Screen();  // Invoke library
 
 // -------------------------------------------------------------------------
 // Setup

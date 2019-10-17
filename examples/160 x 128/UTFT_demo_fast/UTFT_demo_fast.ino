@@ -7,7 +7,7 @@
   This sketch uses the GLCD and font 2 only.
 
   Make sure all the display driver and pin comnenctions are correct by
-  editting the User_Setup.h file in the TFT_eSPI library folder.
+  editting the User_Setup.h file in the Screen library folder.
 
   Note that yield() or delay(0) must be called in long duration for/while
   loops to stop the ESP8266 watchdog triggering.
@@ -17,10 +17,10 @@
   #########################################################################
 */
 
-#include <TFT_eSPI.h> // Graphics and font library for ST7735 driver chip
 #include <SPI.h>
+#include "../../../ESP32-SPIDisplay.h" // Graphics and font library for ST7735 driver chip
 
-TFT_eSPI myGLCD = TFT_eSPI();  // Invoke library, pins defined in User_Setup.h
+Screen myGLCD = Screen();  // Invoke library, pins defined in User_Setup.h
 
 #define DELAY 500
 

@@ -16,7 +16,7 @@
   to plot text to the screen.
 
   Make sure LOAD_GFXFF is defined in the User_Setup.h file within the
-  TFT_eSPI library folder.
+  Screen library folder.
 
   --------------------------- NOTE ----------------------------------------
   The free font encoding format does not lend itself easily to plotting
@@ -38,13 +38,13 @@
   #########################################################################
 */
 
+#include "../../../ESP32-SPIDisplay.h"
 #include "Free_Fonts.h" // Include the header file attached to this sketch
 
 #include "SPI.h"
-#include "TFT_eSPI.h"
 
 // Use hardware SPI
-TFT_eSPI tft = TFT_eSPI();
+Screen tft = Screen();
 
 unsigned long drawTime = 0;
 

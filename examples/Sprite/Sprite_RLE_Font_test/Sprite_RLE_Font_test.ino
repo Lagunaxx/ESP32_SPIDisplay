@@ -2,7 +2,7 @@
  Display all the fast rendering fonts in a sprite
 
  Make sure all the display driver and pin comnections are correct by
- editting the User_Setup.h file in the TFT_eSPI library folder.
+ editting the User_Setup.h file in the Screen library folder.
 
  #########################################################################
  ###### DON'T FORGET TO UPDATE THE User_Setup.h FILE IN THE LIBRARY ######
@@ -16,10 +16,10 @@
 // Pause in milliseconds between screens, change to 0 to time font rendering
 #define WAIT 500
 
-#include <TFT_eSPI.h> // Graphics and font library for ST7735 driver chip
+#include "../../../ESP32-SPIDisplay.h" // Graphics and font library for ST7735 driver chip
 #include <SPI.h>
 
-TFT_eSPI tft = TFT_eSPI();  // Invoke library, pins defined in User_Setup.h
+Screen tft = Screen();  // Invoke library, pins defined in User_Setup.h
 
 TFT_eSprite img = TFT_eSprite(&tft);
 

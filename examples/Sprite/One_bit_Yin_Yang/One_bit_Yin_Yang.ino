@@ -20,9 +20,9 @@
 #define ANGLE_INC 3
 int angle = 0;
 
-#include <TFT_eSPI.h>                 // Hardware-specific library
+#include "../../../ESP32-SPIDisplay.h"                 // Hardware-specific library
 
-TFT_eSPI    tft = TFT_eSPI();         // Invoke library
+Screen    tft = Screen();         // Invoke library
 
 TFT_eSprite img = TFT_eSprite(&tft);  // Sprite class
 

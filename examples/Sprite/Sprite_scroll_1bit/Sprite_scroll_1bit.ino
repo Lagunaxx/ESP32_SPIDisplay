@@ -30,7 +30,7 @@
   The gap left by scrolling is filled with a defined colour.
 
   Example for library:
-  https://github.com/Bodmer/TFT_eSPI
+  https://github.com/Bodmer/Screen
 
   A Sprite is notionally an invisible graphics screen that is
   kept in the processors RAM. Graphics can be drawn into the
@@ -43,9 +43,9 @@
 
 */
 
-#include <TFT_eSPI.h>
+#include "../../../ESP32-SPIDisplay.h"
 
-TFT_eSPI tft = TFT_eSPI();
+Screen tft = Screen();
 
 TFT_eSprite graph1 = TFT_eSprite(&tft); // Sprite object graph1
 

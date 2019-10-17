@@ -16,8 +16,8 @@
   To add the upload option for the ESP32 see:
   https://github.com/me-no-dev/arduino-esp32fs-plugin
 
-  Created by Bodmer 6/1/19 as an example to the TFT_eSPI library:
-  https://github.com/Bodmer/TFT_eSPI
+  Created by Bodmer 6/1/19 as an example to the Screen library:
+  https://github.com/Bodmer/Screen
 
   Extension funtions in the TFT_eFEX library are used to list SPIFFS files and render
   the jpeg to the TFT and to the Sprite:
@@ -40,9 +40,9 @@
 #include "SPIFFS.h" // Needed for ESP32 only
 #endif
 
-// https://github.com/Bodmer/TFT_eSPI
-#include <TFT_eSPI.h>                 // Hardware-specific library
-TFT_eSPI tft = TFT_eSPI();            // Invoke custom library
+// https://github.com/Bodmer/Screen
+#include "../../../ESP32-SPIDisplay.h"                 // Hardware-specific library
+Screen tft = Screen();            // Invoke custom library
 TFT_eSprite spr = TFT_eSprite(&tft);  // Create Sprite object "spr" with pointer to "tft" object
 
 // https://github.com/Bodmer/TFT_eFEX

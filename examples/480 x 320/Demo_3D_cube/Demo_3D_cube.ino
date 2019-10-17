@@ -1,6 +1,6 @@
 /*
 
- Example sketch for TFT_eSPI library.
+ Example sketch for Screen library.
 
  No fonts are needed.
  
@@ -15,9 +15,9 @@
 
 #include <SPI.h>
 
-#include <TFT_eSPI.h> // Hardware-specific library
+#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library
 
-TFT_eSPI tft = TFT_eSPI();       // Invoke custom library
+Screen tft = Screen();       // Invoke custom library
 
 int16_t h;
 int16_t w;

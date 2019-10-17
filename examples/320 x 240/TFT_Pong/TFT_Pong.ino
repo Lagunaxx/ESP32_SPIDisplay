@@ -10,10 +10,10 @@
 #define WHITE 0xFFFF
 #define GREY  0x5AEB
 
-#include <TFT_eSPI.h> // Hardware-specific library
+#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library
 #include <SPI.h>
 
-TFT_eSPI tft = TFT_eSPI();       // Invoke custom library
+Screen tft = Screen();       // Invoke custom library
 
 int16_t h = 240;
 int16_t w = 320;
@@ -108,7 +108,7 @@ void midline() {
   // If the ball is not on the line then don't redraw the line
   if ((ball_x<dashline_x-ball_w) && (ball_x > dashline_x+dashline_w)) return;
 
-  tft.startWrite();
+  tft.SPIStartWrite();
 
   // Quick way to draw a dashed line
   tft.setAddrWindow(dashline_x, 0, dashline_w, h);
@@ -118,7 +118,7 @@ void midline() {
     tft.pushColor(BLACK, dashline_w*dashline_h); // push gap pixels
   }
 
-  tft.endWrite();
+  tft.SPIEndWrite();
 }
 
 void lpaddle() {

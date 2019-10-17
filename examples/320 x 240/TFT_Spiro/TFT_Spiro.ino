@@ -1,10 +1,10 @@
 // Spiro
 // Rainbow patern generator
 
-#include <TFT_eSPI.h> // Hardware-specific library
 #include <SPI.h>
+#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library
 
-TFT_eSPI tft = TFT_eSPI();       // Invoke custom library
+Screen tft = Screen();       // Invoke custom library
 
 #define DEG2RAD 0.0174532925 // Convert angles in degrees to radians
 

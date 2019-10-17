@@ -1,5 +1,5 @@
 
-// Custom "Adafruit" compatible font files can be added to the "TFT_eSPI/Fonts/Custom" folder
+// Custom "Adafruit" compatible font files can be added to the "Screen/Fonts/Custom" folder
 // Fonts in a suitable format can be created using a Squix blog web based tool here:
 /*
    https://blog.squix.org/2016/10/font-creator-now-creates-adafruit-gfx-fonts.html
@@ -13,7 +13,7 @@
                                                                                  ^^^^
 */
 
-// When font files are placed in the Custom folder (TFT_eSPI\Fonts\Custom) then they must
+// When font files are placed in the Custom folder (Screen\Fonts\Custom) then they must
 // also be #included here:
 
 // The CF_OL24 etc are a shorthand reference, but this is not essential to use the fonts

@@ -7,20 +7,20 @@
  This sketch uses the GLCD and font 2 only.
  
  Make sure all the display driver and pin comnenctions are correct by
- editting the User_Setup.h file in the TFT_eSPI library folder.
+ editting the User_Setup.h file in the Screen library folder.
 
  #########################################################################
  ###### DON'T FORGET TO UPDATE THE User_Setup.h FILE IN THE LIBRARY ######
  #########################################################################
  */
 
+#include "../../../ESP32-SPIDisplay.h"
 #include "SPI.h"
 
-#include "TFT_eSPI.h"
 
 #define TFT_GREY 0x7BEF
 
-TFT_eSPI myGLCD = TFT_eSPI();       // Invoke custom library
+Screen myGLCD = Screen();       // Invoke custom library
 
 unsigned long runTime = 0;
 void setup()

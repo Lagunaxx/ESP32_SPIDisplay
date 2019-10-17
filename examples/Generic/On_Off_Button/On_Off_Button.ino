@@ -7,16 +7,16 @@
 // Based on Adafruit_GFX library onoffbutton example.
 
 // Touch handling for XPT2046 based screens is handled by
-// the TFT_eSPI library.
+// the Screen library.
 
 // Calibration data is stored in SPIFFS so we need to include it
 #include "FS.h"
 
 #include <SPI.h>
 
-#include <TFT_eSPI.h> // Hardware-specific library
+#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library
 
-TFT_eSPI tft = TFT_eSPI();       // Invoke custom library
+Screen tft = Screen();       // Invoke custom library
 
 // This is the file name used to store the touch coordinate
 // calibration data. Cahnge the name to start a new calibration.

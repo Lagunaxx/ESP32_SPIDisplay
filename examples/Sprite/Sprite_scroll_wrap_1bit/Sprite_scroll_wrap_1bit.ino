@@ -1,13 +1,13 @@
 // This **ONLY** works for 1 bpp Sprites due to lack of bounds checking in the
 // Sprite pushImage() function for 8 and 16 bit Sprites (it is on the TO DO list)
 
-// Wrapping scroll example by Bodmer for the TFT_eSPI library
+// Wrapping scroll example by Bodmer for the Screen library
 
 //==========================================================================================
 
-#include <TFT_eSPI.h>
+#include "../../../ESP32-SPIDisplay.h"
 
-TFT_eSPI tft = TFT_eSPI();
+Screen tft = Screen();
 
 TFT_eSprite gfx = TFT_eSprite(&tft); // Sprite object for graphics write
 

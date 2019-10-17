@@ -3,7 +3,7 @@
 // This code currently does not "blink" the eye!
 //
 // Library used is here:
-// https://github.com/Bodmer/TFT_eSPI
+// https://github.com/Bodmer/Screen
 //
 // To do, maybe, one day:
 // 1. Get the eye to blink
@@ -40,9 +40,7 @@
 */
 
 #include <SPI.h>
-#include <TFT_eSPI.h> // Hardware-specific library
-
-// Enable ONE of these #includes for the various eyes:
+#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library
 #include "defaultEye.h"        // Standard human-ish hazel eye
 //#include "noScleraEye.h"       // Large iris, no sclera
 //#include "dragonEye.h"         // Slit pupil fiery dragon/demon eye
@@ -89,12 +87,12 @@ typedef struct {
 } eyeBlink;
 
 struct {
-  TFT_eSPI tft; // OLED/eye[e].tft object
+  Screen tft; // OLED/eye[e].tft object
   uint8_t     cs;      // Chip select pin
   eyeBlink    blink;   // Current blink state
 } eye[] = { // OK to comment out one of these for single-eye display:
-  TFT_eSPI(),SELECT_L_PIN,{WINK_L_PIN,NOBLINK},
-  //TFT_eSPI(),SELECT_R_PIN,{WINK_R_PIN,NOBLINK},
+  Screen(),SELECT_L_PIN,{WINK_L_PIN,NOBLINK},
+  //Screen(),SELECT_R_PIN,{WINK_R_PIN,NOBLINK},
 };
 
 #define NUM_EYES (sizeof(eye) / sizeof(eye[0]))

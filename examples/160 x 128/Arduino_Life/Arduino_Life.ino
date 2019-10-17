@@ -6,10 +6,10 @@
 
 // Adapted by Bodmer
 
-#include <TFT_eSPI.h> // Hardware-specific library
 #include <SPI.h>
+#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library
 
-TFT_eSPI tft = TFT_eSPI();       // Invoke custom library
+Screen tft = Screen();       // Invoke custom library
 
 // Maximum number of generations until the screen is refreshed
 #define MAX_GEN_COUNT 500

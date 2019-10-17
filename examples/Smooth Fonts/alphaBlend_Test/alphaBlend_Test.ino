@@ -13,7 +13,7 @@
   https://en.wikipedia.org/wiki/Alpha_compositing
   
   Example for library:
-  https://github.com/Bodmer/TFT_eSPI
+  https://github.com/Bodmer/Screen
 
   The sketch has been tested on a 320x240 ILI9341 based TFT, it
   could be adapted for other screen sizes.
@@ -25,9 +25,9 @@
   #########################################################################
 */
 
-#include <TFT_eSPI.h>       // Include the graphics library
+#include "../../../ESP32-SPIDisplay.h"       // Include the graphics library
 
-TFT_eSPI tft = TFT_eSPI();  // Create object "tft"
+Screen tft = Screen();  // Create object "tft"
 
 // -------------------------------------------------------------------------
 // Setup

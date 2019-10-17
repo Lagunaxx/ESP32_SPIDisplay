@@ -1,5 +1,5 @@
 /*
-  Example for TFT_eSPI library
+  Example for Screen library
 
   Created by Bodmer 31/12/16
 
@@ -43,10 +43,10 @@
 #include "Free_Fonts.h" // Include the header file attached to this sketch
 
 #include "SPI.h"
-#include "TFT_eSPI.h"
+#include "../../../ESP32-SPIDisplay.h"
 
 // Use hardware SPI
-TFT_eSPI tft = TFT_eSPI();
+Screen tft = Screen();
 
 unsigned long drawTime = 0;
 

@@ -20,12 +20,12 @@
 // For 1 bpp Sprites the foreground and background colours are defined with the
 // function spr.setBitmapColor(foregroundColor, backgroundColor).
 
-// Created by Bodmer 6/1/19 as an example to the TFT_eSPI library:
-// https://github.com/Bodmer/TFT_eSPI
+// Created by Bodmer 6/1/19 as an example to the Screen library:
+// https://github.com/Bodmer/Screen
 
-#include <TFT_eSPI.h>
+#include "../../../ESP32-SPIDisplay.h"
 
-TFT_eSPI tft = TFT_eSPI();           // TFT object
+Screen tft = Screen();           // TFT object
 
 TFT_eSprite spr = TFT_eSprite(&tft); // Sprite object
 

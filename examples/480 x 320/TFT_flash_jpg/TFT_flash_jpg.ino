@@ -6,8 +6,8 @@
 
 // The sketch does not need the SD or sdFat libraries since it does not access an SD Card.
 
-// As well as the TFT_eSPI library:
-// https://github.com/Bodmer/TFT_eSPI
+// As well as the Screen library:
+// https://github.com/Bodmer/Screen
 // the sketch need the JPEG Decoder library. This can be loaded via the Library Manager.
 // or can be downloaded here:
 // https://github.com/Bodmer/JPEGDecoder
@@ -15,9 +15,9 @@
 //----------------------------------------------------------------------------------------------------
 
 #include <SPI.h>
-#include <TFT_eSPI.h>
+#include "../../../ESP32-SPIDisplay.h"
 
-TFT_eSPI tft = TFT_eSPI();
+Screen tft = Screen();
 
 
 // JPEG decoder library
@@ -171,7 +171,7 @@ void renderJPEG(int xpos, int ypos) {
     // calculate how many pixels must be drawn
     uint32_t mcu_pixels = win_w * win_h;
 
-    tft.startWrite();
+    tft.SPIStartWrite();
 
     // draw image MCU block only if it will fit on the screen
     if (( mcu_x + win_w ) <= tft.width() && ( mcu_y + win_h ) <= tft.height())
@@ -189,7 +189,7 @@ void renderJPEG(int xpos, int ypos) {
     }
     else if ( (mcu_y + win_h) >= tft.height()) JpegDec.abort(); // Image has run off bottom of screen so abort decoding
 
-    tft.endWrite();
+    tft.SPIEndWrite();
   }
 
   // calculate how long it took to draw the image

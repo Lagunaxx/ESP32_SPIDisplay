@@ -10,10 +10,10 @@
 // Define meter size
 #define M_SIZE 0.667
 
-#include <TFT_eSPI.h> // Hardware-specific library
+#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library
 #include <SPI.h>
 
-TFT_eSPI tft = TFT_eSPI();       // Invoke custom library
+Screen tft = Screen();       // Invoke custom library
 
 #define TFT_GREY 0x5AEB
 #define TFT_ORANGE      0xFD20      /* 255, 165,   0 */

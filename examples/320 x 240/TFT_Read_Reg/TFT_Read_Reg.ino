@@ -15,10 +15,10 @@
 //                                  Libraries
 //====================================================================================
 
-#include <TFT_eSPI.h> // Graphics and font library for ILI9341 driver chip
 #include <SPI.h>
+#include "../../../ESP32-SPIDisplay.h" // Graphics and font library for ILI9341 driver chip
 
-TFT_eSPI tft = TFT_eSPI();  // Invoke library
+Screen tft = Screen();  // Invoke library
 
 //====================================================================================
 //                                    Setup

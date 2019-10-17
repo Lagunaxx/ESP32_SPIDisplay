@@ -1,10 +1,10 @@
 // Animates white pixels to simulate flying through a star field
 
 #include <SPI.h>
-#include <TFT_eSPI.h>
+#include "../../../ESP32-SPIDisplay.h"
 
 // Use hardware SPI
-TFT_eSPI tft = TFT_eSPI();
+Screen tft = Screen();
 
 // With 1024 stars the update rate is ~65 frames per second
 #define NSTARS 1024

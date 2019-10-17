@@ -19,9 +19,9 @@ Updated by Bodmer for variable meter size
 
 #include <SPI.h>
 
-#include <TFT_eSPI.h> // Hardware-specific library
+#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library
 
-TFT_eSPI tft = TFT_eSPI();       // Invoke custom library
+Screen tft = Screen();       // Invoke custom library
 
 #define TFT_GREY 0x5AEB
 

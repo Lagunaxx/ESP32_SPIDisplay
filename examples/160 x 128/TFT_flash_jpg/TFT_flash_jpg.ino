@@ -3,8 +3,8 @@
 // Renders images stored in an array in program (FLASH)
 // The JPEG images are stored in header files (see jpeg1.h etc)
 
-// As well as the TFT_eSPI library:
-// https://github.com/Bodmer/TFT_eSPI
+// As well as the Screen library:
+// https://github.com/Bodmer/Screen
 // the sketch needs the JPEG Decoder library. This can be loaded via the Library Manager.
 // or can be downloaded here:
 // https://github.com/Bodmer/JPEGDecoder
@@ -12,9 +12,9 @@
 //----------------------------------------------------------------------------------------------------
 
 #include <SPI.h>
-#include <TFT_eSPI.h>
+#include "../../../ESP32-SPIDisplay.h"
 
-TFT_eSPI tft = TFT_eSPI();
+Screen tft = Screen();
 
 
 // JPEG decoder library

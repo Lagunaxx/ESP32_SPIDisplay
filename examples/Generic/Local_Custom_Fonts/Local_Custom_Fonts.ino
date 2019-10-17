@@ -1,5 +1,5 @@
 /*
-  Example for TFT_eSPI library
+  Example for Screen library
 
   This example shows the use of a Adafruit_GFX custom font with a
   character code range of 32 - 255, this means accented characters
@@ -15,7 +15,7 @@
   can however still be used with this sketch but the example characters
   used must be changed.
 
-  The Arduino IDE uses UTF8 encoding for these characters. The TFT_eSPI
+  The Arduino IDE uses UTF8 encoding for these characters. The Screen
   library also expects characters in the range 128 to 255 to be UTF-8
   encoded. See link here for details:
 
@@ -44,7 +44,7 @@
 //#define TEST_TEXT "Hello"     // Text that will be printed on screen in the font
 
 #include "SPI.h"
-#include "TFT_eSPI.h"
+#include "../../../ESP32-SPIDisplay.h"
 
 // The custom font file attached to this sketch must be included
 #include "MyFont.h"
@@ -56,7 +56,7 @@
 #define MYFONT32 &myFont32pt8b
 
 // Use hardware SPI
-TFT_eSPI tft = TFT_eSPI();
+Screen tft = Screen();
 
 void setup(void) {
 
@@ -98,7 +98,7 @@ void loop() {
   tft.setTextDatum(MC_DATUM);
 
   // Set text colour to white with black background
-  // Unlike the stock Adafruit_GFX library, the TFT_eSPI library DOES optionally draw
+  // Unlike the stock Adafruit_GFX library, the Screen library DOES optionally draw
   // the background colour for the custom and Free Fonts when using drawString()
   tft.setTextColor(TFT_WHITE, TFT_BLACK);      // White characters on black background
   //tft.setTextColor(TFT_WHITE);               // or white characters, no background

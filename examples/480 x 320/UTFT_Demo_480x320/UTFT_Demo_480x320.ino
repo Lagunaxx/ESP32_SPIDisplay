@@ -9,7 +9,7 @@
  This sketch uses the GLCD and font 2 only.
 
  Make sure all the required fonts are loaded by editting the
- User_Setup.h file in the TFT_eSPI library folder.
+ User_Setup.h file in the Screen library folder.
 
   #########################################################################
   ###### DON'T FORGET TO UPDATE THE User_Setup.h FILE IN THE LIBRARY ######
@@ -22,10 +22,10 @@
 
 #define CENTRE 240
 
-#include <TFT_eSPI.h> // Hardware-specific library
+#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library
 #include <SPI.h>
 
-TFT_eSPI tft = TFT_eSPI();                   // Invoke custom library with default width and height
+Screen tft = Screen();                   // Invoke custom library with default width and height
 
 #define TFT_GREY 0x7BEF
 

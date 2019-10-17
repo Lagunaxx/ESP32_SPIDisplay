@@ -1,5 +1,5 @@
 /*
-  The TFT_eSPI library incorporates an Adafruit_GFX compatible
+  The Screen library incorporates an Adafruit_GFX compatible
   button handling class, this sketch is based on the Arduin-o-phone
   example.
 
@@ -17,9 +17,9 @@
 #include "FS.h"
 
 #include <SPI.h>
-#include <TFT_eSPI.h>      // Hardware-specific library
+#include "../../../ESP32-SPIDisplay.h"      // Hardware-specific library
 
-TFT_eSPI tft = TFT_eSPI(); // Invoke custom library
+Screen tft = Screen(); // Invoke custom library
 
 // This is the file name used to store the calibration data
 // You can change this to create new calibration files.
@@ -70,7 +70,7 @@ uint16_t keyColor[15] = {TFT_RED, TFT_DARKGREY, TFT_DARKGREEN,
                          TFT_BLUE, TFT_BLUE, TFT_BLUE
                         };
 
-// Invoke the TFT_eSPI button class and create all the button objects
+// Invoke the Screen button class and create all the button objects
 TFT_eSPI_Button key[15];
 
 //------------------------------------------------------------------------------------------

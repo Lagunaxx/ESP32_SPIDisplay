@@ -4,7 +4,7 @@
  This sketch uses the GLCD font only.
 
  Make sure all the display driver and pin comnenctions are correct by
- editting the User_Setup.h file in the TFT_eSPI library folder.
+ editting the User_Setup.h file in the Screen library folder.
 
  Note that yield() or delay(0) must be called in long duration for/while
  loops to stop the ESP8266 watchdog triggering.
@@ -15,10 +15,10 @@
  */
 
 
-#include <TFT_eSPI.h> // Hardware-specific library
 #include <SPI.h>
+#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library
 
-TFT_eSPI tft = TFT_eSPI();       // Invoke custom library
+Screen tft = Screen();       // Invoke custom library
 
 // These are used to get information about static SRAM and flash memory sizes
 extern "C" char __data_start[];		// start of SRAM data
@@ -313,7 +313,7 @@ uint32_t testHaD()
 
   uint32_t start = micros_start();
 
-  tft.startWrite();
+  tft.SPIStartWrite();
 
   for (int i = 0; i < 0x10; i++)
   {
@@ -324,7 +324,7 @@ uint32_t testHaD()
     uint16_t curcolor = 0;
 
     const uint8_t *cmp = &HaD_128x160[0];
-    tft.startWrite();
+    tft.SPIStartWrite();
     while (cmp < &HaD_128x160[sizeof(HaD_128x160)])
     {
       cnt = pgm_read_byte(cmp++);
@@ -335,10 +335,10 @@ uint32_t testHaD()
 
       curcolor ^= color;
     }
-    tft.endWrite();
+    tft.SPIEndWrite();
   }
 
-  tft.endWrite();
+  tft.SPIEndWrite();
 
   uint32_t t = micros() - start;
 
@@ -410,7 +410,7 @@ uint32_t testPixels()
   int32_t h = tft.height();
 
   uint32_t start = micros_start();
-  tft.startWrite();
+  tft.SPIStartWrite();
   for (uint16_t y = 0; y < h; y++)
   {
     for (uint16_t x = 0; x < w; x++)
@@ -418,7 +418,7 @@ uint32_t testPixels()
       tft.drawPixel(x, y, tft.color565(x<<3, y<<3, x*y));
     }
   }
-  tft.endWrite();
+  tft.SPIEndWrite();
   return micros() - start;
 }
 

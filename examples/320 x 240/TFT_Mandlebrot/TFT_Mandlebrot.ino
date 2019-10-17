@@ -2,10 +2,10 @@
 
 // This will run quite slowly due to the large number of floating point calculations per pixel
 
-#include <TFT_eSPI.h> // Hardware-specific library
 #include <SPI.h>
+#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library
 
-TFT_eSPI tft = TFT_eSPI();       // Invoke custom library
+Screen tft = Screen();       // Invoke custom library
 
 #define TFT_GREY 0x7BEF
 
@@ -29,7 +29,7 @@ void loop()
   runTime = millis();
 
   tft.fillScreen(TFT_BLACK);
-  tft.startWrite();
+  tft.SPIStartWrite();
   for (int px = 1; px < 320; px++)
   {
     for (int py = 0; py < 240; py++)
@@ -51,7 +51,7 @@ void loop()
       yield();tft.drawPixel(px, py, color);
     }
   }
-  tft.endWrite();
+  tft.SPIEndWrite();
 
   Serial.println(millis()-runTime);
   while(1) yield();

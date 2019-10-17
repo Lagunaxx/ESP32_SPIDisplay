@@ -6,8 +6,8 @@
 // PC client in ~1.67s and 24 bit colour in ~2.5s which is close to the theoretical
 // minimum transfer time.
 
-// This sketch has been created to work with the TFT_eSPI library here:
-// https://github.com/Bodmer/TFT_eSPI
+// This sketch has been created to work with the Screen library here:
+// https://github.com/Bodmer/Screen
 
 // Created by: Bodmer 27/1/17
 // Updated by: Bodmer 10/3/17

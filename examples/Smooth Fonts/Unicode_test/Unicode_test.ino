@@ -24,9 +24,9 @@
 //====================================================================================
 // Call up the SPIFFS FLASH filing system this is part of the ESP Core
 
-#include <TFT_eSPI.h>      // Hardware-specific library
+#include "../../../ESP32-SPIDisplay.h"      // Hardware-specific library
 
-TFT_eSPI tft = TFT_eSPI(); // Invoke custom library
+Screen tft = Screen(); // Invoke custom library
 
 uint16_t bg = TFT_BLACK;
 uint16_t fg = TFT_WHITE;

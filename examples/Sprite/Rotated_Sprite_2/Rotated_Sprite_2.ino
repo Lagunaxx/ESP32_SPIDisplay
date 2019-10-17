@@ -2,7 +2,7 @@
 // Sprite is pushed to the TFT screen. This example is for a 240 x 320 screen.
 
 // The motivation for developing this capability is that animated dials can be drawn easily
-// and the complex calculations involved are handled by the TFT_eSPI library. To create a dial
+// and the complex calculations involved are handled by the Screen library. To create a dial
 // with a moving needle a graphic of a meter needle is plotted at a specified angle into another
 // Sprite that contains the dial face. When the needle Sprite is pushed to the dial Sprite the
 // plotting ensures two pivot points for each Sprite coincide with pixel level accuracy.
@@ -19,12 +19,12 @@
 // For 1 bpp Sprites the foreground and background colours are defined with the
 // member function setBitmapColor(foregroundColor, backgroundColor).
 
-// Created by Bodmer 6/1/19 as an example to the TFT_eSPI library:
-// https://github.com/Bodmer/TFT_eSPI
+// Created by Bodmer 6/1/19 as an example to the Screen library:
+// https://github.com/Bodmer/Screen
 
-#include <TFT_eSPI.h>
+#include "../../../ESP32-SPIDisplay.h"
 
-TFT_eSPI tft = TFT_eSPI();
+Screen tft = Screen();
 
 TFT_eSprite dial   = TFT_eSprite(&tft); // Sprite object for dial
 TFT_eSprite needle = TFT_eSprite(&tft); // Sprite object for needle

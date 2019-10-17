@@ -4,16 +4,16 @@
 // Information on the X BitMap (XBM) format can be found here:
 // https://en.wikipedia.org/wiki/X_BitMap
 
-// This example is part of the TFT_eSPI library:
-// https://github.com/Bodmer/TFT_eSPI
+// This example is part of the Screen library:
+// https://github.com/Bodmer/Screen
 
 // Created by Bodmer 23/04/18
 
+#include "../../../ESP32-SPIDisplay.h"        // Hardware-specific library
 #include "xbm.h"             // Sketch tab header for xbm images
 
-#include <TFT_eSPI.h>        // Hardware-specific library
 
-TFT_eSPI tft = TFT_eSPI();   // Invoke library
+Screen tft = Screen();   // Invoke library
 
 
 void setup()
