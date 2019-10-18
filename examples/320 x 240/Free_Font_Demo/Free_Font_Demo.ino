@@ -38,7 +38,7 @@
   #########################################################################
 */
 
-#include "../../../ESP32-SPIDisplay.h"
+#include "../../../ESP32_SPIDisplay.h"
 #include "Free_Fonts.h" // Include the header file attached to this sketch
 
 #include "SPI.h"

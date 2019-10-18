@@ -36,7 +36,7 @@
 // Pause in milliseconds to set scroll speed
 #define WAIT 0
 
-#include "../../../ESP32-SPIDisplay.h"                 // Include the graphics library (this includes the sprite functions)
+#include "../../../ESP32_SPIDisplay.h"                 // Include the graphics library (this includes the sprite functions)
 
 Screen    tft = Screen();         // Create object "tft"
 

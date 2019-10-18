@@ -16,7 +16,7 @@
 // Pause in milliseconds between screens, change to 0 to time font rendering
 #define WAIT 1000
 
-#include "../../../ESP32-SPIDisplay.h" // Graphics and font library for ILI9341 driver chip
+#include "../../../ESP32_SPIDisplay.h" // Graphics and font library for ILI9341 driver chip
 #include <SPI.h>
 
 Screen tft = Screen();  // Invoke library, pins defined in User_Setup.h

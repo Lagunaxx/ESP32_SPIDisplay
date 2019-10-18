@@ -10,7 +10,7 @@
 #define WHITE 0xFFFF
 #define GREY  0x5AEB
 
-#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library
+#include "../../../ESP32_SPIDisplay.h" // Hardware-specific library
 #include <SPI.h>
 
 Screen tft = Screen();       // Invoke custom library

@@ -13,7 +13,7 @@
  #########################################################################
  */
 
-#include "../../../ESP32-SPIDisplay.h"
+#include "../../../ESP32_SPIDisplay.h"
 #include "SPI.h"
 
 // Use hardware SPI

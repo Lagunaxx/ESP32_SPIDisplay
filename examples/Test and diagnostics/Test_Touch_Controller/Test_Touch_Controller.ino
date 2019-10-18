@@ -15,7 +15,7 @@
 // and z values. x and y are raw ADC readings, not pixel coordinates.
 
 #include <SPI.h>
-#include "../../../ESP32-SPIDisplay.h"
+#include "../../../ESP32_SPIDisplay.h"
 Screen tft = Screen();
 
 //====================================================================

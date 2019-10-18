@@ -40,7 +40,7 @@
 */
 
 #include <SPI.h>
-#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library
+#include "../../../ESP32_SPIDisplay.h" // Hardware-specific library
 #include "defaultEye.h"        // Standard human-ish hazel eye
 //#include "noScleraEye.h"       // Large iris, no sclera
 //#include "dragonEye.h"         // Slit pupil fiery dragon/demon eye

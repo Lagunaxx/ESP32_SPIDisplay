@@ -24,7 +24,7 @@
 #endif
 
 // Call up the TFT library
-#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library for ESP8266
+#include "../../../ESP32_SPIDisplay.h" // Hardware-specific library for ESP8266
 
 // Invoke TFT library
 Screen tft = Screen();

@@ -41,7 +41,7 @@
 #include   <epd2in7.h>                  // Screen specific library
 Epd ePaper;                             // Create an instance ePaper
 
-#include "../../../ESP32-SPIDisplay.h"                   // Graphics library and Sprite class
+#include "../../../ESP32_SPIDisplay.h"                   // Graphics library and Sprite class
 
 Screen      glc = Screen();         // Invoke the graphics library class
 TFT_eSprite frame = TFT_eSprite(&glc);  // Invoke the Sprite class for the image frame buffer

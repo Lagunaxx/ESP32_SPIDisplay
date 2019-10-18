@@ -23,7 +23,7 @@
 // Created by Bodmer 6/1/19 as an example to the Screen library:
 // https://github.com/Bodmer/Screen
 
-#include "../../../ESP32-SPIDisplay.h"
+#include "../../../ESP32_SPIDisplay.h"
 
 Screen tft = Screen();           // TFT object
 

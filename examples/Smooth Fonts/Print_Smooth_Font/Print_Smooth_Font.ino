@@ -34,7 +34,7 @@
 #include <FS.h>
 
 // Graphics and font library
-#include "../../../ESP32-SPIDisplay.h"
+#include "../../../ESP32_SPIDisplay.h"
 #include <SPI.h>
 
 Screen tft = Screen();  // Invoke library

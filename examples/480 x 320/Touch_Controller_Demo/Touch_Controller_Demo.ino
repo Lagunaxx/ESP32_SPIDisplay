@@ -1,6 +1,6 @@
 #include "FS.h"
 #include <SPI.h>
-#include "../../../ESP32-SPIDisplay.h"
+#include "../../../ESP32_SPIDisplay.h"
 Screen tft = Screen();
 
 #define CALIBRATION_FILE "/calibrationData"

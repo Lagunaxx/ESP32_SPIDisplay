@@ -8,7 +8,7 @@
 #ifndef COMPONENTS_ARDUINO_LIBRARIES_TFT_ESPI_EXTENSIONS_GRAPHICS_H_
 #define COMPONENTS_ARDUINO_LIBRARIES_TFT_ESPI_EXTENSIONS_GRAPHICS_H_
 
-#include <ESP32-SPIDisplay.h>
+#include "../ESP32_SPIDisplay.h"
 
 namespace Device {
 	namespace Display {

@@ -11,7 +11,7 @@
  Modifyed by Laguna_x 16/oct/2019
  ****************************************************/
 
-#include "ESP32-SPIDisplay.h"
+#include "ESP32_SPIDisplay.h"
 
 namespace Device {
 namespace Display {

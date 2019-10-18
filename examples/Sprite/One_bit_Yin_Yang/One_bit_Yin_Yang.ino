@@ -20,7 +20,7 @@
 #define ANGLE_INC 3
 int angle = 0;
 
-#include "../../../ESP32-SPIDisplay.h"                 // Hardware-specific library
+#include "../../../ESP32_SPIDisplay.h"                 // Hardware-specific library
 
 Screen    tft = Screen();         // Invoke library
 

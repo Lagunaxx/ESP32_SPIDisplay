@@ -15,7 +15,8 @@
 ** Description:             read raw touch position.  Always returns true.
 ***************************************************************************************/
 #include "Touch.h"
-#include <ESP32-SPIDisplay.h>
+
+#include "../ESP32_SPIDisplay.h"
 
 namespace Device{
 	namespace Input{

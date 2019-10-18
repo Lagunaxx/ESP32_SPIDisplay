@@ -14,7 +14,7 @@
 */
 
 #include <SPI.h>
-#include "../../../ESP32-SPIDisplay.h"      // Graphics library
+#include "../../../ESP32_SPIDisplay.h"      // Graphics library
 
 Screen tft = Screen(); // Invoke library
 

@@ -16,7 +16,7 @@
 //====================================================================================
 
 #include <SPI.h>
-#include "../../../ESP32-SPIDisplay.h" // Graphics and font library for ILI9341 driver chip
+#include "../../../ESP32_SPIDisplay.h" // Graphics and font library for ILI9341 driver chip
 
 Screen tft = Screen();  // Invoke library
 

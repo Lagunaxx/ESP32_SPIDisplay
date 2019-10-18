@@ -29,7 +29,7 @@ code	color
  */
 
 #include <SPI.h>
-#include "../../../ESP32-SPIDisplay.h" // Graphics and font library for ST7735 driver chip
+#include "../../../ESP32_SPIDisplay.h" // Graphics and font library for ST7735 driver chip
 
 Screen tft = Screen();  // Invoke library, pins defined in User_Setup.h
 

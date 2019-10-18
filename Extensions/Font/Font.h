@@ -20,7 +20,7 @@
 		#include <SPIFFS.h>
 	#endif
 
-	#include <ESP32-SPIDisplay.h>
+	#include "../../ESP32_SPIDisplay.h"
 	#include <Extensions/Cursor.h>
 
 	#include "FontTypes.h"

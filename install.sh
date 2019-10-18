@@ -27,23 +27,23 @@ then
 # cd into arduino folder
 #cd pwd
 
-echo Adding ESP32-SPIDisplay to Library list...
+echo Adding ESP32_SPIDisplay to Library list...
 
 cp CMakeLists.txt tmp.txt
 src_line=$(grep -Hn "set(LIBRARY_SRCS" ./tmp.txt | sed 's/\(:[^:]*\)\{1\}$//' | sed 's/.*://')
 tmp_s=$(bc -l <<<$src_line'+1')
-sed $tmp_s' i   libraries/ESP32-SPIDisplay/ESP32-SPIDisplay.cpp' tmp.txt >> ttmp.txt
+sed $tmp_s' i   libraries/ESP32_SPIDisplay/ESP32_SPIDisplay.cpp' tmp.txt >> ttmp.txt
 
 rm tmp.txt
 mv ttmp.txt tmp.txt
 
 ###################################################################################################
 
-echo Adding ESP32-SPIDisplay to Includes list...
+echo Adding ESP32_SPIDisplay to Includes list...
 
 	lib_line=$(grep -Hn "set(COMPONENT_ADD_INCLUDEDIRS" ./tmp.txt | sed 's/\(:[^:]*\)\{1\}$//' | sed 's/.*://')
 	tmp_l=$(bc -l<<<$lib_line'+1')
-	sed $tmp_l' i   libraries/ESP32-SPIDisplay' tmp.txt >> ttmp.txt
+	sed $tmp_l' i   libraries/ESP32_SPIDisplay' tmp.txt >> ttmp.txt
 
 	rm tmp.txt
 
@@ -61,7 +61,7 @@ fi
 
 ###################################################################################################
 
-echo Adding ESP32-SPIDisplay to menuconfig...
+echo Adding ESP32_SPIDisplay to menuconfig...
 
 if [ -f "Kconfig.projbuild" ]
 then
@@ -69,7 +69,7 @@ then
 	src_line=$(grep -Hn "config ARDUINO_SELECTIVE_SPIFFS" ./tmp.txt | sed 's/\(:[^:]*\)\{1\}$//' | sed 's/.*://')
 	tmp=$(tail -n +$src_line ./tmp.txt | grep -Hn "default" | head -n +1 | sed 's/\(:[^:]*\)\{1\}$//' | sed 's/.*://' | sed 's/* //')
 	dst_line=$(bc -l <<<$src_line'+1+'$tmp)
-	sed $dst_line' i config ARDUINO_SELECTIVE_ESP32-SPIDisplay\n    bool "Enable ESP32-SPIDisplay"\n    depends on ARDUINO_SELECTIVE_COMPILATION\n    select ARDUINO_SELECTIVE_SPI\n    select ARDUINO_SELECTIVE_SPIFFS\n    default y\n' tmp.txt >> ttmp.txt
+	sed $dst_line' i config ARDUINO_SELECTIVE_ESP32_SPIDisplay\n    bool "Enable ESP32_SPIDisplay"\n    depends on ARDUINO_SELECTIVE_COMPILATION\n    select ARDUINO_SELECTIVE_SPI\n    select ARDUINO_SELECTIVE_SPIFFS\n    default y\n' tmp.txt >> ttmp.txt
 	rm tmp.txt
 
 	#writing changes

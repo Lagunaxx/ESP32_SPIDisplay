@@ -27,7 +27,7 @@ BR_DATUM = Bottom right
 
 
 #include <SPI.h>
-#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library
+#include "../../../ESP32_SPIDisplay.h" // Hardware-specific library
 
 Screen tft = Screen();       // Invoke custom library
 

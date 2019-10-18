@@ -9,7 +9,7 @@
 
 // Created by Bodmer 23/04/18
 
-#include "../../../ESP32-SPIDisplay.h"        // Hardware-specific library
+#include "../../../ESP32_SPIDisplay.h"        // Hardware-specific library
 #include "xbm.h"             // Sketch tab header for xbm images
 
 

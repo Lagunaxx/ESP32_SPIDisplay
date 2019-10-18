@@ -37,7 +37,7 @@
 #include <FS.h>
 
 #include <SPI.h>
-#include "../../../ESP32-SPIDisplay.h"       // Hardware-specific library
+#include "../../../ESP32_SPIDisplay.h"       // Hardware-specific library
 
 Screen    tft = Screen();
 TFT_eSprite spr = TFT_eSprite(&tft); // Sprite class needs to be invoked

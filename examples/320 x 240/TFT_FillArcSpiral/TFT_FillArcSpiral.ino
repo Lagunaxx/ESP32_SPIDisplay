@@ -3,7 +3,7 @@
 // Sketch also includes (but does not use) a function to change the brightness of a colour
 
 #include <SPI.h>
-#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library
+#include "../../../ESP32_SPIDisplay.h" // Hardware-specific library
 
 Screen tft = Screen();       // Invoke custom library
 

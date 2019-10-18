@@ -44,7 +44,7 @@
 //#define TEST_TEXT "Hello"     // Text that will be printed on screen in the font
 
 #include "SPI.h"
-#include "../../../ESP32-SPIDisplay.h"
+#include "../../../ESP32_SPIDisplay.h"
 
 // The custom font file attached to this sketch must be included
 #include "MyFont.h"

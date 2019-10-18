@@ -17,7 +17,7 @@
 #include <FS.h>
 #include <SD.h>
 
-#include "../../../ESP32-SPIDisplay.h"
+#include "../../../ESP32_SPIDisplay.h"
 Screen tft = Screen();
 
 // JPEG decoder library

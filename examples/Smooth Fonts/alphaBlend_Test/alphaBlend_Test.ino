@@ -25,7 +25,7 @@
   #########################################################################
 */
 
-#include "../../../ESP32-SPIDisplay.h"       // Include the graphics library
+#include "../../../ESP32_SPIDisplay.h"       // Include the graphics library
 
 Screen tft = Screen();  // Create object "tft"
 

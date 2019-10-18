@@ -10,7 +10,7 @@
 // Define meter size
 #define M_SIZE 0.667
 
-#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library
+#include "../../../ESP32_SPIDisplay.h" // Hardware-specific library
 #include <SPI.h>
 
 Screen tft = Screen();       // Invoke custom library

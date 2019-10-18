@@ -1,7 +1,7 @@
 // Animates white pixels to simulate flying through a star field
 
 #include <SPI.h>
-#include "../../../ESP32-SPIDisplay.h"
+#include "../../../ESP32_SPIDisplay.h"
 
 // Use hardware SPI
 Screen tft = Screen();

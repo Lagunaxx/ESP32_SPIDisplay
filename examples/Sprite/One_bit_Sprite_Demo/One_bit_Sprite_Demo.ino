@@ -21,7 +21,7 @@
 // rendering to the screen.
 
 
-#include "../../../ESP32-SPIDisplay.h"                 // Include the graphics library (this includes the sprite functions)
+#include "../../../ESP32_SPIDisplay.h"                 // Include the graphics library (this includes the sprite functions)
 
 Screen    tft = Screen();         // Create object "tft"
 

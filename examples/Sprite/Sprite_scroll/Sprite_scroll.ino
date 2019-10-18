@@ -20,7 +20,7 @@
 
 */
 
-#include "../../../ESP32-SPIDisplay.h"
+#include "../../../ESP32_SPIDisplay.h"
 
 Screen tft = Screen();
 

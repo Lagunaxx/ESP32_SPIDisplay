@@ -23,7 +23,7 @@
 #define TEXT "abc MWy 123 |" // Text that will be printed on screen in any font
 
 #include "SPI.h"
-#include "../../../ESP32-SPIDisplay.h"
+#include "../../../ESP32_SPIDisplay.h"
 
 // Stock font and GFXFF reference handle
 #define GFXFF 1

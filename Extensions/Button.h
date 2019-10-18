@@ -7,9 +7,9 @@
 
 #ifndef DEVIACE_BUTTON_H
 #define DEVIACE_BUTTON_H
-#include <ESP32-SPIDisplay.h>
 #include <Extensions/Cursor.h>
 #include <Extensions/Graphics.h>
+#include "../ESP32_SPIDisplay.h"
 
 	namespace Device{
 		namespace Input{

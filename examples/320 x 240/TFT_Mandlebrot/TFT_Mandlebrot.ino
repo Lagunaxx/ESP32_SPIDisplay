@@ -3,7 +3,7 @@
 // This will run quite slowly due to the large number of floating point calculations per pixel
 
 #include <SPI.h>
-#include "../../../ESP32-SPIDisplay.h" // Hardware-specific library
+#include "../../../ESP32_SPIDisplay.h" // Hardware-specific library
 
 Screen tft = Screen();       // Invoke custom library
 

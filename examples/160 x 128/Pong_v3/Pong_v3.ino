@@ -8,7 +8,7 @@
 #define WHITE 0xFFFF
 #define GREY  0x5AEB
 
-#include "../../../ESP32-SPIDisplay.h" // Graphics and font library for ST7735 driver chip
+#include "../../../ESP32_SPIDisplay.h" // Graphics and font library for ST7735 driver chip
 #include <SPI.h>
 
 Screen tft = Screen();  // Invoke library, pins defined in User_Setup.h

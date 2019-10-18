@@ -41,7 +41,7 @@
 #endif
 
 // https://github.com/Bodmer/Screen
-#include "../../../ESP32-SPIDisplay.h"                 // Hardware-specific library
+#include "../../../ESP32_SPIDisplay.h"                 // Hardware-specific library
 Screen tft = Screen();            // Invoke custom library
 TFT_eSprite spr = TFT_eSprite(&tft);  // Create Sprite object "spr" with pointer to "tft" object
 

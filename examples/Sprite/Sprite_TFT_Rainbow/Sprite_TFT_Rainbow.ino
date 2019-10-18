@@ -19,7 +19,7 @@
 #define IWIDTH  160
 #define IHEIGHT 128
 
-#include "../../../ESP32-SPIDisplay.h" // Graphics and font library
+#include "../../../ESP32_SPIDisplay.h" // Graphics and font library
 #include <SPI.h>
 
 Screen tft = Screen();  // Invoke library, pins defined in User_Setup.h
