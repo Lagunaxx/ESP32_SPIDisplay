@@ -53,7 +53,7 @@ namespace Device{
 	   CS_H; // Just in case it has been left low
 
 	  #if defined (SPI_HAS_TRANSACTION) && defined (SUPPORT_TRANSACTIONS)
-		if (locked) {locked = false; spi.beginTransaction(SPISettings(SPI_TOUCH_FREQUENCY, MSBFIRST, SPI_MODE0));}
+//		if (locked) {locked = false; spi.beginTransaction(SPISettings(SPI_TOUCH_FREQUENCY, MSBFIRST, SPI_MODE0));}
 	  #else
 		spi.setFrequency(SPI_TOUCH_FREQUENCY);
 	  #endif
@@ -69,7 +69,7 @@ namespace Device{
 	  T_CS_H;
 
 	  #if defined (SPI_HAS_TRANSACTION) && defined (SUPPORT_TRANSACTIONS)
-		if(!inTransaction) {if (!locked) {locked = true; spi.endTransaction();}}
+//		if(!inTransaction) {if (!locked) {locked = true; spi.endTransaction();}}
 	  #else
 		spi.setFrequency(SPI_FREQUENCY);
 	  #endif

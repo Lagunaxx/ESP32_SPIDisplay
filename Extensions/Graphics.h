@@ -14,7 +14,7 @@ namespace Device {
 	namespace Display {
 		namespace Graphics {
 
-			class Graphics: protected Screen {
+			class Graphics: private Screen {
 			public:
 				Graphics();
 				virtual ~Graphics();
@@ -38,7 +38,8 @@ namespace Device {
 					drawBitmap(T_DispCoords x, T_DispCoords y, const uint8_t *bitmap, T_DispCoords w, T_DispCoords h, uint16_t color),
 					drawXBitmap(T_DispCoords x, T_DispCoords y, const uint8_t *bitmap, T_DispCoords w, T_DispCoords h, uint16_t color),
 					drawXBitmap(T_DispCoords x, T_DispCoords y, const uint8_t *bitmap, T_DispCoords w, T_DispCoords h, uint16_t fgcolor, uint16_t bgcolor),
-					setBitmapColor(uint16_t fgcolor, uint16_t bgcolor); // For 1bpp sprites
+					setBitmapColor(uint16_t fgcolor, uint16_t bgcolor), // For 1bpp sprites
+					drawImageBuffer(T_DispCoords x, T_DispCoords y, void * buffer, T_DispCoords widh, T_DispCoords height);
 			  void _bitmap_fg(uint32_t c);
 			  void _bitmap_bg(uint32_t c);
 			  T_DispCoords __xpivot();
@@ -55,6 +56,11 @@ namespace Device {
 
 
 			};
+
+			  static Graphics* Graph;
+			  bool init(uint32_t color = TFT_BLACK);
+			  //bool init();
+			  bool remove();
 
 		} /* namespace Graphics */
 	} /* namespace Display */

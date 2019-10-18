@@ -87,7 +87,9 @@ public:
 	Screen(T_DispCoords _W = TFT_WIDTH, T_DispCoords _H = TFT_HEIGHT);
 	virtual ~Screen();
 
+	//ToDo: move 'init' into constructor, remove 'begin'
 	void 	init(uint8_t tc = TAB_COLOUR), begin(uint8_t tc = TAB_COLOUR); // Same - begin included for backwards compatibility
+
 	T_DispCoords 	height(void),
 					width(void);
 	uint8_t getRotation(void);

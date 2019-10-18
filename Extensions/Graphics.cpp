@@ -11,6 +11,46 @@ namespace Device {
 	namespace Display {
 		namespace Graphics {
 
+		/***************************************************************************************
+		** Function name:           init
+		** Description:             initialize Graphics module
+		** Usage:
+		** 		Device::Display:Graphics::init(color);	// initialize Graph pointer and
+		** 												// fills screen with specified color
+		**
+		** 		Device::Display::Graphics::init();		// initialize Graph pointer and
+		** 												// fills screen with black color
+		**
+		** 	Return value (bool):
+		** 		true - Graph initialized;
+		** 		false - Graph do not initialized
+		***************************************************************************************/
+		bool init(uint32_t background_color){
+			Graph=new Graphics();
+			if (Graph==0) return false;
+			Graph->fillScreen(background_color);
+			return true;
+		};
+/*		bool init(){
+			return init(TFT_BLACK);
+		}//*/
+
+		/***************************************************************************************
+		** Function name:           remove
+		** Description:             removes Graphics module
+		** Usage:
+		** 		Device::Display::Graphics::remove();	// removes Graph pointer. Do not change screen
+		**
+		** 	Return value (bool):
+		** 		true - Graph removed;
+		** 		false - Graph was not initialized (null-pointer)
+		***************************************************************************************/
+		bool remove(){
+			if (Graph==0) return false;
+			delete(Graph);
+			return true;
+		}
+
 			Graphics::Graphics() {
 				// TODO Auto-generated constructor stub
 				bitmap_fg = TFT_WHITE;
@@ -525,6 +565,11 @@ namespace Device {
 			  return _ypivot;
 			}
 
+			void Graphics::drawImageBuffer(T_DispCoords x, T_DispCoords y, void * buffer, T_DispCoords w, T_DispCoords h){
+				//ToDo: remove (uint32_t). for this need to modify types in Display::Driver
+				pushImage((uint32_t)x,(uint32_t)y,(uint32_t)w,(uint32_t)h,(uint16_t *)buffer);
+			}
+
 			/***************************************************************************************
 			** Function name:           setPivot
 			** Description:             Set the pivot point on the TFT
@@ -547,14 +592,6 @@ namespace Device {
 			  T_DispCoords Graphics::__ypivot(){
 				  return _xpivot;
 			  }
-
-
-
-
-
-
-
-
 
 		} /* namespace Graphics */
 	} /* namespace Display */
