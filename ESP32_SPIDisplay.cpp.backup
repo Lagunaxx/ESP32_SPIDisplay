@@ -10,83 +10,8 @@
 
  Modifyed by Laguna_x 16/oct/2019
  ****************************************************/
-#include <Arduino.h>
-#include <SPI.h>
+
 #include "ESP32_SPIDisplay.h"
-
-inline void spi_begin(void) {
-#if defined (SPI_HAS_TRANSACTION) && defined (SUPPORT_TRANSACTIONS) && !defined(ESP32_PARALLEL)
-	if (locked) {
-		locked = false;
-		spi.beginTransaction(
-				SPISettings(SPI_FREQUENCY, MSBFIRST, TFT_SPI_MODE));
-		CS_L
-		;
-	}
-#else
-				  CS_L;
-				#endif
-#ifdef ESP8266
-				  SPI1U = SPI1U_WRITE;
-				#endif
-}
-
-inline void spi_end(void) {
-#if defined (SPI_HAS_TRANSACTION) && defined (SUPPORT_TRANSACTIONS) && !defined(ESP32_PARALLEL)
-	if (!inTransaction) {
-		if (!locked) {
-			locked = true;
-			CS_H;
-			spi.endTransaction();
-		}
-	}
-#ifdef ESP8266
-					SPI1U = SPI1U_READ;
-				  #endif
-#else
-				  if(!inTransaction) CS_H;
-				#endif
-}
-
-inline void spi_begin_read(void) {
-#if defined (SPI_HAS_TRANSACTION) && defined (SUPPORT_TRANSACTIONS) && !defined(ESP32_PARALLEL)
-	if (locked) {
-		locked = false;
-		spi.beginTransaction(
-				SPISettings(SPI_READ_FREQUENCY, MSBFIRST, TFT_SPI_MODE));
-		CS_L
-		;
-	}
-#else
-				  #if !defined(ESP32_PARALLEL)
-					spi.setFrequency(SPI_READ_FREQUENCY);
-				  #endif
-				   CS_L;
-				#endif
-#ifdef ESP8266
-				  SPI1U = SPI1U_READ;
-				#endif
-}
-
-inline void spi_end_read(void) {
-#if defined (SPI_HAS_TRANSACTION) && defined (SUPPORT_TRANSACTIONS) && !defined(ESP32_PARALLEL)
-	if (!inTransaction) {
-		if (!locked) {
-			locked = true;
-			CS_H;
-			spi.endTransaction();
-		}
-	}
-#else
-				  #if !defined(ESP32_PARALLEL)
-					spi.setFrequency(SPI_FREQUENCY);
-				  #endif
-				   if(!inTransaction) CS_H;
-				#endif
-#ifdef ESP8266
-				  SPI1U = SPI1U_WRITE;
-				#endif
-}
 
 namespace Device {
 namespace Display {
@@ -111,47 +36,48 @@ namespace Display {
  *                                                                             *
  *******************************************************************************/
 //Screen* Driver;
+
 /*// Next code for initializing class in memory
- void init(T_DispCoords _W, T_DispCoords _H, uint8_t _R
- #ifdef ST7735_DRIVER
- , uint8_t tc
- #endif
- ) {
- Driver = new Screen(_W, _H);
- #ifdef ST7735_DRIVER
- Driver->init(tc);
- #else
- Driver->init();
- #endif
- Driver->setRotation(_R);
- }
- void init(uint8_t R
- #ifdef ST7735_DRIVER
- , uint8_t tc
- #endif
- ) {
- init(TFT_WIDTH,
- TFT_HEIGHT, R
- #ifdef ST7735_DRIVER
- , tc
- #endif
- );
- }
- void init(
- #ifdef ST7735_DRIVER
- , uint8_t tc
- #endif
- ) {
- init(0
- #ifdef ST7735_DRIVER
- , tc
- #endif
- );
- }
- void remove() {
- delete (Driver);
- }
- */
+void init(T_DispCoords _W, T_DispCoords _H, uint8_t _R
+#ifdef ST7735_DRIVER
+		, uint8_t tc
+#endif
+		) {
+	Driver = new Screen(_W, _H);
+#ifdef ST7735_DRIVER
+	Driver->init(tc);
+#else
+	Driver->init();
+#endif
+	Driver->setRotation(_R);
+}
+void init(uint8_t R
+#ifdef ST7735_DRIVER
+		, uint8_t tc
+#endif
+		) {
+	init(TFT_WIDTH,
+	TFT_HEIGHT, R
+#ifdef ST7735_DRIVER
+		, tc
+#endif
+			);
+}
+void init(
+#ifdef ST7735_DRIVER
+		, uint8_t tc
+#endif
+) {
+	init(0
+#ifdef ST7735_DRIVER
+		, tc
+#endif
+			);
+}
+void remove() {
+	delete (Driver);
+}
+*/
 void Screen::PrintError(const char message[]) {
 	//use it for debugging spi. Make print to serial or whatever.
 	;
@@ -173,15 +99,15 @@ Screen::Screen(T_DispCoords w, T_DispCoords h) // @suppress("Class members shoul
 #endif
 
 	// Configure chip select for touchscreen controller if present
-#ifdef TOUCH_CS
-	  digitalWrite(TOUCH_CS, HIGH); // Chip select high (inactive)
-	  pinMode(TOUCH_CS, OUTPUT);
-	#endif
-
+	/*		#ifdef TOUCH_CS
+	 digitalWrite(TOUCH_CS, HIGH); // Chip select high (inactive)
+	 pinMode(TOUCH_CS, OUTPUT);
+	 #endif
+	 */
 #ifdef TFT_WR
-	  digitalWrite(TFT_WR, HIGH); // Set write strobe high (inactive)
-	  pinMode(TFT_WR, OUTPUT);
-	#endif
+		  digitalWrite(TFT_WR, HIGH); // Set write strobe high (inactive)
+		  pinMode(TFT_WR, OUTPUT);
+		#endif
 
 #ifdef TFT_DC
 	digitalWrite(TFT_DC, HIGH); // Data/Command high = data mode
@@ -197,44 +123,54 @@ Screen::Screen(T_DispCoords w, T_DispCoords h) // @suppress("Class members shoul
 
 #ifdef ESP32_PARALLEL
 
-	  // Create a bit set lookup table for data bus - wastes 1kbyte of RAM but speeds things up dramatically
-	  for (int32_t c = 0; c<256; c++)
-	  {
-	    xset_mask[c] = 0;
-	    if ( c & 0x01 ) xset_mask[c] |= (1 << TFT_D0);
-	    if ( c & 0x02 ) xset_mask[c] |= (1 << TFT_D1);
-	    if ( c & 0x04 ) xset_mask[c] |= (1 << TFT_D2);
-	    if ( c & 0x08 ) xset_mask[c] |= (1 << TFT_D3);
-	    if ( c & 0x10 ) xset_mask[c] |= (1 << TFT_D4);
-	    if ( c & 0x20 ) xset_mask[c] |= (1 << TFT_D5);
-	    if ( c & 0x40 ) xset_mask[c] |= (1 << TFT_D6);
-	    if ( c & 0x80 ) xset_mask[c] |= (1 << TFT_D7);
-	  }
+		  // Create a bit set lookup table for data bus - wastes 1kbyte of RAM but speeds things up dramatically
+		  for (int32_t c = 0; c<256; c++)
+		  {
+			xset_mask[c] = 0;
+			if ( c & 0x01 ) xset_mask[c] |= (1 << TFT_D0);
+			if ( c & 0x02 ) xset_mask[c] |= (1 << TFT_D1);
+			if ( c & 0x04 ) xset_mask[c] |= (1 << TFT_D2);
+			if ( c & 0x08 ) xset_mask[c] |= (1 << TFT_D3);
+			if ( c & 0x10 ) xset_mask[c] |= (1 << TFT_D4);
+			if ( c & 0x20 ) xset_mask[c] |= (1 << TFT_D5);
+			if ( c & 0x40 ) xset_mask[c] |= (1 << TFT_D6);
+			if ( c & 0x80 ) xset_mask[c] |= (1 << TFT_D7);
+		  }
 
-	  // Make sure read is high before we set the bus to output
-	  digitalWrite(TFT_RD, HIGH);
-	  pinMode(TFT_RD, OUTPUT);
+		  // Make sure read is high before we set the bus to output
+		  digitalWrite(TFT_RD, HIGH);
+		  pinMode(TFT_RD, OUTPUT);
 
-	  GPIO.out_w1ts = set_mask(255); // Set data bus to 0xFF
+		  GPIO.out_w1ts = set_mask(255); // Set data bus to 0xFF
 
-	  // Set TFT data bus lines to output
-	  busDir(dir_mask, OUTPUT);
+		  // Set TFT data bus lines to output
+		  busDir(dir_mask, OUTPUT);
 
-	#endif
+		#endif
 
 	_init_width = _width = w; // Set by specific xxxxx_Defines.h file or by users sketch
 	_init_height = _height = h; // Set by specific xxxxx_Defines.h file or by users sketch
 	rotation = 0;
+//		  cursor_y  = cursor_x  = 0;
+//		  cursor = new c_Cursor();
 
-	_swapBytes = false;   // Do not swap colour bytes by default
+//		  textfont  = 1;
+//		  textsize  = 1;
+//		  textcolor   = bitmap_fg = 0xFFFF; // White
+//		  textbgcolor = bitmap_bg = 0x0000; // Black
 
-//	  locked = true;        // ESP32 transaction mutex lock flags
-//	  inTransaction = false;
+	_swapBytes = false;   // Do not swap color bytes by default
+
+	locked = true;        // ESP32 transaction mutex lock flags
+	inTransaction = false;
 
 	_booted = true;
 
 	addr_row = 0xFFFF;
 	addr_col = 0xFFFF;
+
+//		  _xpivot = 0;
+//		  _ypivot = 0;
 
 	cspinmask = 0;
 	dcpinmask = 0;
@@ -261,38 +197,38 @@ void Screen::begin(uint8_t tc) {
 void Screen::init(uint8_t tc) {
 	if (_booted) {
 #if !defined (ESP32)
-	  #if defined (TFT_CS) && (TFT_CS >= 0)
-	    cspinmask = (uint32_t) digitalPinToBitMask(TFT_CS);
-	  #endif
+		  #if defined (TFT_CS) && (TFT_CS >= 0)
+			cspinmask = (uint32_t) digitalPinToBitMask(TFT_CS);
+		  #endif
 
-	  #if defined (TFT_DC) && (TFT_DC >= 0)
-	    dcpinmask = (uint32_t) digitalPinToBitMask(TFT_DC);
-	  #endif
+		  #if defined (TFT_DC) && (TFT_DC >= 0)
+			dcpinmask = (uint32_t) digitalPinToBitMask(TFT_DC);
+		  #endif
 
-	  #if defined (TFT_WR) && (TFT_WR >= 0)
-	    wrpinmask = (uint32_t) digitalPinToBitMask(TFT_WR);
-	  #endif
+		  #if defined (TFT_WR) && (TFT_WR >= 0)
+			wrpinmask = (uint32_t) digitalPinToBitMask(TFT_WR);
+		  #endif
 
-	  #if defined (TFT_SCLK) && (TFT_SCLK >= 0)
-	    sclkpinmask = (uint32_t) digitalPinToBitMask(TFT_SCLK);
-	  #endif
+		  #if defined (TFT_SCLK) && (TFT_SCLK >= 0)
+			sclkpinmask = (uint32_t) digitalPinToBitMask(TFT_SCLK);
+		  #endif
 
-	  #ifdef TFT_SPI_OVERLAP
-	    // Overlap mode SD0=MISO, SD1=MOSI, CLK=SCLK must use D3 as CS
-	    //    pins(int8_t sck, int8_t miso, int8_t mosi, int8_t ss);
-	    //spi.pins(        6,          7,           8,          0);
-	    spi.pins(6, 7, 8, 0);
-	  #endif
+		  #ifdef TFT_SPI_OVERLAP
+			// Overlap mode SD0=MISO, SD1=MOSI, CLK=SCLK must use D3 as CS
+			//    pins(int8_t sck, int8_t miso, int8_t mosi, int8_t ss);
+			//spi.pins(        6,          7,           8,          0);
+			spi.pins(6, 7, 8, 0);
+		  #endif
 
-	  spi.begin(); // This will set HMISO to input
+		  spi.begin(); // This will set HMISO to input
 
-	#else
+		#else
 #if !defined(ESP32_PARALLEL)
 #if defined (TFT_MOSI) && !defined (TFT_SPI_OVERLAP)
 		spi.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, -1);
 #else
-	      spi.begin();
-	    #endif
+			  spi.begin();
+			#endif
 #endif
 #endif
 
@@ -302,22 +238,22 @@ void Screen::init(uint8_t tc) {
 		// SUPPORT_TRANSACTIONS is mandatory for ESP32 so the hal mutex is toggled
 		// so the code here is for ESP8266 only
 #if !defined (SUPPORT_TRANSACTIONS) && defined (ESP8266)
-	    spi.setBitOrder(MSBFIRST);
-	    spi.setDataMode(TFT_SPI_MODE);
-	    spi.setFrequency(SPI_FREQUENCY);
-	#endif
+			spi.setBitOrder(MSBFIRST);
+			spi.setDataMode(TFT_SPI_MODE);
+			spi.setFrequency(SPI_FREQUENCY);
+		#endif
 
 #if defined(ESP32_PARALLEL)
-	    digitalWrite(TFT_CS, LOW); // Chip select low permanently
-	    pinMode(TFT_CS, OUTPUT);
-	#else
+			digitalWrite(TFT_CS, LOW); // Chip select low permanently
+			pinMode(TFT_CS, OUTPUT);
+		#else
 #ifdef TFT_CS
 		// Set to output once again in case D6 (MISO) is used for CS
 		digitalWrite(TFT_CS, HIGH); // Chip select high (inactive)
 		pinMode(TFT_CS, OUTPUT);
 #else
-	    spi.setHwCs(1); // Use hardware SS toggling
-	  #endif
+			spi.setHwCs(1); // Use hardware SS toggling
+		  #endif
 #endif
 
 		// Set to output once again in case D6 (MISO) is used for DC
@@ -343,8 +279,8 @@ void Screen::init(uint8_t tc) {
 	} else
 		writecommand(TFT_SWRST); // Software reset
 #else
-	  writecommand(TFT_SWRST); // Software reset
-	#endif
+		  writecommand(TFT_SWRST); // Software reset
+		#endif
 
 	spi_end();
 
@@ -354,54 +290,54 @@ void Screen::init(uint8_t tc) {
 
 	// This loads the driver specific initialisation code  <<<<<<<<<<<<<<<<<<<<< ADD NEW DRIVERS TO THE LIST HERE <<<<<<<<<<<<<<<<<<<<<<<
 #if   defined (ILI9341_DRIVER)
-	    #include "TFT_Drivers/ILI9341_Init.h"
+			#include "TFT_Drivers/ILI9341_Init.h"
 
-	#elif defined (ST7735_DRIVER)
-	    tabcolor = tc;
-	    #include "TFT_Drivers/ST7735_Init.h"
+		#elif defined (ST7735_DRIVER)
+			tabcolor = tc;
+			#include "TFT_Drivers/ST7735_Init.h"
 
-	#elif defined (ILI9163_DRIVER)
-	    #include "TFT_Drivers/ILI9163_Init.h"
+		#elif defined (ILI9163_DRIVER)
+			#include "TFT_Drivers/ILI9163_Init.h"
 
-	#elif defined (S6D02A1_DRIVER)
-	    #include "TFT_Drivers/S6D02A1_Init.h"
+		#elif defined (S6D02A1_DRIVER)
+			#include "TFT_Drivers/S6D02A1_Init.h"
 
-	#elif defined (RPI_ILI9486_DRIVER)
-	    #include "TFT_Drivers/ILI9486_Init.h"
+		#elif defined (RPI_ILI9486_DRIVER)
+			#include "TFT_Drivers/ILI9486_Init.h"
 
-	#elif defined (ILI9486_DRIVER)
-	    #include "TFT_Drivers/ILI9486_Init.h"
+		#elif defined (ILI9486_DRIVER)
+			#include "TFT_Drivers/ILI9486_Init.h"
 
-	#elif defined (ILI9481_DRIVER)
-	    #include "TFT_Drivers/ILI9481_Init.h"
+		#elif defined (ILI9481_DRIVER)
+			#include "TFT_Drivers/ILI9481_Init.h"
 
-	#elif defined (ILI9488_DRIVER)
-	    #include "TFT_Drivers/ILI9488_Init.h"
+		#elif defined (ILI9488_DRIVER)
+			#include "TFT_Drivers/ILI9488_Init.h"
 
-	#elif defined (HX8357D_DRIVER)
-	    #include "TFT_Drivers/HX8357D_Init.h"
+		#elif defined (HX8357D_DRIVER)
+			#include "TFT_Drivers/HX8357D_Init.h"
 
-	#elif defined (ST7789_DRIVER)
+		#elif defined (ST7789_DRIVER)
 #include "TFT_Drivers/ST7789_Init.h"
 
 #elif defined (R61581_DRIVER)
-	    #include "TFT_Drivers/R61581_Init.h"
+			#include "TFT_Drivers/R61581_Init.h"
 
-	#elif defined (RM68140_DRIVER)
-		#include "TFT_Drivers/RM68140_Init.h"
+		#elif defined (RM68140_DRIVER)
+			#include "TFT_Drivers/RM68140_Init.h"
 
-	#elif defined (ST7789_2_DRIVER)
-	    #include "TFT_Drivers/ST7789_2_Init.h"
+		#elif defined (ST7789_2_DRIVER)
+			#include "TFT_Drivers/ST7789_2_Init.h"
 
-	#endif
+		#endif
 
 #ifdef TFT_INVERSION_ON
 	writecommand(TFT_INVON);
 #endif
 
 #ifdef TFT_INVERSION_OFF
-	  writecommand(TFT_INVOFF);
-	#endif
+		  writecommand(TFT_INVOFF);
+		#endif
 
 	spi_end();
 
@@ -411,12 +347,12 @@ void Screen::init(uint8_t tc) {
 	digitalWrite(TFT_BL, TFT_BACKLIGHT_ON);
 	pinMode(TFT_BL, OUTPUT);
 #else
-	  #if defined (TFT_BL) && defined (M5STACK)
-	    // Turn on the back-light LED
-	    digitalWrite(TFT_BL, HIGH);
-	    pinMode(TFT_BL, OUTPUT);
-	  #endif
-	#endif
+		  #if defined (TFT_BL) && defined (M5STACK)
+			// Turn on the back-light LED
+			digitalWrite(TFT_BL, HIGH);
+			pinMode(TFT_BL, OUTPUT);
+		  #endif
+		#endif
 }
 
 /***************************************************************************************
@@ -425,53 +361,56 @@ void Screen::init(uint8_t tc) {
  ***************************************************************************************/
 void Screen::setRotation(uint8_t m) {
 
-	spi_begin();
+	if (SPIStartWrite()) {
 
-	// This loads the driver specific rotation code  <<<<<<<<<<<<<<<<<<<<< ADD NEW DRIVERS TO THE LIST HERE <<<<<<<<<<<<<<<<<<<<<<<
+		// This loads the driver specific rotation code  <<<<<<<<<<<<<<<<<<<<< ADD NEW DRIVERS TO THE LIST HERE <<<<<<<<<<<<<<<<<<<<<<<
 #if   defined (ILI9341_DRIVER)
-	    #include "TFT_Drivers/ILI9341_Rotation.h"
+			#include "TFT_Drivers/ILI9341_Rotation.h"
 
-	#elif defined (ST7735_DRIVER)
-	    #include "TFT_Drivers/ST7735_Rotation.h"
+		#elif defined (ST7735_DRIVER)
+			#include "TFT_Drivers/ST7735_Rotation.h"
 
-	#elif defined (ILI9163_DRIVER)
-	    #include "TFT_Drivers/ILI9163_Rotation.h"
+		#elif defined (ILI9163_DRIVER)
+			#include "TFT_Drivers/ILI9163_Rotation.h"
 
-	#elif defined (S6D02A1_DRIVER)
-	    #include "TFT_Drivers/S6D02A1_Rotation.h"
+		#elif defined (S6D02A1_DRIVER)
+			#include "TFT_Drivers/S6D02A1_Rotation.h"
 
-	#elif defined (RPI_ILI9486_DRIVER)
-	    #include "TFT_Drivers/ILI9486_Rotation.h"
+		#elif defined (RPI_ILI9486_DRIVER)
+			#include "TFT_Drivers/ILI9486_Rotation.h"
 
-	#elif defined (ILI9486_DRIVER)
-	    #include "TFT_Drivers/ILI9486_Rotation.h"
+		#elif defined (ILI9486_DRIVER)
+			#include "TFT_Drivers/ILI9486_Rotation.h"
 
-	#elif defined (ILI9481_DRIVER)
-	    #include "TFT_Drivers/ILI9481_Rotation.h"
+		#elif defined (ILI9481_DRIVER)
+			#include "TFT_Drivers/ILI9481_Rotation.h"
 
-	#elif defined (ILI9488_DRIVER)
-	    #include "TFT_Drivers/ILI9488_Rotation.h"
+		#elif defined (ILI9488_DRIVER)
+			#include "TFT_Drivers/ILI9488_Rotation.h"
 
-	#elif defined (HX8357D_DRIVER)
-	    #include "TFT_Drivers/HX8357D_Rotation.h"
+		#elif defined (HX8357D_DRIVER)
+			#include "TFT_Drivers/HX8357D_Rotation.h"
 
-	#elif defined (ST7789_DRIVER)
+		#elif defined (ST7789_DRIVER)
 #include "TFT_Drivers/ST7789_Rotation.h"
 
 #elif defined (R61581_DRIVER)
-	    #include "TFT_Drivers/R61581_Rotation.h"
+			#include "TFT_Drivers/R61581_Rotation.h"
 
-	#elif defined (RM68140_DRIVER)
-		#include "TFT_Drivers/RM68140_Rotation.h"
+		#elif defined (RM68140_DRIVER)
+			#include "TFT_Drivers/RM68140_Rotation.h"
 
-	#elif defined (ST7789_2_DRIVER)
-	    #include "TFT_Drivers/ST7789_2_Rotation.h"
+		#elif defined (ST7789_2_DRIVER)
+			#include "TFT_Drivers/ST7789_2_Rotation.h"
 
-	#endif
+		#endif
 
-	delayMicroseconds(10);
+		delayMicroseconds(10);
 
-	spi_end();
+		SPIEndWrite();
+	} else {
+		PrintError("[]Error: SPI is buisy!");
+	}
 
 	addr_row = 0xFFFF;
 	addr_col = 0xFFFF;
@@ -505,6 +444,7 @@ void Screen::commandList(const uint8_t *addr) {
 			delay((ms == 255 ? 500 : ms));
 		}
 	}
+
 }
 
 /***************************************************************************************
@@ -520,15 +460,13 @@ void Screen::spiwrite(uint8_t c) {
  ** Description:             Send an 8 bit command to the TFT
  ***************************************************************************************/
 void Screen::writecommand(uint8_t c) {
-	spi_begin(); // CS_L;
-
-	DC_C;
-
-	tft_Write_8(c);
-
-	DC_D;
-
-	spi_end();  // CS_H;
+	if (SPIStartWrite()) {
+		DC_C;
+		tft_Write_8(c); DC_D;
+		SPIEndWrite();
+	} else {
+		PrintError("[]Error: SPI is buisy!");
+	}
 
 }
 
@@ -537,16 +475,14 @@ void Screen::writecommand(uint8_t c) {
  ** Description:             Send a 8 bit data value to the TFT
  ***************************************************************************************/
 void Screen::writedata(uint8_t d) {
-	spi_begin(); // CS_L;
+	if (SPIStartWrite()) {
+		DC_D;     // Play safe, but should already be in data mode
+		tft_Write_8(d); CS_L;        // Allow more hold time for low VDI rail
+		SPIEndWrite();
+	} else {
+		PrintError("[]Error: SPI is buisy!");
+	}
 
-	DC_D;        // Play safe, but should already be in data mode
-
-	tft_Write_8(d);
-
-	CS_L
-	;        // Allow more hold time for low VDI rail
-
-	spi_end();   // CS_H;
 }
 
 /***************************************************************************************
@@ -557,39 +493,42 @@ uint8_t Screen::readcommand8(uint8_t cmd_function, uint8_t index) {
 	uint8_t reg = 0;
 #ifdef ESP32_PARALLEL
 
-	  writecommand(cmd_function); // Sets DC and CS high
+		  writecommand(cmd_function); // Sets DC and CS high
 
-	  busDir(dir_mask, INPUT);
+		  busDir(dir_mask, INPUT);
 
-	  CS_L;
+		  CS_L;
 
-	  // Read nth parameter (assumes caller discards 1st parameter or points index to 2nd)
-	  while(index--) reg = readByte();
+		  // Read nth parameter (assumes caller discards 1st parameter or points index to 2nd)
+		  while(index--) reg = readByte();
 
-	  busDir(dir_mask, OUTPUT);
+		  busDir(dir_mask, OUTPUT);
 
-	  CS_H;
+		  CS_H;
 
-	#else
+		#else
 	// for ILI9341 Interface II i.e. IM [3:0] = "1101"
-	spi_begin_read();
-	index = 0x10 + (index & 0x0F);
+	if (SPIStartRead()) {
 
-	DC_C;
-	tft_Write_8(0xD9);
-	DC_D;
-	tft_Write_8(index);
+		//spi_begin_read();
+		index = 0x10 + (index & 0x0F);
 
-	CS_H; // Some displays seem to need CS to be pulsed here, or is just a delay needed?
-	CS_L
-	;
+		DC_C;
+		tft_Write_8(0xD9);DC_D;
+		tft_Write_8(index);
 
-	DC_C;
-	tft_Write_8(cmd_function);
-	DC_D;
-	reg = tft_Read_8();
+		CS_H; // Some displays seem to need CS to be pulsed here, or is just a delay needed?
+		CS_L;
 
-	spi_end_read();
+		DC_C;
+		tft_Write_8(cmd_function);DC_D;
+		reg = tft_Read_8();
+
+		SPIEndRead();
+	} else {
+		PrintError("[]Error: SPI is buisy!");
+	}
+	//spi_end_read();
 #endif
 	return reg;
 }
@@ -629,83 +568,88 @@ uint32_t Screen::readcommand32(uint8_t cmd_function, uint8_t index) {
 uint32_t Screen::readPixel(T_DispCoords x0, T_DispCoords y0) {
 #if defined(ESP32_PARALLEL)
 
-  readAddrWindow(x0, y0, 1, 1); // Sets CS low
+		  readAddrWindow(x0, y0, 1, 1); // Sets CS low
 
-  // Set masked pins D0- D7 to input
-  busDir(dir_mask, INPUT);
+		  // Set masked pins D0- D7 to input
+		  busDir(dir_mask, INPUT);
 
-  // Dummy read to throw away don't care value
-  readByte();
+		  // Dummy read to throw away don't care value
+		  readByte();
 
-  // Fetch the 16 bit BRG pixel
-  //uint16_t rgb = (readByte() << 8) | readByte();
+		  // Fetch the 16 bit BRG pixel
+		  //uint16_t rgb = (readByte() << 8) | readByte();
 
-  #if defined (ILI9341_DRIVER) | defined (ILI9488_DRIVER) // Read 3 bytes
+		  #if defined (ILI9341_DRIVER) | defined (ILI9488_DRIVER) // Read 3 bytes
 
-  // Read window pixel 24 bit RGB values and fill in LS bits
-  uint16_t rgb = ((readByte() & 0xF8) << 8) | ((readByte() & 0xFC) << 3) | (readByte() >> 3);
+		  // Read window pixel 24 bit RGB values and fill in LS bits
+		  uint16_t rgb = ((readByte() & 0xF8) << 8) | ((readByte() & 0xFC) << 3) | (readByte() >> 3);
 
-  CS_H;
+		  CS_H;
 
-  // Set masked pins D0- D7 to output
-  busDir(dir_mask, OUTPUT);
+		  // Set masked pins D0- D7 to output
+		  busDir(dir_mask, OUTPUT);
 
-  return rgb;
+		  return rgb;
 
-  #else // ILI9481 16 bit read
+		  #else // ILI9481 16 bit read
 
-  // Fetch the 16 bit BRG pixel
-  uint16_t bgr = (readByte() << 8) | readByte();
+		  // Fetch the 16 bit BRG pixel
+		  uint16_t bgr = (readByte() << 8) | readByte();
 
-  CS_H;
+		  CS_H;
 
-  // Set masked pins D0- D7 to output
-  busDir(dir_mask, OUTPUT);
+		  // Set masked pins D0- D7 to output
+		  busDir(dir_mask, OUTPUT);
 
-  // Swap Red and Blue (could check MADCTL setting to see if this is needed)
-  return  (bgr>>11) | (bgr<<11) | (bgr & 0x7E0);
-  #endif
+		  // Swap Red and Blue (could check MADCTL setting to see if this is needed)
+		  return  (bgr>>11) | (bgr<<11) | (bgr & 0x7E0);
+		  #endif
 
-#else // Not ESP32_PARALLEL
+		#else // Not ESP32_PARALLEL
 
-	spi_begin_read();
+	//spi_begin_read();
+	if (SPIStartRead()) {
 
-	readAddrWindow(x0, y0, 1, 1); // Sets CS low
-
-#ifdef TFT_SDA_READ
-    begin_SDA_Read();
-  #endif
-
-	// Dummy read to throw away don't care value
-	tft_Read_8();
-
-	//#if !defined (ILI9488_DRIVER)
-
-	// Read the 3 RGB bytes, colour is actually only in the top 6 bits of each byte
-	// as the TFT stores colours as 18 bits
-	uint8_t r = tft_Read_8();
-	uint8_t g = tft_Read_8();
-	uint8_t b = tft_Read_8();
-	/*
-	 #else
-
-	 // The 6 colour bits are in MS 6 bits of each byte, but the ILI9488 needs an extra clock pulse
-	 // so bits appear shifted right 1 bit, so mask the middle 6 bits then shift 1 place left
-	 uint8_t r = (tft_Read_8()&0x7E)<<1;
-	 uint8_t g = (tft_Read_8()&0x7E)<<1;
-	 uint8_t b = (tft_Read_8()&0x7E)<<1;
-
-	 #endif
-	 */
-	CS_H;
+		readAddrWindow(x0, y0, 1, 1); // Sets CS low
 
 #ifdef TFT_SDA_READ
-    end_SDA_Read();
-  #endif
+			begin_SDA_Read();
+		  #endif
 
-	spi_end_read();
+		// Dummy read to throw away don't care value
+		tft_Read_8();
 
-	return (((uint32_t) 0) | (r << 16) | (g << 8) | b); //retuns 0x00rrggbb;color565(r, g, b);
+		//#if !defined (ILI9488_DRIVER)
+
+		// Read the 3 RGB bytes, color is actually only in the top 6 bits of each byte
+		// as the TFT stores colors as 18 bits
+		uint8_t r = tft_Read_8();
+		uint8_t g = tft_Read_8();
+		uint8_t b = tft_Read_8();
+		/*
+		 #else
+
+		 // The 6 color bits are in MS 6 bits of each byte, but the ILI9488 needs an extra clock pulse
+		 // so bits appear shifted right 1 bit, so mask the middle 6 bits then shift 1 place left
+		 uint8_t r = (tft_Read_8()&0x7E)<<1;
+		 uint8_t g = (tft_Read_8()&0x7E)<<1;
+		 uint8_t b = (tft_Read_8()&0x7E)<<1;
+
+		 #endif
+		 */
+		CS_H;
+
+#ifdef TFT_SDA_READ
+			end_SDA_Read();
+		  #endif
+
+		SPIEndRead();
+		return (((uint32_t) 0) | (r << 16) | (g << 8) | b); //retuns 0x00rrggbb
+
+	} else {
+		PrintError("[]Error: SPI is buisy!");
+	}
+	return -1;
 
 #endif
 }
@@ -818,29 +762,29 @@ void Screen::readRect(T_DispCoords x, T_DispCoords y, T_DispCoords w,
 
 		#else // Not ESP32_PARALLEL
 
-	spi_begin_read();
-	//if (SPIStartRead()) {
+	//spi_begin_read();
+	if (SPIStartRead()) {
 
-	readAddrWindow(x, y, w, h); // Sets CS low
+		readAddrWindow(x, y, w, h); // Sets CS low
 
 #ifdef TFT_SDA_READ
 			begin_SDA_Read();
 		  #endif
 
-	// Dummy read to throw away don't care value
-	tft_Read_8();
+		// Dummy read to throw away don't care value
+		tft_Read_8();
 
-	// Read window pixel 24 bit RGB values
-	uint32_t len = w * h;
-	while (len--) {
+		// Read window pixel 24 bit RGB values
+		uint32_t len = w * h;
+		while (len--) {
 
 #if !defined (ILI9488_DRIVER)
 
-		// Read the 3 RGB bytes, color is actually only in the top 6 bits of each byte
-		// as the TFT stores colors as 18 bits
-		uint8_t r = tft_Read_8();
-		uint8_t g = tft_Read_8();
-		uint8_t b = tft_Read_8();
+			// Read the 3 RGB bytes, color is actually only in the top 6 bits of each byte
+			// as the TFT stores colors as 18 bits
+			uint8_t r = tft_Read_8();
+			uint8_t g = tft_Read_8();
+			uint8_t b = tft_Read_8();
 
 #else
 
@@ -852,22 +796,22 @@ void Screen::readRect(T_DispCoords x, T_DispCoords y, T_DispCoords w,
 
 		  #endif
 
-		// Swapped color byte order for compatibility with pushRect()
-		*data++ = (r & 0xF8) | (g & 0xE0) >> 5 | (b & 0xF8) << 5
-				| (g & 0x1C) << 11;
-	}
+			// Swapped color byte order for compatibility with pushRect()
+			*data++ = (r & 0xF8) | (g & 0xE0) >> 5 | (b & 0xF8) << 5
+					| (g & 0x1C) << 11;
+		}
 
-	CS_H;
+		CS_H;
 
 #ifdef TFT_SDA_READ
 			end_SDA_Read();
 		  #endif
 
-//		SPIEndRead();
-//	} else {
-//		PrintError("[]Error: SPI is buisy!");
-//	}
-	spi_end_read();
+		SPIEndRead();
+	} else {
+		PrintError("[]Error: SPI is buisy!");
+	}
+	//spi_end_read();
 
 #endif
 }
@@ -980,25 +924,23 @@ void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
 
 	if (dw < 1 || dh < 1)
 		return;
-//	spi_begin();
-//	inTransaction = true;
+
 	if (SPIStartWrite()) {
-	setWindow(x, y, x + dw - 1, y + dh - 1);
+		setWindow(x, y, x + dw - 1, y + dh - 1);
 
-	data += dx + dy * w;
+		data += dx + dy * w;
 
-	while (dh--) {
-		pushColors(data, dw, _swapBytes);
-		data += w;
-	}
-//	inTransaction = false;
-//	spi_end();
+		while (dh--) {
+			pushColors(data, dw, _swapBytes);
+			data += w;
+		}
+
 		SPIEndWrite();
 	} else {
 		//calling output: Error, SPI is buisy!
-//		PrintError("[pushImage] Error: SPI is buisy");
-		Serial.printf("SPI is buisy:%i\n",(int)inTransaction);
+		PrintError("[pushImage] Error: SPI is buisy");
 	}
+
 }
 
 /***************************************************************************************
@@ -2162,65 +2104,63 @@ void Screen::drawPixel(T_DispCoords x, T_DispCoords y, uint32_t color) {
 	if ((x < 0) || (y < 0) || (x >= _width) || (y >= _height))
 		return;
 
-//	if (SPIStartWrite()) {
-	spi_begin();
+	if (SPIStartWrite()) {
 
 #ifdef CGRAM_OFFSET
-	x += colstart;
-	y += rowstart;
+		x += colstart;
+		y += rowstart;
 #endif
 
-	DC_C;
+		DC_C;
 
-	// No need to send x if it has not changed (speeds things up)
-	if (addr_col != x) {
+		// No need to send x if it has not changed (speeds things up)
+		if (addr_col != x) {
 
-		tft_Write_8(TFT_CASET);
+			tft_Write_8(TFT_CASET);
 
-		DC_D;
+			DC_D;
 
 #if defined (RPI_ILI9486_DRIVER)
 			uint8_t xb[] = { 0, (uint8_t) (x>>8), 0, (uint8_t) (x>>0), 0, (uint8_t) (x>>8), 0, (uint8_t) (x>>0), };
 			spi.writePattern(&xb[0], 8, 1);
 		#else
-		tft_Write_32(SPI_32(x, x));
+			tft_Write_32(SPI_32(x, x));
 #endif
 
-		DC_C;
+			DC_C;
 
-		addr_col = x;
-	}
+			addr_col = x;
+		}
 
-	// No need to send y if it has not changed (speeds things up)
-	if (addr_row != y) {
+		// No need to send y if it has not changed (speeds things up)
+		if (addr_row != y) {
 
-		tft_Write_8(TFT_PASET);
+			tft_Write_8(TFT_PASET);
 
-		DC_D;
+			DC_D;
 
 #if defined (RPI_ILI9486_DRIVER)
 			uint8_t yb[] = { 0, (uint8_t) (y>>8), 0, (uint8_t) (y>>0), 0, (uint8_t) (y>>8), 0, (uint8_t) (y>>0), };
 			spi.writePattern(&yb[0], 8, 1);
 		#else
-		tft_Write_32(SPI_32(y, y));
+			tft_Write_32(SPI_32(y, y));
 #endif
 
-		DC_C;
+			DC_C;
 
-		addr_row = y;
+			addr_row = y;
+		}
+
+		tft_Write_8(TFT_RAMWR);
+
+		DC_D;
+
+		tft_Write_16(color);
+
+		SPIEndWrite();
+	} else {
+		PrintError("[]Error: SPI is buisy!");
 	}
-
-	tft_Write_8(TFT_RAMWR);
-
-	DC_D;
-
-	tft_Write_16(color);
-
-	spi_end();
-//		SPIEndWrite();
-//	} else {
-//		PrintError("[]Error: SPI is buisy!");
-//	}
 
 }
 #endif
@@ -2231,18 +2171,13 @@ void Screen::drawPixel(T_DispCoords x, T_DispCoords y, uint32_t color) {
  ** Description:             push a single pixel
  ***************************************************************************************/
 void Screen::pushColor(uint16_t color) {
-	/*	if (SPIStartWrite()) {
-	 tft_Write_16(color);
-	 SPIEndWrite();
-	 } else {
-	 PrintError("[]Error: SPI is buisy!");
-	 }
-	 */
-	spi_begin();
+	if (SPIStartWrite()) {
+		tft_Write_16(color);
+		SPIEndWrite();
+	} else {
+		PrintError("[]Error: SPI is buisy!");
+	}
 
-	tft_Write_16(color);
-
-	spi_end();
 }
 
 /***************************************************************************************
@@ -2380,7 +2315,7 @@ void Screen::pushColors(uint8_t *data, uint32_t len) {
  ** Description:             push an array of pixels, for image drawing
  ***************************************************************************************/
 void Screen::pushColors(uint16_t *data, uint32_t len, bool swap) {
-	//spi_begin();//if (SPIStartWrite()) {
+	if (SPIStartWrite()) {
 
 #if defined (ESP32) || defined (ILI9488_DRIVER)
 #if defined (ESP32_PARALLEL) || defined (ILI9488_DRIVER)
@@ -2468,12 +2403,11 @@ void Screen::pushColors(uint16_t *data, uint32_t len, bool swap) {
 
 		#endif
 
-		  //spi_end();
-		  /*SPIEndWrite();
+		SPIEndWrite();
 	} else {
 		PrintError("[]Error: SPI is buisy!");
 	}
-*/
+
 }
 
 /***************************************************************************************

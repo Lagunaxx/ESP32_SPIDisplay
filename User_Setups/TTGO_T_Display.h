@@ -3,13 +3,13 @@
 	#define TTGO_T_DISPLAY_H
 	#define ST7789_DRIVER     // Configure all registers
 
-	#define TFT_WIDTH  135
-	#define TFT_HEIGHT 240
+	#define TFT_WIDTH  240
+	#define TFT_HEIGHT 320
 
 	#define CGRAM_OFFSET      // Library will add offsets required
 
-	#define TFT_RGB_ORDER TFT_RGB  // Colour order Red-Green-Blue
-	//#define TFT_RGB_ORDER TFT_BGR  // Colour order Blue-Green-Red
+	//#define TFT_RGB_ORDER TFT_RGB  // Colour order Red-Green-Blue
+	#define TFT_RGB_ORDER TFT_BGR  // Colour order Blue-Green-Red
 
 	#define TFT_INVERSION_ON
 	//#define TFT_INVERSION_OFF
@@ -49,7 +49,7 @@
 	#define SMOOTH_FONT
 
 
-	// #define SPI_FREQUENCY  27000000
+	//#define SPI_FREQUENCY  27000000
 	#define SPI_FREQUENCY  40000000
 
 	#define SPI_READ_FREQUENCY  20000000

@@ -39,9 +39,6 @@
 			#define TFT_SPI_MODE SPI_MODE0
 		#endif
 
-
-	namespace Device{
-
 		#if defined (ESP32)
 		  #if !defined (ESP32_PARALLEL)
 			#ifdef USE_HSPI_PORT
@@ -54,6 +51,21 @@
 		  static SPIClass& spi = SPI;
 		#endif
 
+
+	namespace Device{
+/*
+		#if defined (ESP32)
+		  #if !defined (ESP32_PARALLEL)
+			#ifdef USE_HSPI_PORT
+			  static SPIClass spi = SPIClass(HSPI);
+			#else // use default VSPI port
+			  static SPIClass& spi = SPI;
+			#endif
+		  #endif
+		#else // ESP8266
+		  static SPIClass& spi = SPI;
+		#endif
+*/
 
 /*			inline void		spi_begin() __attribute__((always_inline)),
 							spi_end()   __attribute__((always_inline)),

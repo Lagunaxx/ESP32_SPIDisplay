@@ -57,10 +57,10 @@ namespace Device {
 
 			};
 
-			  static Graphics* Graph;
-			  bool init(uint32_t color = TFT_BLACK);
+//			  static Graphics* Graph;
+//			  bool init(uint32_t color = TFT_BLACK);
 			  //bool init();
-			  bool remove();
+//			  bool remove();
 
 		} /* namespace Graphics */
 	} /* namespace Display */

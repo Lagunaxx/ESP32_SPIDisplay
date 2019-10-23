@@ -25,12 +25,12 @@ namespace Device {
 		** 		true - Graph initialized;
 		** 		false - Graph do not initialized
 		***************************************************************************************/
-		bool init(uint32_t background_color){
+/*		bool init(uint32_t background_color){
 			Graph=new Graphics();
 			if (Graph==0) return false;
 			Graph->fillScreen(background_color);
 			return true;
-		};
+		};*/
 /*		bool init(){
 			return init(TFT_BLACK);
 		}//*/
@@ -45,12 +45,12 @@ namespace Device {
 		** 		true - Graph removed;
 		** 		false - Graph was not initialized (null-pointer)
 		***************************************************************************************/
-		bool remove(){
+/*		bool remove(){
 			if (Graph==0) return false;
 			delete(Graph);
 			return true;
 		}
-
+*/
 			Graphics::Graphics() {
 				// TODO Auto-generated constructor stub
 				bitmap_fg = TFT_WHITE;

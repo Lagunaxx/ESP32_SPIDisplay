@@ -980,9 +980,9 @@ void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
 
 	if (dw < 1 || dh < 1)
 		return;
-//	spi_begin();
-//	inTransaction = true;
-	if (SPIStartWrite()) {
+	spi_begin();
+	inTransaction = true;
+//	if (SPIStartWrite()) {
 	setWindow(x, y, x + dw - 1, y + dh - 1);
 
 	data += dx + dy * w;
@@ -991,14 +991,14 @@ void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
 		pushColors(data, dw, _swapBytes);
 		data += w;
 	}
-//	inTransaction = false;
-//	spi_end();
-		SPIEndWrite();
-	} else {
-		//calling output: Error, SPI is buisy!
+	inTransaction = false;
+	spi_end();
+//		SPIEndWrite();
+//	} else {
+//		//calling output: Error, SPI is buisy!
 //		PrintError("[pushImage] Error: SPI is buisy");
-		Serial.printf("SPI is buisy:%i\n",(int)inTransaction);
-	}
+//	}
+
 }
 
 /***************************************************************************************
@@ -2380,7 +2380,7 @@ void Screen::pushColors(uint8_t *data, uint32_t len) {
  ** Description:             push an array of pixels, for image drawing
  ***************************************************************************************/
 void Screen::pushColors(uint16_t *data, uint32_t len, bool swap) {
-	//spi_begin();//if (SPIStartWrite()) {
+	if (SPIStartWrite()) {
 
 #if defined (ESP32) || defined (ILI9488_DRIVER)
 #if defined (ESP32_PARALLEL) || defined (ILI9488_DRIVER)
@@ -2468,12 +2468,11 @@ void Screen::pushColors(uint16_t *data, uint32_t len, bool swap) {
 
 		#endif
 
-		  //spi_end();
-		  /*SPIEndWrite();
+		SPIEndWrite();
 	} else {
 		PrintError("[]Error: SPI is buisy!");
 	}
-*/
+
 }
 
 /***************************************************************************************

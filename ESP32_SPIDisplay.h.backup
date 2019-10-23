@@ -17,7 +17,6 @@
  - provides main output to display.
  ****************************************************/
 
-
 // Stop fonts etc being loaded multiple times
 #ifndef DEVICE_DISPLAY_H_
 #define DEVICE_DISPLAY_H_
@@ -50,7 +49,6 @@
 #include "Definations.h"
 #include "Types.h"
 
-
 /*********************************************************
  * Adding Extensions                                     *
  *********************************************************/
@@ -76,46 +74,6 @@
 	#error "\"Types.h\" do not loaded!"
 #endif
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-  inline void spi_begin() __attribute__((always_inline));
-  inline void spi_end()   __attribute__((always_inline));
-
-  inline void spi_begin_read() __attribute__((always_inline));
-  inline void spi_end_read()   __attribute__((always_inline));
-
-
-static	bool locked, inTransaction; // Transaction and mutex lock flags for ESP32
-static	bool _booted;    // init() or begin() has already run once
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*********************************************************
  * Starting Display driver declaration                   *
  *********************************************************/
@@ -138,7 +96,7 @@ public:
 	void 	setRotation(uint8_t r),		// Set display rotation
 			invertDisplay(boolean i);	// Set/reset color inversion
 
-//protected:
+protected:
 
 	void 	getSetup(T_DisplaySettings &tft_settings), // Sketch provides the instance to populate
 			setWindow(T_DispCoords xs, T_DispCoords ys, T_DispCoords xe,
@@ -261,6 +219,77 @@ private:
 	uint32_t readcommand32(uint8_t cmd_function, uint8_t index = 0); // 32-bit read
 
 
+	inline void spi_begin(void) {
+#if defined (SPI_HAS_TRANSACTION) && defined (SUPPORT_TRANSACTIONS) && !defined(ESP32_PARALLEL)
+		if (locked) {
+			locked = false;
+			spi.beginTransaction(
+					SPISettings(SPI_FREQUENCY, MSBFIRST, TFT_SPI_MODE));
+			CS_L;
+		}
+#else
+				  CS_L;
+				#endif
+#ifdef ESP8266
+				  SPI1U = SPI1U_WRITE;
+				#endif
+	}
+
+	inline void spi_end(void) {
+#if defined (SPI_HAS_TRANSACTION) && defined (SUPPORT_TRANSACTIONS) && !defined(ESP32_PARALLEL)
+		if (!inTransaction) {
+			if (!locked) {
+				locked = true;
+				CS_H;
+				spi.endTransaction();
+			}
+		}
+#ifdef ESP8266
+					SPI1U = SPI1U_READ;
+				  #endif
+#else
+				  if(!inTransaction) CS_H;
+				#endif
+	}
+
+	inline void spi_begin_read(void) {
+#if defined (SPI_HAS_TRANSACTION) && defined (SUPPORT_TRANSACTIONS) && !defined(ESP32_PARALLEL)
+		if (locked) {
+			locked = false;
+			spi.beginTransaction(
+					SPISettings(SPI_READ_FREQUENCY, MSBFIRST, TFT_SPI_MODE));
+			CS_L;
+		}
+#else
+				  #if !defined(ESP32_PARALLEL)
+					spi.setFrequency(SPI_READ_FREQUENCY);
+				  #endif
+				   CS_L;
+				#endif
+#ifdef ESP8266
+				  SPI1U = SPI1U_READ;
+				#endif
+	}
+
+	inline void spi_end_read(void) {
+#if defined (SPI_HAS_TRANSACTION) && defined (SUPPORT_TRANSACTIONS) && !defined(ESP32_PARALLEL)
+		if (!inTransaction) {
+			if (!locked) {
+				locked = true;
+				CS_H;
+				spi.endTransaction();
+			}
+		}
+#else
+				  #if !defined(ESP32_PARALLEL)
+					spi.setFrequency(SPI_FREQUENCY);
+				  #endif
+				   if(!inTransaction) CS_H;
+				#endif
+#ifdef ESP8266
+				  SPI1U = SPI1U_WRITE;
+				#endif
+	}
 
 	virtual void PrintError(const char[]);
 
@@ -268,9 +297,8 @@ private:
 	uint32_t _lastColor; // Buffered value of last color used
 	uint8_t rotation;  // Display rotation (0-3)
 	bool _swapBytes; // Swap the byte order for TFT pushImage()
-//	bool locked, inTransaction; // Transaction and mutex lock flags for ESP32
-//	bool _booted;    // init() or begin() has already run once
-
+	bool locked, inTransaction; // Transaction and mutex lock flags for ESP32
+	bool _booted;    // init() or begin() has already run once
 
 };
 // End of class Screen
@@ -289,7 +317,7 @@ void init(T_DispCoords _W, T_DispCoords _H, uint8_t R
 						, uint8_t tc
 #endif
 		);
-void remove();*/
+void remove();
 }
-}
+}*/
 #endif

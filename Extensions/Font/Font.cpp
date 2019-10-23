@@ -619,7 +619,7 @@ namespace Device{
 		*************************************************************************************x*/
 		void Font::showFont(uint32_t td, Screen &display)
 		{
-		  if(!fontLoaded) return;
+/*		  if(!fontLoaded) return;
 
 		  if(!fontFile)
 		  {
@@ -663,7 +663,7 @@ namespace Device{
 		  //fillScreen(textbgcolor);
 		  //fontFile.close();
 
-		}
+*/		}
 
 
 		/**************************************************************************
@@ -1037,9 +1037,9 @@ namespace Device{
 			}
 			// Check coordinates are OK, adjust if not
 			if (poX < 0) poX = 0;
-			if (poX+cwidth > Device::Display::Driver->width())   poX = Device::Display::Driver->width() - cwidth;
+//			if (poX+cwidth > Device::Display::Driver->width())   poX = Device::Display::Driver->width() - cwidth;
 			if (poY < 0) poY = 0;
-			if (poY+cheight-baseline> Device::Display::Driver->height()) poY = Device::Display::Driver->height() - cheight;
+//			if (poY+cheight-baseline> Device::Display::Driver->height()) poY = Device::Display::Driver->height() - cheight;
 		  }
 
 
