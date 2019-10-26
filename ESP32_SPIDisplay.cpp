@@ -226,7 +226,7 @@ Screen::Screen(T_DispCoords w, T_DispCoords h) // @suppress("Class members shoul
 	_init_height = _height = h; // Set by specific xxxxx_Defines.h file or by users sketch
 	rotation = 0;
 
-	_swapBytes = false;   // Do not swap colour bytes by default
+	_swapBytes = true;   // Do not swap colour bytes by default
 
 //	  locked = true;        // ESP32 transaction mutex lock flags
 //	  inTransaction = false;
