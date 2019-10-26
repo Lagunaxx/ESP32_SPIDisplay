@@ -13,7 +13,11 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include "ESP32_SPIDisplay.h"
+#include <User_Setup_Select.h>
 
+namespace Device {
+namespace Display {
+namespace {
 inline void spi_begin(void) {
 #if defined (SPI_HAS_TRANSACTION) && defined (SUPPORT_TRANSACTIONS) && !defined(ESP32_PARALLEL)
 	if (locked) {
@@ -88,8 +92,9 @@ inline void spi_end_read(void) {
 				#endif
 }
 
-namespace Device {
-namespace Display {
+}
+
+uint8_t Screen::tabcolor, Screen::colstart, Screen::rowstart;
 
 //Screen* Driver;
 
@@ -111,47 +116,47 @@ namespace Display {
  *                                                                             *
  *******************************************************************************/
 //Screen* Driver;
-/*// Next code for initializing class in memory
- void init(T_DispCoords _W, T_DispCoords _H, uint8_t _R
- #ifdef ST7735_DRIVER
+// Next code for initializing class in memory
+void init(T_DispCoords _W, T_DispCoords _H, uint8_t _R
+#ifdef ST7735_DRIVER
  , uint8_t tc
  #endif
- ) {
- Driver = new Screen(_W, _H);
- #ifdef ST7735_DRIVER
+		) {
+	Driver = new Screen(_W, _H);
+#ifdef ST7735_DRIVER
  Driver->init(tc);
  #else
- Driver->init();
- #endif
- Driver->setRotation(_R);
- }
- void init(uint8_t R
- #ifdef ST7735_DRIVER
+	Driver->init();
+#endif
+	Driver->setRotation(_R);
+}
+void init(uint8_t R
+#ifdef ST7735_DRIVER
  , uint8_t tc
  #endif
- ) {
- init(TFT_WIDTH,
- TFT_HEIGHT, R
- #ifdef ST7735_DRIVER
+		) {
+	init(TFT_WIDTH,
+	TFT_HEIGHT, R
+#ifdef ST7735_DRIVER
  , tc
  #endif
- );
- }
- void init(
- #ifdef ST7735_DRIVER
+			);
+}
+void init(
+#ifdef ST7735_DRIVER
  , uint8_t tc
  #endif
- ) {
- init(0
- #ifdef ST7735_DRIVER
+) {
+	init(0
+#ifdef ST7735_DRIVER
  , tc
  #endif
- );
- }
- void remove() {
- delete (Driver);
- }
- */
+			);
+}
+void remove() {
+	delete (Driver);
+}
+// */
 void Screen::PrintError(const char message[]) {
 	//use it for debugging spi. Make print to serial or whatever.
 	;
@@ -241,6 +246,8 @@ Screen::Screen(T_DispCoords w, T_DispCoords h) // @suppress("Class members shoul
 	wrpinmask = 0;
 	sclkpinmask = 0;
 
+	lastColor = 0xFFFF;
+
 }
 
 Screen::~Screen() {
@@ -259,6 +266,7 @@ void Screen::begin(uint8_t tc) {
  ** Description:             Reset, then initialise the TFT display registers
  ***************************************************************************************/
 void Screen::init(uint8_t tc) {
+
 	if (_booted) {
 #if !defined (ESP32)
 	  #if defined (TFT_CS) && (TFT_CS >= 0)
@@ -425,7 +433,8 @@ void Screen::init(uint8_t tc) {
  ***************************************************************************************/
 void Screen::setRotation(uint8_t m) {
 
-	spi_begin();
+	//spi_begin();
+	SPIStartWrite();
 
 	// This loads the driver specific rotation code  <<<<<<<<<<<<<<<<<<<<< ADD NEW DRIVERS TO THE LIST HERE <<<<<<<<<<<<<<<<<<<<<<<
 #if   defined (ILI9341_DRIVER)
@@ -471,7 +480,8 @@ void Screen::setRotation(uint8_t m) {
 
 	delayMicroseconds(10);
 
-	spi_end();
+	//spi_end();
+	SPIEndWrite();
 
 	addr_row = 0xFFFF;
 	addr_col = 0xFFFF;
@@ -818,8 +828,8 @@ void Screen::readRect(T_DispCoords x, T_DispCoords y, T_DispCoords w,
 
 		#else // Not ESP32_PARALLEL
 
-	spi_begin_read();
-	//if (SPIStartRead()) {
+	//spi_begin_read();
+	if (SPIStartRead()) {
 
 	readAddrWindow(x, y, w, h); // Sets CS low
 
@@ -863,11 +873,11 @@ void Screen::readRect(T_DispCoords x, T_DispCoords y, T_DispCoords w,
 			end_SDA_Read();
 		  #endif
 
-//		SPIEndRead();
-//	} else {
-//		PrintError("[]Error: SPI is buisy!");
-//	}
-	spi_end_read();
+		SPIEndRead();
+	} else {
+		PrintError("[]Error: SPI is buisy!");
+	}
+//	spi_end_read();
 
 #endif
 }
@@ -980,24 +990,19 @@ void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
 
 	if (dw < 1 || dh < 1)
 		return;
-//	spi_begin();
-//	inTransaction = true;
 	if (SPIStartWrite()) {
-	setWindow(x, y, x + dw - 1, y + dh - 1);
+		setWindow(x, y, x + dw - 1, y + dh - 1);
 
-	data += dx + dy * w;
+		data += dx + dy * w;
 
-	while (dh--) {
-		pushColors(data, dw, _swapBytes);
-		data += w;
-	}
-//	inTransaction = false;
-//	spi_end();
+		while (dh--) {
+			pushColors(data, dw, _swapBytes);
+			data += w;
+		}
 		SPIEndWrite();
 	} else {
 		//calling output: Error, SPI is buisy!
-//		PrintError("[pushImage] Error: SPI is buisy");
-		Serial.printf("SPI is buisy:%i\n",(int)inTransaction);
+		PrintError("[pushImage] Error: SPI is buisy");
 	}
 }
 
@@ -2387,10 +2392,10 @@ void Screen::pushColors(uint16_t *data, uint32_t len, bool swap) {
 			if (swap) while ( len-- ) {tft_Write_16(*data); data++;}
 			else while ( len-- ) {tft_Write_16S(*data); data++;}
 		  #else
-		if (swap)
-			spi.writePixels(data, len << 1);
-		else
-			spi.writeBytes((uint8_t*) data, len << 1);
+	if (swap)
+		spi.writePixels(data, len << 1);
+	else
+		spi.writeBytes((uint8_t*) data, len << 1);
 #endif
 #else
 
@@ -2468,12 +2473,12 @@ void Screen::pushColors(uint16_t *data, uint32_t len, bool swap) {
 
 		#endif
 
-		  //spi_end();
-		  /*SPIEndWrite();
-	} else {
-		PrintError("[]Error: SPI is buisy!");
-	}
-*/
+	//spi_end();
+	/*SPIEndWrite();
+	 } else {
+	 PrintError("[]Error: SPI is buisy!");
+	 }
+	 */
 }
 
 /***************************************************************************************

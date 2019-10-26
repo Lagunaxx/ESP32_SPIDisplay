@@ -25,12 +25,12 @@ namespace Device {
 		** 		true - Graph initialized;
 		** 		false - Graph do not initialized
 		***************************************************************************************/
-/*		bool init(uint32_t background_color){
+		/*	ToDo: Do not work due memory problem		bool init(uint32_t background_color){
 			Graph=new Graphics();
 			if (Graph==0) return false;
 			Graph->fillScreen(background_color);
 			return true;
-		};*/
+		};// */
 /*		bool init(){
 			return init(TFT_BLACK);
 		}//*/
@@ -45,19 +45,18 @@ namespace Device {
 		** 		true - Graph removed;
 		** 		false - Graph was not initialized (null-pointer)
 		***************************************************************************************/
-/*		bool remove(){
+		/*	ToDo: Do not work due memory problem		bool remove(){
 			if (Graph==0) return false;
 			delete(Graph);
 			return true;
 		}
-*/
+// */
 			Graphics::Graphics() {
 				// TODO Auto-generated constructor stub
 				bitmap_fg = TFT_WHITE;
 				bitmap_bg = TFT_BLACK;
 				_xpivot = 0;
 				_ypivot = 0;
-
 			}
 
 			Graphics::~Graphics() {
@@ -565,9 +564,44 @@ namespace Device {
 			  return _ypivot;
 			}
 
+			/***************************************************************************************
+			** Function name:           drawImageBuffer
+			** Description:             Calling Display function to draw buffer data on screen
+			***************************************************************************************/
 			void Graphics::drawImageBuffer(T_DispCoords x, T_DispCoords y, void * buffer, T_DispCoords w, T_DispCoords h){
 				//ToDo: remove (uint32_t). for this need to modify types in Display::Driver
 				pushImage((uint32_t)x,(uint32_t)y,(uint32_t)w,(uint32_t)h,(uint16_t *)buffer);
+			}
+
+			/***************************************************************************************
+			** Function name:           drawImageBufferAlpha
+			** Description:             Calling Display function to draw buffer data on screen
+			** 							with alpha-channel support
+			***************************************************************************************/
+			void Graphics::drawImageBufferAlpha(T_DispCoords x, T_DispCoords y, void * buffer, uint8_t* alpha, T_DispCoords w, T_DispCoords h){
+				//ToDo: remove (uint32_t). for this need to modify types in Display::Driver
+
+				uint16_t *data= (uint16_t*)malloc(w*h*sizeof(uint16_t));
+				upng_s_rgb16b *pixel_screen = new upng_s_rgb16b();
+				upng_s_rgb16b *pixel_buffer = new upng_s_rgb16b();
+				uint8_t a;
+				readRect(x, y, w, h, data);
+
+				for (T_DispCoords xx=0;xx<w;xx++){
+					for (T_DispCoords yy=0;yy<h;yy++){
+						memcpy(pixel_screen,data+(yy*w+xx)*1,2);
+						memcpy(pixel_buffer,(uint16_t *)buffer+(yy*w+xx)*1,2);
+						a=*(alpha+yy*w+xx);
+						//memcpy(&a,alpha+yy*w+xx,1);
+						pixel_screen->r=pixel_screen->r*(255-a)/255 + pixel_buffer->r*a/255;
+						pixel_screen->g=pixel_screen->g*(255-a)/255 + pixel_buffer->g*a/255;
+						pixel_screen->b=pixel_screen->b*(255-a)/255 + pixel_buffer->b*a/255;
+						memcpy(data+(yy*w+xx),pixel_screen,2);
+					}
+				}
+
+				pushImage((uint32_t)x,(uint32_t)y,(uint32_t)w,(uint32_t)h,(uint16_t *)data);
+				free(data);
 			}
 
 			/***************************************************************************************

@@ -5,14 +5,19 @@
   switch (rotation) {
     case 0: // Portrait
 #ifdef CGRAM_OFFSET
-      if (_init_width == 135)
+      if (_init_width == 135 )
       {
         colstart = 52;
         rowstart = 40;
       }
+      else if (_init_width == 240 )
+	  {
+          colstart = 52;
+          rowstart = 40;
+      }
       else
       {
-        colstart = 0;
+        colstart = 11;
         rowstart = 0;
       }
 #endif
@@ -24,14 +29,19 @@
 
     case 1: // Landscape (Portrait + 90)
 #ifdef CGRAM_OFFSET
-      if (_init_width == 135)
+      if (_init_width == 135 )
       {
         colstart = 40;
         rowstart = 53;
       }
+      else if (_init_width == 240)
+	  {
+          colstart = 40;
+          rowstart = 53;
+      }
       else
       {
-        colstart = 0;
+        colstart = 22;
         rowstart = 0;
       }
 #endif
@@ -47,6 +57,11 @@
       {
         colstart = 53;
         rowstart = 40;
+      }
+      else if (_init_width == 240)
+	  {
+          colstart = 53;
+          rowstart = 40;
       }
       else
       {
@@ -65,6 +80,11 @@
       {
         colstart = 40;
         rowstart = 52;
+      }
+      else if (_init_width == 240)
+	  {
+          colstart = 40;
+          rowstart = 52;
       }
       else
       {

@@ -20,11 +20,13 @@
 
 		// If the frequency is not defined, set a default
 		#ifndef SPI_FREQUENCY
+			#warning "SPI_FREQUENCY not defined, using default 20000000"
 			#define SPI_FREQUENCY 20000000
 		#endif
 
 		// If the frequency is not defined, set a default
 		#ifndef SPI_READ_FREQUENCY
+			#warning "SPI_READ_FREQUENCY not defined, using SPI_FREQUENCY as default"
 			#define SPI_READ_FREQUENCY SPI_FREQUENCY
 		#endif
 

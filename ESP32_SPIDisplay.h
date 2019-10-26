@@ -17,7 +17,6 @@
  - provides main output to display.
  ****************************************************/
 
-
 // Stop fonts etc being loaded multiple times
 #ifndef DEVICE_DISPLAY_H_
 #define DEVICE_DISPLAY_H_
@@ -50,7 +49,6 @@
 #include "Definations.h"
 #include "Types.h"
 
-
 /*********************************************************
  * Adding Extensions                                     *
  *********************************************************/
@@ -76,53 +74,21 @@
 	#error "\"Types.h\" do not loaded!"
 #endif
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-  inline void spi_begin() __attribute__((always_inline));
-  inline void spi_end()   __attribute__((always_inline));
-
-  inline void spi_begin_read() __attribute__((always_inline));
-  inline void spi_end_read()   __attribute__((always_inline));
-
-
-static	bool locked, inTransaction; // Transaction and mutex lock flags for ESP32
-static	bool _booted;    // init() or begin() has already run once
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*********************************************************
  * Starting Display driver declaration                   *
  *********************************************************/
 
 namespace Device {
 namespace Display {
+namespace {
+inline void spi_begin() __attribute__((always_inline));
+inline void spi_end() __attribute__((always_inline));
 
+inline void spi_begin_read() __attribute__((always_inline));
+inline void spi_end_read() __attribute__((always_inline));
+static bool locked, inTransaction; // Transaction and mutex lock flags for ESP32
+static bool _booted;    // init() or begin() has already run once
+}
 // Class functions and variables
 class Screen {
 public:
@@ -130,21 +96,19 @@ public:
 	virtual ~Screen();
 
 	//ToDo: move 'init' into constructor, remove 'begin'
-	void 	init(uint8_t tc = TAB_COLOUR), begin(uint8_t tc = TAB_COLOUR); // Same - begin included for backwards compatibility
+	void init(uint8_t tc = TAB_COLOUR), begin(uint8_t tc = TAB_COLOUR); // Same - begin included for backwards compatibility
 
-	T_DispCoords 	height(void),
-					width(void);
+	T_DispCoords height(void), width(void);
 	uint8_t getRotation(void);
-	void 	setRotation(uint8_t r),		// Set display rotation
-			invertDisplay(boolean i);	// Set/reset color inversion
+	void setRotation(uint8_t r),		// Set display rotation
+	invertDisplay(boolean i);	// Set/reset color inversion
 
-//protected:
+protected:
 
-	void 	getSetup(T_DisplaySettings &tft_settings), // Sketch provides the instance to populate
-			setWindow(T_DispCoords xs, T_DispCoords ys, T_DispCoords xe,
-					T_DispCoords ye),
-			setAddrWindow(T_DispCoords xs, T_DispCoords ys,
-					T_DispCoords w, T_DispCoords h),
+	void getSetup(T_DisplaySettings &tft_settings), // Sketch provides the instance to populate
+	setWindow(T_DispCoords xs, T_DispCoords ys, T_DispCoords xe,
+			T_DispCoords ye), setAddrWindow(T_DispCoords xs, T_DispCoords ys,
+			T_DispCoords w, T_DispCoords h),
 
 	// Write pixels to display SPI
 			writeBlock(uint16_t color, uint32_t repeat), // Fast block write prototype
@@ -222,17 +186,17 @@ private:
 	void
 	// Display configuration
 
-			readAddrWindow(int32_t xs, int32_t ys, T_DispCoords w, T_DispCoords h); //define an area to read a stream of pixels
-			bool SPIStartWrite(void),			// Begin SPI transaction
-			SPIStartRead(void);
-			void SPIEndWrite(void),				// End SPI transaction
-			SPIEndRead(void), spiwrite(uint8_t),			// Write any to SPI
-			writecommand(uint8_t c),	// Send command to SPI
-			writedata(uint8_t d),		// Send data to SPI
-			commandList(const uint8_t *addr);	// Send list of commands to SPI,
-										// first byte contains number of commands in array
+	readAddrWindow(int32_t xs, int32_t ys, T_DispCoords w, T_DispCoords h); //define an area to read a stream of pixels
+	bool SPIStartWrite(void),			// Begin SPI transaction
+	SPIStartRead(void);
+	void SPIEndWrite(void),				// End SPI transaction
+	SPIEndRead(void), spiwrite(uint8_t),			// Write any to SPI
+	writecommand(uint8_t c),	// Send command to SPI
+	writedata(uint8_t d),		// Send data to SPI
+	commandList(const uint8_t *addr);	// Send list of commands to SPI,
+	// first byte contains number of commands in array
 
-	uint8_t tabcolor, colstart = 0, rowstart = 0; // some ST7735 displays need this changed
+	static uint8_t tabcolor, colstart, rowstart; // some ST7735 displays need this changed
 
 	volatile uint32_t *dcport, *csport;
 
@@ -242,7 +206,7 @@ private:
 					uint32_t  xclr_mask, xdir_mask, xset_mask[256];
 				#endif
 
-	uint32_t lastColor = 0xFFFF;
+	uint32_t lastColor; // = 0xFFFF;
 
 	T_DispCoords _init_width, _init_height; // Display w/h as input, used by setRotation()
 	T_DispCoords _width, _height; // Display w/h as modified by current rotation
@@ -260,8 +224,6 @@ private:
 	uint16_t readcommand16(uint8_t cmd_function, uint8_t index = 0); // 16-bit read
 	uint32_t readcommand32(uint8_t cmd_function, uint8_t index = 0); // 32-bit read
 
-
-
 	virtual void PrintError(const char[]);
 
 	int32_t addr_row, addr_col;
@@ -271,10 +233,10 @@ private:
 //	bool locked, inTransaction; // Transaction and mutex lock flags for ESP32
 //	bool _booted;    // init() or begin() has already run once
 
-
 };
+
 // End of class Screen
-/* // Next code for initializing class in memory
+// Next code for initializing class in memory
 static Screen *Driver;
 void init(T_DispCoords _W, T_DispCoords _H, uint8_t R
 #ifdef ST7735_DRIVER
@@ -289,7 +251,7 @@ void init(T_DispCoords _W, T_DispCoords _H, uint8_t R
 						, uint8_t tc
 #endif
 		);
-void remove();*/
+void remove(); // */
 }
 }
 #endif

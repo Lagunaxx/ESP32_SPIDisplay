@@ -39,7 +39,8 @@ namespace Device {
 					drawXBitmap(T_DispCoords x, T_DispCoords y, const uint8_t *bitmap, T_DispCoords w, T_DispCoords h, uint16_t color),
 					drawXBitmap(T_DispCoords x, T_DispCoords y, const uint8_t *bitmap, T_DispCoords w, T_DispCoords h, uint16_t fgcolor, uint16_t bgcolor),
 					setBitmapColor(uint16_t fgcolor, uint16_t bgcolor), // For 1bpp sprites
-					drawImageBuffer(T_DispCoords x, T_DispCoords y, void * buffer, T_DispCoords widh, T_DispCoords height);
+					drawImageBuffer(T_DispCoords x, T_DispCoords y, void * buffer, T_DispCoords widh, T_DispCoords height),
+					drawImageBufferAlpha(T_DispCoords x, T_DispCoords y, void * buffer, uint8_t* alpha, T_DispCoords widh, T_DispCoords height);
 			  void _bitmap_fg(uint32_t c);
 			  void _bitmap_bg(uint32_t c);
 			  T_DispCoords __xpivot();
@@ -57,11 +58,12 @@ namespace Device {
 
 			};
 
-//			  static Graphics* Graph;
-//			  bool init(uint32_t color = TFT_BLACK);
+/*	ToDo: Do not work due memory problem
+			  static Graphics* Graph;
+			  bool init(uint32_t color = TFT_BLACK);
 			  //bool init();
-//			  bool remove();
-
+			  bool remove();
+*/
 		} /* namespace Graphics */
 	} /* namespace Display */
 } /* namespace Device */
