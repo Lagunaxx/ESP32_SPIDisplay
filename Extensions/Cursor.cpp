@@ -135,6 +135,14 @@ namespace Device {
 				}
 			}
 
+			void Draw(){
+				;
+			}
+			void Redraw(){
+				;
+			}
+
+
 			//virtual void Cursor::Draw();
 		} /* namespace Cursor */
 	} /* namespace Display */

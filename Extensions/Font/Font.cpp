@@ -46,6 +46,8 @@ namespace Device{
 		  glyph_bb=0;
 		  glyph_ab=0;
 
+		  ImageBuffer=new c_TextBuffer();
+
 #ifdef LOAD_GLCD
   fontsloaded  = 0x0002; // Bit 1 set
 #endif
@@ -507,24 +509,24 @@ namespace Device{
 		** Description:             Write a character to the TFT cursor position
 		*************************************************************************************x*/
 		// Expects file to be open
-		void Font::drawGlyph(uint16_t code, c_Cursor &cursor)
+		void Font::drawGlyph(uint16_t code)//, c_Cursor &cursor)
 		{
-			_CoordsType cursor_x = cursor.X();
-			_CoordsType cursor_y = cursor.Y();
+			_CoordsType cursor_x = ImageBuffer->X();
+			_CoordsType cursor_y = ImageBuffer->Y();
 
 		  if (code < 0x21)
 		  {
 			if (code == 0x20) {
 			  cursor_x += gFont.spaceWidth;
-			  cursor.X(cursor_x);
+			  ImageBuffer->X(cursor_x);
 			  return;
 			}
 
 			if (code == '\n') {
-			  cursor.X(0);
+			  ImageBuffer->X(0);
 			  cursor_y += gFont.yAdvance;
 			  if (cursor_y >= __height()) cursor_y = 0;
-			  cursor.Set(cursor_x,cursor_y);
+			  ImageBuffer->Set(cursor_x,cursor_y);
 			  return;
 			}
 		  }
@@ -538,12 +540,12 @@ namespace Device{
 		  if (found)
 		  {
 
-			if (textwrapX && (cursor_x + gWidth[gNum] + gdX[gNum] > __width()))
+			if (textwrapX && (cursor_x + gWidth[gNum] + gdX[gNum] > Device::Display::Driver->width()))
 			{
 			  cursor_y += gFont.yAdvance;
 			  cursor_x = 0;
 			}
-			if (textwrapY && ((cursor_y + gFont.yAdvance) >= __height())) cursor_y = 0;
+			if (textwrapY && ((cursor_y + gFont.yAdvance) >= Device::Display::Driver->height())) cursor_y = 0;
 			if (cursor_x == 0) cursor_x -= gdX[gNum];
 
 			fontFile->seek(gBitmap[gNum], fs::SeekSet); // This is taking >30ms for a significant position shift
@@ -555,8 +557,9 @@ namespace Device{
 
 			_CoordsType cy = cursor_y + gFont.maxAscent - gdY[gNum];
 			_CoordsType cx = cursor_x + gdX[gNum];
+			ImageBuffer->init(2,sizeof(uint16_t),cx,cy);
 
-			startWrite(); // Avoid slow ESP32 transaction overhead for every pixel
+//			startWrite(); // Avoid slow ESP32 transaction overhead for every pixel
 
 			for (int y = 0; y < gHeight[gNum]; y++)
 			{
@@ -567,9 +570,9 @@ namespace Device{
 			  }
 			  else
 			  {
-				endWrite();    // Release SPI for SD card transaction
+//				endWrite();    // Release SPI for SD card transaction
 				fontFile->read(pbuffer, gWidth[gNum]);
-				startWrite();  // Re-start SPI for TFT transaction
+//				startWrite();  // Re-start SPI for TFT transaction
 				//Serial.println("Not SPIFFS");
 			  }
 
@@ -578,7 +581,8 @@ namespace Device{
 				uint8_t pixel = pbuffer[x]; //<//
 				if (pixel)
 				{
-				  if (pixel != 0xFF)
+/*
+					if (pixel != 0xFF)
 				  {
 					if (dl) {
 					  if (dl==1) drawPixel(xs, y + cy, fg);
@@ -591,26 +595,27 @@ namespace Device{
 				  {
 					if (dl==0) xs = x + cx;
 					dl++;
-				  }
+				  }// */
+
 				}
 				else
 				{
-				  if (dl) { drawFastHLine( xs, y + cy, dl, fg); dl = 0; }
+//				  if (dl) { drawFastHLine( xs, y + cy, dl, fg); dl = 0; }
 				}
 			  }
-			  if (dl) { drawFastHLine( xs, y + cy, dl, fg); dl = 0; }
-			}
+//			  if (dl) { drawFastHLine( xs, y + cy, dl, fg); dl = 0; }
+			}// */
 
 			cursor_x += gxAdvance[gNum];
-			endWrite();
+//			endWrite();
 		  }
 		  else
 		  {
 			// Not a Unicode in font so draw a rectangle and move on cursor
-			drawRect(cursor_x, cursor_y + gFont.maxAscent - gFont.ascent, gFont.spaceWidth, gFont.ascent, fg);
+//			drawRect(cursor_x, cursor_y + gFont.maxAscent - gFont.ascent, gFont.spaceWidth, gFont.ascent, fg);
 			cursor_x += gFont.spaceWidth + 1;
 		  }
-		  cursor.Set(cursor_x, cursor_y);
+		  ImageBuffer->Set(cursor_x, cursor_y);
 		}
 
 		/***************************************************************************************
@@ -651,7 +656,7 @@ namespace Device{
 			  }
 			}
 
-			cursor->Set(cursorX, cursorY);
+			ImageBuffer->Set(cursorX, cursorY);
 			drawGlyph(gUnicode[i], *cursor);
 			cursorX += gxAdvance[i];
 			//cursorX +=  printToSprite( cursorX, cursorY, i );
@@ -1084,7 +1089,7 @@ namespace Device{
 			//fontFile = SPIFFS.open( _gFontFilename, "r");
 			if(!fontFile) return 0;
 
-//			cursor->Set(poX, poY);
+//			ImageBuffer->Set(poX, poY);
 
 			while (n < len)
 			{
@@ -1584,18 +1589,18 @@ namespace Device{
 /*
 
 			  if (utf8 == '\n') {
-				cursor->MoveY(height);
-				cursor->X(0);
+				ImageBuffer->MoveY(height);
+				ImageBuffer->X(0);
 			  }
 			  else
 			  {
-				if (textwrapX && (cursor->X() + width * textsize > _width))
+				if (textwrapX && (ImageBuffer->X() + width * textsize > _width))
 				{
-					cursor->MoveY(height);
-					cursor->X(0);
+					ImageBuffer->MoveY(height);
+					ImageBuffer->X(0);
 				}
-				if (textwrapY && (cursor->Y() >= (int32_t)_height)) cursor->Y(0);
-				cursor->MoveX(drawChar(uniCode, cursor->X(), cursor->Y(), textfont));
+				if (textwrapY && (ImageBuffer->Y() >= (int32_t)_height)) ImageBuffer->Y(0);
+				ImageBuffer->MoveX(drawChar(uniCode, ImageBuffer->X(), ImageBuffer->Y(), textfont));
 			  }*///ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
 
 
@@ -1605,8 +1610,8 @@ namespace Device{
 			  else
 			  {
 				if(utf8 == '\n') {
-//				  cursor->X(0); //ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
-//				  cursor->MoveY((int16_t)textsize *
+//				  ImageBuffer->X(0); //ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
+//				  ImageBuffer->MoveY((int16_t)textsize *
 //							  (uint8_t)pgm_read_byte(&gfxFont->yAdvance)); //ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
 				} else {
 				  if (uniCode > pgm_read_word(&gfxFont->last )) return 1;
@@ -1621,16 +1626,16 @@ namespace Device{
 					int16_t xo = (int8_t)pgm_read_byte(&glyph->xOffset);
 
 
-					if(textwrapX && ((cursor->X() + textsize * (xo + w)) > _width)) {
+					if(textwrapX && ((ImageBuffer->X() + textsize * (xo + w)) > _width)) {
 					  // Drawing character would go off right edge; wrap to new line
-					  cursor->X(0);
-					  cursor->MoveY((int16_t)textsize *
+					  ImageBuffer->X(0);
+					  ImageBuffer->MoveY((int16_t)textsize *
 								  (uint8_t)pgm_read_byte(&gfxFont->yAdvance));
 					}
-					if (textwrapY && (cursor->Y() >= (int32_t)_height)) cursor->Y(0);
-					drawChar(cursor->X(), cursor->Y(), uniCode, textcolor, textbgcolor, textsize);
+					if (textwrapY && (ImageBuffer->Y() >= (int32_t)_height)) ImageBuffer->Y(0);
+					drawChar(ImageBuffer->X(), ImageBuffer->Y(), uniCode, textcolor, textbgcolor, textsize);
 				  }
-				  cursor->MoveX(pgm_read_byte(&glyph->xAdvance) * (int16_t)textsize);
+				  ImageBuffer->MoveX(pgm_read_byte(&glyph->xAdvance) * (int16_t)textsize);
 
 				  *///ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
 				}
@@ -2013,7 +2018,7 @@ namespace Device{
 				  if (size == 1) // default size
 				  {
 					for (int8_t j = 0; j < 8; j++) {
-					  if (line & 0x1) drawPixel(x + i, y + j, color);
+//					  if (line & 0x1) drawPixel(x + i, y + j, color);
 					  line >>= 1;
 					}
 				  }
@@ -2178,6 +2183,12 @@ namespace Device{
 			}
 
 
+			_CoordsType Font::__width(){
+				return 2000;
+			}
+			_CoordsType Font::__height(){
+				return 2000;
+			}
 
 
 

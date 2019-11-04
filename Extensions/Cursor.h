@@ -55,8 +55,10 @@
 									MoveY(_CoordsType coord),		//	Move Y coordinate by coord
 									MoveZ(_CoordsType coord);		//	Move Z coordinate by coord
 
-					virtual void Draw();
-					virtual void Redraw();
+					//virtual
+					void Draw();
+					//virtual
+					void Redraw();
 
 				private:
 					_CoordsType			x, y, z;					//Cursor's coordinates

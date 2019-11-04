@@ -154,7 +154,7 @@ namespace Device{
 		  _CoordsType  _iwidth, _iheight; // Sprite memory image bit width and height (swapped during rotations)
 		  _CoordsType  _dwidth, _dheight; // Real display width and height (for <8bpp Sprites)
 		  int32_t  _bitwidth;         // Sprite image bit width for drawPixel (for <8bpp Sprites, not swapped)
-		  c_Cursor* cursor;
+		  Device::Display::Cursor::c_Cursor* cursor;
 		};
 
 	}

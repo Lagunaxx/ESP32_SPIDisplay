@@ -20,14 +20,22 @@
 		#include <SPIFFS.h>
 	#endif
 
-	#include "../../ESP32_SPIDisplay.h"
+	#include <ESP32_SPIDisplay.h>
 	#include <Extensions/Cursor.h>
+	#include <Extensions/cBuffer.h>
 
 	#include "FontTypes.h"
 
 	namespace Device{
 		namespace Display{
 			namespace Graphics{
+
+			class c_TextBuffer: public Device::Display::Cursor::c_Cursor, public Device::Memory::c_Buffer{
+
+			};
+
+
+
 
 				using namespace Cursor;
 
@@ -216,7 +224,7 @@
 				};
 
 
-				class Font{
+				class Font: private Device::Display::Cursor::c_Cursor{
 				 public:
 					Font();
 					virtual ~Font();
@@ -239,18 +247,9 @@
 					bool     textwrapX, textwrapY;   // If set, 'wrap' text at right and optionally bottom edge of display
 
 					uint16_t fontsLoaded(void);
-					virtual void		drawPixel(int32_t x, int32_t y, uint32_t color),
-										drawFastHLine(int32_t x, int32_t y, int32_t w, uint32_t color),
-										drawRect(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t color),
-										fillScreen(uint32_t color);
 
-
-					virtual  void     startWrite(void);                         // Begin SPI transaction
-	//				  void     writeColor(uint16_t color, uint32_t len); // Write colours without transaction overhead
-					virtual  void     endWrite(void);                           // End SPI transaction
-
-					virtual c_Cursor* Cursor();
-					virtual void Cursor(c_Cursor& _cursor);
+					//virtual c_Cursor* Cursor();
+					//virtual void Cursor(c_Cursor& _cursor);
 					virtual _CoordsType __width();
 					virtual _CoordsType __height();
 
@@ -315,7 +314,7 @@
 
 				  uint16_t alphaBlend(uint8_t alpha, uint16_t fgc, uint16_t bgc);
 
-				  virtual void drawGlyph(uint16_t code, c_Cursor &cursor);
+				  virtual void drawGlyph(uint16_t code);//, c_Cursor &cursor);
 
 				  void     showFont(uint32_t td, Device::Display::Screen &display);
 
@@ -348,10 +347,12 @@
 					uint8_t  glyph_ab,   // glyph delta Y (height) above baseline
 						   glyph_bb;   // glyph delta Y (height) below baseline
 
+					c_TextBuffer *ImageBuffer;
+
 
 				};
 			}
 		}
 	}
 
-#endif
+#endif /* DEVICE_DISPLAY_GRAPHICS_FONT_H */

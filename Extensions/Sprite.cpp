@@ -52,7 +52,7 @@ namespace Device{
 		  _sw=0;
 		  _sy=0;
 		  _img8_1=0;
-		  cursor=new c_Cursor();
+		  cursor=new Device::Display::Cursor::c_Cursor();
 
 		  //this->cursor->Y(0); this->cursor->X(0); // Text cursor position
 		}

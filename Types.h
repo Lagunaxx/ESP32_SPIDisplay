@@ -10,52 +10,68 @@
 
 #include <Arduino.h>
 
-		struct upng_s_rgb16b{
-			int b:5;
-			int g:6;
-			int r:5;
-			int null : 16;
-		};
-		struct upng_s_rgb18b{
-			int b:6;
-			int g:6;
-			int r:6;
-			int null:14;
-		};
-		struct upng_s_rgb24b{
-			int r:8;
-			int g:8;
-			int b:8;
-			int null:8;
-		};
 
-		struct upng_s_rgba32b{
-			upng_s_rgb24b rgb;
-			byte alpha;
-		};
 
 namespace Device{
 	namespace Display{
 
-		#ifndef DEVICE_DISPLAY_DRIVER_VERSION
-			#define DEVICE_DISPLAY_DRIVER_VERSION "Version not defined!"
-			#warning "Display driver version not defined! need #define DEVICE_DISPLAY_DRIVER_VERSION \"version\""
-		#endif
+#ifndef DEVICE_DISPLAY_DRIVER_VERSION
+	#define DEVICE_DISPLAY_DRIVER_VERSION "Version not defined!"
+	#warning "Display driver version not defined! need #define DEVICE_DISPLAY_DRIVER_VERSION \"version\""
+#endif
 
-		// define how much bits coordinate will consists type
-		#ifdef COORDINATES_8b
-			typedef int8_t T_DispCoords;
+// define how much bits coordinate will consists type
+#ifdef COORDINATES_8b
+	typedef int8_t T_DispCoords;
+#else
+	#ifdef COORDINATES_16b
+		typedef int16_t T_DispCoords;
+	#else
+		#ifdef COORDINATES_32b
+			typedef int32_t T_DispCoords;
 		#else
-			#ifdef COORDINATES_16b
-				typedef int16_t T_DispCoords;
-			#else
-				#ifdef COORDINATES_32b
-					typedef int32_t T_DispCoords;
-				#else
-					typedef int64_t T_DispCoords; //by default using 64bit coordinates
-				#endif
-			#endif
+			typedef int64_t T_DispCoords; //by default using 64bit coordinates
 		#endif
+	#endif
+#endif
+
+
+	struct upng_s_rgb16b{
+		int b:5;
+		int g:6;
+		int r:5;
+		int null : 16;
+	};
+	struct upng_s_rgb18b{
+		int b:6;
+		int g:6;
+		int r:6;
+		int null:14;
+	};
+	struct upng_s_rgb24b{
+		int r:8;
+		int g:8;
+		int b:8;
+		int null:8;
+	};
+
+	struct upng_s_rgba32b{
+		upng_s_rgb24b rgb;
+		byte alpha;
+	};
+
+	struct st_Size2D{
+		T_DispCoords width;
+		T_DispCoords height;
+	};
+
+	struct st_Size3D{
+		T_DispCoords width;
+		T_DispCoords height;
+		T_DispCoords deep;
+	};
+
+
 
 		// This structure allows sketches to retrieve the user setup parameters at runtime
 		// by calling getSetup(), zero impact on code size unless used, mainly for diagnostics
