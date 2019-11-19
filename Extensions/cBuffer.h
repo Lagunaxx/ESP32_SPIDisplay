@@ -16,14 +16,24 @@
 
 namespace Device {
 namespace Memory {
+namespace {
+#define CheckInit(_returnType) if (!Initialized()) return (_returnType) NULL;
+#define ListDimensions(_variable,_startvalue) for (uint _variable = _startvalue; _variable < dimensions; _variable++)
+
+}
 
 typedef enum cBuffer_Error{
 	CBUF_OK,			// All ok
 	CBUF_ERR_SRC,		// Source not initialized
 	CBUF_ERR_MALLOC,	// Memory didn't allocated
+	CBUF_ERR_BUFFER,	// Null-pointer in 'buffer' (buffer not initialized)
 	CBUF_ERR_NODIMENSIONS,	// Dimensions = 0 in initialization
+	CBUF_ERR_DIMENSIONS,	// Any other errors with dimensions
 	CBUF_ERR_NULLBUFFERSIZE,// Buffersize=0 (one of initialization units = 0)
+	CBUF_ERR_BUFFERSIZE,	// Any other errors with Buffersize
 	CBUF_ERR_OVERFLOW,	//Overflow dew copy (source buffer larger then destination
+	CBUF_ERR_SIZE,		// Error with sizes of any dimensions
+	CBUF_ERR_UNITSIZE,	// unitSize is NULL
 
 	CBUF_ERR_OTHER		// Any other error
 };
@@ -37,17 +47,29 @@ public:
 	c_Buffer(c_Buffer &&other);
 	//c_Buffer& operator=(const c_Buffer &other);
 	//c_Buffer& operator=(c_Buffer &&other);
+	c_Buffer& operator=(const c_Buffer &other(...));
 
 	void init(uint f_Dimensions, uint f_UnitSize, ...);
 	void remove();
 
+	bool Initialized();
+
 	bool set(void* value, ...); // Store value into specified position(...)
 	void * get(...);			// Returns value at specified position
 
-	cBuffer_Error setBuffer(c_Buffer* srcBuffer,void* position); // copy buffer to specified position
-	cBuffer_Error status;
+	cBuffer_Error Status();
+	uint getDimensions();
+	uint getUnitSize();
+	uint* copySize();
+	uint getSize(uint dimension);
+	bool copyBuffer(c_Buffer *srcBuffer, uint *srcPosition, uint *srcSize, uint *dstPosition); // copy source buffer or it's part to specified position in current buffer
+
+	void* copyBuffer(void *needPosition, void *needSize); // copy part of buffer
+	void* copyBuffer();	// Return copy of current buffer
 
 private:
+	cBuffer_Error status;
+
 	uint dimensions;
 	uint unitSize;
 	void *buffer;
