@@ -323,12 +323,12 @@ void* c_Buffer::copyBuffer(void *needPosition, void *needSize){
 	 */
 	CheckInit(void*);
 
-	uint64_t f_dstposition=0, f_srcposition=0, tmpsize=1, tmpsizecur, btsmove;
+	uint64_t f_srcpositionCurDim=0, f_srcposition=0, tmpsize=1, tmpsizecur, btsmove;
 	uint8_t tmpbyte;
-	uint datablocks=1;
+	uint64_t datablocks=1, totalblocks;
+	bool DecreaseNextDimension=false;
 	void *tmpSizePosition = (uint*)malloc((dimensions-1)*unitSize); //Contains positions for data-blocks (without first dimension)
 	uint8_t *posparam = (uint8_t *) malloc(unitSize); //Contains position of current dimension in dimensions listing
-	bool DecreaseNextDimension=false;
 	uint64_t lastmax=1, *curmax=(uint64_t*)malloc(unitSize);
 
 Serial.printf("\nstart list");
@@ -348,32 +348,36 @@ Serial.printf("\ntmpsizecur=%i,%i",(uint)tmpsizecur,(uint)tmpbyte);
 		if (i>0) datablocks*=tmpsizecur;
 
 		memcpy(posparam,needPosition+i*unitSize,unitSize);
-		if (i>0) memcpy(tmpSizePosition+(i-1)*unitSize,needSize+i*unitSize,unitSize); // fill counter for datablocks by dimensions
+//vv1		if (i>0) memcpy(tmpSizePosition+(i-1)*unitSize,needSize+i*unitSize,unitSize); // fill counter for datablocks by dimensions
+		if (i>0) memcpy(tmpSizePosition+(i-1)*unitSize,needPosition+i*unitSize,unitSize);
 
 	}
 Serial.printf("\ndatablocks=%i",(uint)datablocks); // blocks of data need to export
-
+	totalblocks = datablocks;
 	void *tmpbuf=malloc(tmpsize*unitSize); // allocate memory for new data
 
 		f_srcposition = 0;//1;
 		memcpy (&f_srcposition,needPosition,unitSize);
-		f_dstposition = 0;
+		f_srcpositionCurDim = 0;
 
 	while ( datablocks > 0){
 Serial.printf("\n\n");
 
-f_srcposition = 0;
-memcpy (&f_srcposition,needPosition,unitSize);
-
+		f_srcposition = 0;
+		memcpy (&f_srcposition,needPosition,unitSize);
+Serial.printf("\nf_srcpos()=%i",(uint)f_srcposition);
 		memcpy(curmax,size,unitSize);
 		lastmax=(uint64_t)*curmax;
 		ListDimensions(i,1){
 			// Count position for current datablock
-/*			memcpy(posparam,tmpSizePosition+(i-1)*unitSize, unitSize);
-			f_srcposition += uint64_t(*posparam)*lastmax;
-			memcpy(curmax,needSize+i*unitSize,unitSize);
-*/
-			memcpy(posparam,tmpSizePosition+(i-1)*unitSize, unitSize);
+			memcpy (&f_srcpositionCurDim,needPosition+i*unitSize,unitSize);
+
+
+//			memcpy(posparam,needPosition+i*unitSize, unitSize);//v3
+//			memcpy(posparam,f_srcpositionCurDim+tmpSizePosition+(i-1)*unitSize, unitSize);//v2
+			memcpy(posparam,tmpSizePosition+(i-1)*unitSize, unitSize); //v1
+
+//			f_srcposition += uint64_t(*posparam)*lastmax;
 			f_srcposition += uint64_t(*posparam)*lastmax;
 			memcpy(curmax,size+i*unitSize,unitSize);
 
@@ -383,16 +387,8 @@ Serial.printf("\i=%i, lastmax=%i,posparam=%i,size+i*unitSize=%i",i,(uint)lastmax
 		}
 Serial.printf("\nf_srcpos=%i",(uint)f_srcposition);
 
-//			f_dstposition *= *(needSize+i);
-//Serial.printf("\n*(tmpSizePosition+%i)=%i",i,(uint)*(tmpSizePosition+i));
-//		}
-		//f_srcposition += (uint)*needSize;
-//Serial.printf("\nf_srcposition=%i",(uint)f_srcposition);
-//		memcpy((tmpbuf+f_dstposition),(buffer+f_srcposition),(unitSize*(*needSize)));
-//Serial.printf("\tvalue = %i",*((uint *)buffer+f_srcposition));
-
 		ListDimensions(i,1){
-			// Decrease position we need by dimensions - ToDo: nop.. mast increase by 1 to needSize[dimension] = ready!
+			// Decrease position we need by dimensions - ToDo: nop.. mast increase by 1 to needSize[dimension] = +done!
 
 			// make calculation of: *(tmpSizePosition+i) +=1;
 			for (uint8_t tmp=0;tmp<unitSize;tmp++){
@@ -419,6 +415,15 @@ Serial.printf("\nf_srcpos=%i",(uint)f_srcposition);
 			if (!DecreaseNextDimension)break; // break if we do not need to decrease next dimension
 
 		}
+
+		// Now we have f_srcpos, calculated above for current datablock.
+		// Next we need to copy part of buffer from calclated position with size specified in first dimension of needSize
+		// Starting position = f_srcpos*unitSize
+		// Destination f_dstpos mast be calculated depends on datablock and size specified in first dimension of needSize
+		tmpsize=0;
+		memcpy(&tmpsize,needSize,unitSize);
+		memcpy(tmpbuf+(totalblocks-datablocks)*tmpsize*unitSize,buffer+f_srcposition*unitSize,tmpsize*unitSize);
+
 
 		datablocks--;
 	}
