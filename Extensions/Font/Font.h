@@ -21,6 +21,7 @@
 	#endif
 
 	#include <ESP32_SPIDisplay.h>
+	#include <Extensions/Graphics.h>
 	#include <Extensions/Cursor.h>
 	#include <Extensions/cBuffer.h>
 
@@ -31,6 +32,10 @@
 			namespace Graphics{
 
 			class c_TextBuffer: public Device::Display::Cursor::c_Cursor, public Device::Memory::c_Buffer{
+				/*
+				 * Class for buffering text's image. Gathering info from font and but all in rgb-buffer for using with graphics next.
+				 */
+
 
 			};
 
@@ -348,6 +353,7 @@
 						   glyph_bb;   // glyph delta Y (height) below baseline
 
 					c_TextBuffer *ImageBuffer;
+					//Device::Memory::c_Buffer *ImageBuffer;
 
 
 				};

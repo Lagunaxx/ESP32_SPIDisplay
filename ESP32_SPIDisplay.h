@@ -74,6 +74,10 @@
 	#error "\"Types.h\" do not loaded!"
 #endif
 
+#ifdef DEVICE_DISPLAY_USE_BUFFER
+#include <Extensions/cBuffer.h>
+#endif
+
 /*********************************************************
  * Starting Display driver declaration                   *
  *********************************************************/
@@ -103,7 +107,7 @@ public:
 	void setRotation(uint8_t r),		// Set display rotation
 	invertDisplay(boolean i);	// Set/reset color inversion
 
-protected:
+//protected:
 
 	void getSetup(T_DisplaySettings &tft_settings), // Sketch provides the instance to populate
 	setWindow(T_DispCoords xs, T_DispCoords ys, T_DispCoords xe,
@@ -120,7 +124,7 @@ protected:
 			writeColor(uint16_t color, uint32_t len); // Write colors without transaction overhead
 
 	// These are virtual so the TFT_eSprite class can override them with sprite specific functions
-	virtual void drawPixel(T_DispCoords x, T_DispCoords y, uint32_t color),
+	void drawPixel(T_DispCoords x, T_DispCoords y, uint32_t color),
 			drawLine(T_DispCoords x0, T_DispCoords y0, T_DispCoords x1,
 					T_DispCoords y1, uint32_t color), drawFastVLine(
 					T_DispCoords x, T_DispCoords y, T_DispCoords h,
@@ -232,12 +236,15 @@ private:
 	bool _swapBytes; // Swap the byte order for TFT pushImage()
 //	bool locked, inTransaction; // Transaction and mutex lock flags for ESP32
 //	bool _booted;    // init() or begin() has already run once
+	#ifdef DEVICE_DISPLAY_USE_BUFFER
+	Device::Memory::c_Buffer *vBuffer;
+	#endif
 
 };
 
 // End of class Screen
 // Next code for initializing class in memory
-static Screen *Driver;
+extern Screen* Display;
 void init(T_DispCoords _W, T_DispCoords _H, uint8_t R
 #ifdef ST7735_DRIVER
 		, uint8_t tc
@@ -251,7 +258,7 @@ void init(T_DispCoords _W, T_DispCoords _H, uint8_t R
 						, uint8_t tc
 #endif
 		);
-void remove(); // */
+//void remove(); // */
 }
 }
 #endif

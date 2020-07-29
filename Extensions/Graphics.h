@@ -10,11 +10,12 @@
 
 #include "../ESP32_SPIDisplay.h"
 
+
 namespace Device {
 	namespace Display {
 		namespace Graphics {
 
-			class Graphics: private Screen {
+			class Graphics: public Screen {
 			public:
 				Graphics();
 				virtual ~Graphics();
@@ -51,19 +52,18 @@ namespace Device {
 			int16_t getPivotY(void);
 			void setPivot(T_DispCoords x, T_DispCoords y);
 
+			protected:
 			uint32_t bitmap_fg, bitmap_bg;
 			T_DispCoords _xpivot;   // x pivot point coordinate
 			T_DispCoords _ypivot;   // y pivot point coordinate
 
-
 			};
 
-/*	ToDo: Do not work due memory problem
-			  static Graphics* Graph;
+			  extern Graphics* Graph;
 			  bool init(uint32_t color = TFT_BLACK);
-			  //bool init();
+			  bool init();
 			  bool remove();
-*/
+
 		} /* namespace Graphics */
 	} /* namespace Display */
 } /* namespace Device */

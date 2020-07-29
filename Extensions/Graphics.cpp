@@ -11,6 +11,8 @@ namespace Device {
 	namespace Display {
 		namespace Graphics {
 
+		Graphics* Graph;
+
 		/***************************************************************************************
 		** Function name:           init
 		** Description:             initialize Graphics module
@@ -25,15 +27,16 @@ namespace Device {
 		** 		true - Graph initialized;
 		** 		false - Graph do not initialized
 		***************************************************************************************/
-		/*	ToDo: Do not work due memory problem		bool init(uint32_t background_color){
+		// / *	ToDo: Do not work due memory problem
+		bool init(uint32_t background_color){
 			Graph=new Graphics();
 			if (Graph==0) return false;
 			Graph->fillScreen(background_color);
 			return true;
-		};// */
-/*		bool init(){
+		};
+		bool init(){
 			return init(TFT_BLACK);
-		}//*/
+		}
 
 		/***************************************************************************************
 		** Function name:           remove
@@ -45,12 +48,12 @@ namespace Device {
 		** 		true - Graph removed;
 		** 		false - Graph was not initialized (null-pointer)
 		***************************************************************************************/
-		/*	ToDo: Do not work due memory problem		bool remove(){
+		bool remove(){
 			if (Graph==0) return false;
 			delete(Graph);
 			return true;
 		}
-// */
+
 			Graphics::Graphics() {
 				// TODO Auto-generated constructor stub
 				bitmap_fg = TFT_WHITE;

@@ -96,7 +96,7 @@ inline void spi_end_read(void) {
 
 uint8_t Screen::tabcolor, Screen::colstart, Screen::rowstart;
 
-//Screen* Driver;
+Screen* Display;
 
 /*******************************************************************************
  *                                                                             *
@@ -122,13 +122,13 @@ void init(T_DispCoords _W, T_DispCoords _H, uint8_t _R
  , uint8_t tc
  #endif
 		) {
-	Driver = new Screen(_W, _H);
+	Display = new Screen(_W, _H);
 #ifdef ST7735_DRIVER
  Driver->init(tc);
  #else
-	Driver->init();
+ Display->init();
 #endif
-	Driver->setRotation(_R);
+ Display->setRotation(_R);
 }
 void init(uint8_t R
 #ifdef ST7735_DRIVER
@@ -154,7 +154,7 @@ void init(
 			);
 }
 void remove() {
-	delete (Driver);
+	delete (Display);
 }
 // */
 void Screen::PrintError(const char message[]) {
@@ -247,6 +247,10 @@ Screen::Screen(T_DispCoords w, T_DispCoords h) // @suppress("Class members shoul
 	sclkpinmask = 0;
 
 	lastColor = 0xFFFF;
+
+	#ifdef DEVICE_DISPLAY_USE_BUFFER
+	vBuffer = new Device::Memory::c_Buffer(2,sizeof(uint),w,h);
+	#endif
 
 }
 
@@ -637,6 +641,20 @@ uint32_t Screen::readcommand32(uint8_t cmd_function, uint8_t index) {
  ** Description:             Read 565 pixel colors from a pixel
  ***************************************************************************************/
 uint32_t Screen::readPixel(T_DispCoords x0, T_DispCoords y0) {
+
+	#ifdef DEVICE_DISPLAY_USE_BUFFER //'read from buffer'
+	//read data from buffer
+	uint *Data=(uint *)vBuffer->get(x0,y0);
+
+	uint8_t r=(uint8_t)((*Data)>>11),
+			g=(uint8_t)((*Data-((uint)r<<11))>>5),
+			b=(uint8_t)(*Data-((uint)r<<11)-((uint)g<<5));
+
+
+	free(Data);
+	return (((uint32_t) 0) | (r << 16) | (g << 8) | b); //retuns 0x00rrggbb;color565(r, g, b);
+	#else
+
 #if defined(ESP32_PARALLEL)
 
   readAddrWindow(x0, y0, 1, 1); // Sets CS low
@@ -718,6 +736,8 @@ uint32_t Screen::readPixel(T_DispCoords x0, T_DispCoords y0) {
 	return (((uint32_t) 0) | (r << 16) | (g << 8) | b); //retuns 0x00rrggbb;color565(r, g, b);
 
 #endif
+
+	#endif //for 'read from buffer'
 }
 
 #ifdef ESP32_PARALLEL
@@ -785,6 +805,16 @@ void Screen::readRect(T_DispCoords x, T_DispCoords y, T_DispCoords w,
 		T_DispCoords h, uint16_t *data) {
 	if ((x > _width) || (y > _height) || (w == 0) || (h == 0))
 		return;
+	st_Size2D f_pos,f_sz;
+	f_pos.width=x;
+	f_pos.height=y;
+	f_sz.width=w;
+	f_sz.height=h;
+
+#ifdef DEVICE_DISPLAY_USE_BUFFER //'read from buffer'
+//read data from buffer
+data=(uint16_t *)vBuffer->copyBuffer((void*)&f_pos,(void*)&f_sz);
+#endif
 
 #if defined(ESP32_PARALLEL)
 
@@ -1000,6 +1030,12 @@ void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
 			data += w;
 		}
 		SPIEndWrite();
+
+#ifdef DEVICE_DISPLAY_USE_BUFFER //'read from buffer'
+//write data from buffer
+//vBuffer->copyBuffer((void*)&f_pos,(void*)&f_sz);
+#endif
+
 	} else {
 		//calling output: Error, SPI is buisy!
 		PrintError("[pushImage] Error: SPI is buisy");
@@ -1082,6 +1118,10 @@ void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
 			data += w;
 		}
 		SPIEndWrite();
+#ifdef DEVICE_DISPLAY_USE_BUFFER //'read from buffer'
+//write data from buffer
+//data=(uint16_t *)vBuffer->copyBuffer((void*)&f_pos,(void*)&f_sz);
+#endif
 	} else {
 		PrintError("[pushImage]Error: SPI is buisy!");
 	}
@@ -1344,6 +1384,10 @@ void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
 			}
 		}
 		SPIEndWrite();
+#ifdef DEVICE_DISPLAY_USE_BUFFER //'read from buffer'
+//write data from buffer
+//data=(uint16_t *)vBuffer->copyBuffer((void*)&f_pos,(void*)&f_sz);
+#endif
 	} else {
 		PrintError("[pushImage]Error: SPI is buisy!");
 	}
@@ -1492,6 +1536,10 @@ void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
 			}
 		}
 		SPIEndWrite();
+#ifdef DEVICE_DISPLAY_USE_BUFFER //'read from buffer'
+//write data from buffer
+//data=(uint16_t *)vBuffer->copyBuffer((void*)&f_pos,(void*)&f_sz);
+#endif
 	} else {
 		PrintError("[pushImage]Error: SPI is buisy!");
 	}
@@ -1521,7 +1569,12 @@ bool Screen::getSwapBytes(void) {
 // If w and h are 1, then 1 pixel is read, *data array size must be 3 bytes per pixel
 void Screen::readRectRGB(T_DispCoords x0, T_DispCoords y0, T_DispCoords w,
 		T_DispCoords h, uint8_t *data) {
-#if defined(ESP32_PARALLEL)
+#ifdef DEVICE_DISPLAY_USE_BUFFER //'read from buffer'
+//read data from buffer
+//data=(uint16_t *)vBuffer->copyBuffer((void*)&f_pos,(void*)&f_sz);
+#endif
+
+	#if defined(ESP32_PARALLEL)
 
 		  // ESP32 parallel bus supported yet
 
@@ -2222,6 +2275,11 @@ void Screen::drawPixel(T_DispCoords x, T_DispCoords y, uint32_t color) {
 	tft_Write_16(color);
 
 	spi_end();
+
+#ifdef DEVICE_DISPLAY_USE_BUFFER //'read from buffer'
+//read data from buffer
+//data=(uint16_t *)vBuffer->copyBuffer((void*)&f_pos,(void*)&f_sz);
+#endif
 //		SPIEndWrite();
 //	} else {
 //		PrintError("[]Error: SPI is buisy!");
@@ -2248,6 +2306,10 @@ void Screen::pushColor(uint16_t color) {
 	tft_Write_16(color);
 
 	spi_end();
+#ifdef DEVICE_DISPLAY_USE_BUFFER //'read from buffer'
+//read data from buffer
+//data=(uint16_t *)vBuffer->copyBuffer((void*)&f_pos,(void*)&f_sz);
+#endif
 }
 
 /***************************************************************************************
@@ -2270,6 +2332,10 @@ void Screen::pushColor(uint16_t color, uint32_t len) {
 #endif
 
 		SPIEndWrite();
+#ifdef DEVICE_DISPLAY_USE_BUFFER //'read from buffer'
+//read data from buffer
+//data=(uint16_t *)vBuffer->copyBuffer((void*)&f_pos,(void*)&f_sz);
+#endif
 	} else {
 		PrintError("[]Error: SPI is buisy!");
 	}
