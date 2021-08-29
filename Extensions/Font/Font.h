@@ -21,9 +21,10 @@
 	#endif
 
 	#include <ESP32_SPIDisplay.h>
-	#include <Extensions/Graphics.h>
 	#include <Extensions/Cursor.h>
 	#include <Extensions/cBuffer.h>
+	#include <Extensions/Graphics.h>
+	//#include <Extensions/Sprite.h>
 
 	#include "FontTypes.h"
 
@@ -31,11 +32,20 @@
 		namespace Display{
 			namespace Graphics{
 
-			class c_TextBuffer: public Device::Display::Cursor::c_Cursor, public Device::Memory::c_Buffer{
-				/*
-				 * Class for buffering text's image. Gathering info from font and but all in rgb-buffer for using with graphics next.
-				 */
+			class c_TextBuffer: public Device::Display::Cursor::c_Cursor{
+			public:
+				c_TextBuffer();
+				c_TextBuffer(uint16_t length);
+				~c_TextBuffer();
 
+				T_DispCoords GetX(),
+						GetY();
+				void SetX(T_DispCoords coord),
+						SetY(T_DispCoords coord);
+
+			private:
+				T_DispCoords x, y;
+				Device::Memory::c_Buffer *buffer;
 
 			};
 
@@ -229,7 +239,7 @@
 				};
 
 
-				class Font: private Device::Display::Cursor::c_Cursor{
+				class Font{
 				 public:
 					Font();
 					virtual ~Font();
@@ -255,8 +265,8 @@
 
 					//virtual c_Cursor* Cursor();
 					//virtual void Cursor(c_Cursor& _cursor);
-					virtual _CoordsType __width();
-					virtual _CoordsType __height();
+					//virtual T_DispCoords __width();
+					//virtual T_DispCoords __height();
 
 
 					virtual T_DispCoords  drawChar(uint16_t uniCode, T_DispCoords x, T_DispCoords y, uint8_t font),
@@ -290,7 +300,7 @@
 								  // Set or get an arbitrary library attribute or configuration option
 								  void     setAttribute(uint8_t id = 0, uint8_t a = 0);
 								  uint8_t  getAttribute(uint8_t id = 0);
-								  uint32_t _textcolor(), _textbgcolor();
+								  uint32_t _textcolor(), _textbgcolor(); //ToDo: text mast be with transparent background
 								  uint8_t _textsize();
 
 									T_DispCoords  drawNumber(long long_num, T_DispCoords poX, T_DispCoords poY, uint8_t font),
@@ -319,31 +329,36 @@
 
 				  uint16_t alphaBlend(uint8_t alpha, uint16_t fgc, uint16_t bgc);
 
-				  virtual void drawGlyph(uint16_t code);//, c_Cursor &cursor);
+				  virtual void drawGlyph(uint16_t code, T_DispCoords x, T_DispCoords y);//, c_Cursor &cursor);
 
 				  void     showFont(uint32_t td, Device::Display::Screen &display);
 
+				 protected:
+				  uint16_t decodeUTF8(uint8_t *buf, uint16_t *index, uint16_t remaining);
+				  uint16_t decodeUTF8(uint8_t c);
 
 				  private:
-				  uint32_t textcolor, textbgcolor;
+				  	  uint32_t textcolor, textbgcolor;
 
 
-				  uint8_t  textfont,  // Current selected font
-						   textsize,  // Current font size multiplier
-						   textdatum; // Text reference datum
+				  	uint8_t  textfont,  // Current selected font
+							textsize,  // Current font size multiplier
+							textdatum; // Text reference datum
 
 
-				  void     loadMetrics(uint16_t gCount);
-				  uint32_t readInt32(void);
+					void     loadMetrics(uint16_t gCount);
+					uint32_t readInt32(void);
 
-				  fs::FS   &fontFS = SPIFFS;
-				  bool     spiffs = true;
+					fs::FS   &fontFS = SPIFFS;
+					bool     spiffs = true;
+
+					bool bgfill = false; // fill background with bgcolor while printing
 
 				#ifdef LOAD_GFXFF
-				  GFXfont  *gfxFont;
+					GFXfont  *gfxFont;
 				#endif
-				  uint8_t  decoderState = 0;   // UTF8 decoder state
-				  uint16_t decoderBuffer;      // Unicode code-point buffer
+					uint8_t  decoderState = 0;   // UTF8 decoder state
+					uint16_t decoderBuffer;      // Unicode code-point buffer
 					bool     _cp437;     // If set, use correct CP437 charset (default is ON)
 					bool     _utf8;      // If set, use UTF-8 decoder in print stream 'write()' function (default ON)
 					T_DispCoords  padX; // Padding (from top, from bottom, from left, from tight)
@@ -353,7 +368,6 @@
 						   glyph_bb;   // glyph delta Y (height) below baseline
 
 					c_TextBuffer *ImageBuffer;
-					//Device::Memory::c_Buffer *ImageBuffer;
 
 
 				};

@@ -1,6 +1,10 @@
  // Coded by Bodmer 10/2/18, see license in root directory.
  // This is part of the Screen class and is associated with anti-aliased font functions
  
+/***************************************************************************************
+** Function name:
+** Description:
+***************************************************************************************/
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // New anti-aliased (smoothed) font functions added below
@@ -27,15 +31,15 @@ namespace Device{
 		gBitmap = NULL;   //file pointer to greyscale bitmap
 		fontLoaded = false; // Flags when a anti-aliased font is loaded
 		fontFile = new fs::File();
-		textwrapX=true;
+		textwrapX=false;
 		textwrapY=false;
 		textbgcolor=TFT_BLACK;
-		textdatum=TL_DATUM;
-		textfont=1;
-		textcolor=TFT_WHITE;
+		textdatum=0;
+		textfont=0;
+		textcolor=0;
 		decoderBuffer=0;
 		gfxFont=0;
-		textsize=1;
+		textsize=0;
 		_cp437    = true;
 		_utf8     = true;
 		  isDigits   = false;   // No bounding box adjustment
@@ -46,7 +50,7 @@ namespace Device{
 		  glyph_bb=0;
 		  glyph_ab=0;
 
-		  ImageBuffer=new c_TextBuffer();//Device::Memory::c_Buffer();//
+		  ImageBuffer=new c_TextBuffer();
 
 #ifdef LOAD_GLCD
   fontsloaded  = 0x0002; // Bit 1 set
@@ -382,7 +386,7 @@ namespace Device{
 
 		  return c; // fall-back to extended ASCII
 		}
-		*/
+//		*/
 
 		/***************************************************************************************
 		** Function name:           decodeUTF8
@@ -440,7 +444,7 @@ namespace Device{
 		  decoderState = 0;
 		  return (uint16_t)c; // fall-back to extended ASCII
 		}
-		*/
+//		*/
 
 
 
@@ -506,26 +510,28 @@ namespace Device{
 
 		/***************************************************************************************
 		** Function name:           drawGlyph
-		** Description:             Write a character to the TFT cursor position
+		** Description:             Write a character to the position
 		*************************************************************************************x*/
 		// Expects file to be open
-		void Font::drawGlyph(uint16_t code)//, c_Cursor &cursor)
+		void Font::drawGlyph(uint16_t code, T_DispCoords x, T_DispCoords y)//, c_Cursor &cursor)
 		{
-			_CoordsType cursor_x = ImageBuffer->X();
-			_CoordsType cursor_y = ImageBuffer->Y();
-
+			//_CoordsType cursor_x = x;
+			//_CoordsType cursor_y = y;
+#ifndef FONT_SCREEN_SCROLL
+#ifdef FONT_SCREEN_VROLL
+#endif
 		  if (code < 0x21)
 		  {
 			if (code == 0x20) {
-			  cursor_x += gFont.spaceWidth;
-			  ImageBuffer->X(cursor_x);
+			  x += gFont.spaceWidth;
+			  //ImageBuffer->X(cursor_x);
 			  return;
 			}
 
 			if (code == '\n') {
-			  ImageBuffer->X(0);
-			  cursor_y += gFont.yAdvance;
-			  if (cursor_y >= __height()) cursor_y = 0;
+			  //ImageBuffer->X(0);
+			  y += gFont.yAdvance;
+			  if (y >= __height()) cursor_y = 0;
 			  ImageBuffer->Set(cursor_x,cursor_y);
 			  return;
 			}
@@ -540,12 +546,12 @@ namespace Device{
 		  if (found)
 		  {
 
-			if (textwrapX && (cursor_x + gWidth[gNum] + gdX[gNum] > Device::Display::Display->width()))
+			if (textwrapX && (cursor_x + gWidth[gNum] + gdX[gNum] > Device::Display::Driver->width()))
 			{
 			  cursor_y += gFont.yAdvance;
 			  cursor_x = 0;
 			}
-			if (textwrapY && ((cursor_y + gFont.yAdvance) >= Device::Display::Display->height())) cursor_y = 0;
+			if (textwrapY && ((cursor_y + gFont.yAdvance) >= Device::Display::Driver->height())) cursor_y = 0;
 			if (cursor_x == 0) cursor_x -= gdX[gNum];
 
 			fontFile->seek(gBitmap[gNum], fs::SeekSet); // This is taking >30ms for a significant position shift
@@ -575,11 +581,6 @@ namespace Device{
 //				startWrite();  // Re-start SPI for TFT transaction
 				//Serial.println("Not SPIFFS");
 			  }
-
-			  /*
-			   * ToDo: Modify pbuffer ( it contains 1 byte-per-pixel color,
-			   *  need to make function to reproduce this kind of byte-printing for Graphics driver)
-			   */
 
 			  for (int x = 0; x < gWidth[gNum]; x++)
 			  {
@@ -1046,10 +1047,11 @@ namespace Device{
 				break;
 			}
 			// Check coordinates are OK, adjust if not
+			// ToDo: add scrolling feature
 			if (poX < 0) poX = 0;
-//			if (poX+cwidth > Device::Display::Driver->width())   poX = Device::Display::Driver->width() - cwidth;
+			if (poX+cwidth > Device::Display::Driver->width())   poX = Device::Display::Driver->width() - cwidth;
 			if (poY < 0) poY = 0;
-//			if (poY+cheight-baseline> Device::Display::Driver->height()) poY = Device::Display::Driver->height() - cheight;
+			if (poY+cheight-baseline> Device::Display::Driver->height()) poY = Device::Display::Driver->height() - cheight;
 		  }
 
 
@@ -1076,7 +1078,7 @@ namespace Device{
 				// Add 1 pixel of padding all round
 				//cheight +=2;
 				//fillRect(poX+xo-1, poY - 1 - glyph_ab * textsize, cwidth+2, cheight, textbgcolor);
-//				fillRect(poX+xo, poY - glyph_ab * textsize, cwidth, cheight, textbgcolor); //ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
+				Device::Display::Graphics::Graph->fillRect(poX+xo, poY - glyph_ab * textsize, cwidth, cheight, textbgcolor); //ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
 			  }
 			  padding -=100;
 			}
@@ -1088,18 +1090,18 @@ namespace Device{
 		#ifdef SMOOTH_FONT
 		  if(fontLoaded)
 		  {
-//			if (textcolor!=textbgcolor) fillRect(poX, poY, cwidth, cheight, textbgcolor);//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
+			if (textcolor!=textbgcolor) Device::Display::Graphics::Graph->fillRect(poX, poY, cwidth, cheight, textbgcolor);//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
 			//drawLine(poX - 5, poY, poX + 5, poY, TFT_GREEN);
 			//drawLine(poX, poY - 5, poX, poY + 5, TFT_GREEN);
 			//fontFile = SPIFFS.open( _gFontFilename, "r");
 			if(!fontFile) return 0;
 
-//			ImageBuffer->Set(poX, poY);
+			ImageBuffer->Set(poX, poY);
 
 			while (n < len)
 			{
 			  uint16_t uniCode = decodeUTF8((uint8_t*)string, &n, len - n);
-//			  drawGlyph(uniCode, *cursor); //ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
+			  drawGlyph(uniCode);//, *cursor); //ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
 			}
 			sumX += cwidth;
 			//fontFile.close();
@@ -1134,17 +1136,17 @@ namespace Device{
 		#endif
 			switch(padding) {
 			  case 1:
-//				fillRect(padXc,poY,padX-cwidth,cheight, textbgcolor);//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
+				Device::Display::Graphics::Graph->fillRect(padXc,poY,padX-cwidth,cheight, textbgcolor);//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
 				break;
 			  case 2:
-//				fillRect(padXc,poY,(padX-cwidth)>>1,cheight, textbgcolor);//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
+				Device::Display::Graphics::Graph->fillRect(padXc,poY,(padX-cwidth)>>1,cheight, textbgcolor);//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
 				padXc = (padX-cwidth)>>1;
 				if (padXc>poX) padXc = poX;
-//				fillRect(poX - padXc,poY,(padX-cwidth)>>1,cheight, textbgcolor);//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
+				Device::Display::Graphics::Graph->fillRect(poX - padXc,poY,(padX-cwidth)>>1,cheight, textbgcolor);//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
 				break;
 			  case 3:
 				if (padXc>padX) padXc = padX;
-//				fillRect(poX + cwidth - padXc,poY,padXc-cwidth,cheight, textbgcolor);//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
+				Device::Display::Graphics::Graph->fillRect(poX + cwidth - padXc,poY,padXc-cwidth,cheight, textbgcolor);//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
 				break;
 			}
 		  }
@@ -1165,17 +1167,17 @@ namespace Device{
 			drawRect(poX,poY,sumX,cheight, TFT_GREEN);
 			switch(padding) {
 			  case 1:
-				drawRect(padXc,poY,padX-sumX,cheight, TFT_WHITE);
+				  Device::Display::Graphics::Graph->drawRect(padXc,poY,padX-sumX,cheight, TFT_WHITE);
 				break;
 			  case 2:
-				drawRect(padXc,poY,(padX-sumX)>>1, cheight, TFT_WHITE);
+				  Device::Display::Graphics::Graph->drawRect(padXc,poY,(padX-sumX)>>1, cheight, TFT_WHITE);
 				padXc = (padX-sumX)>>1;
 				if (padXc>poX) padXc = poX;
-				drawRect(poX - padXc,poY,(padX-sumX)>>1,cheight, TFT_WHITE);
+				Device::Display::Graphics::Graph->drawRect(poX - padXc,poY,(padX-sumX)>>1,cheight, TFT_WHITE);
 				break;
 			  case 3:
 				if (padXc>padX) padXc = padX;
-				drawRect(poX + sumX - padXc,poY,padXc-sumX,cheight, TFT_WHITE);
+				Device::Display::Graphics::Graph->drawRect(poX + sumX - padXc,poY,padXc-sumX,cheight, TFT_WHITE);
 				break;
 			}
 		  }
@@ -1665,17 +1667,12 @@ namespace Device{
 			  // Any UTF-8 decoding must be done before calling drawChar()
 			T_DispCoords Font::drawChar(uint16_t uniCode, T_DispCoords x, T_DispCoords y, uint8_t font)
 			{
-
-Serial.println("\ndrawChar.\n");
 			  if (!uniCode) return 0;
-Serial.println("\n!drawChar.\n");
+
 			  if (font==1)
 			  {
-Serial.println("\n font.\n");
 			#ifdef LOAD_GLCD
-Serial.println("\n Load_GLCD.\n");
 			  #ifndef LOAD_GFXFF
-Serial.println("\n !LOAD_GFXGG.\n");
 				drawChar(x, y, uniCode, textcolor, textbgcolor, textsize);
 				return 6 * textsize;
 			  #endif
@@ -1686,12 +1683,9 @@ Serial.println("\n !LOAD_GFXGG.\n");
 			#endif
 
 			#ifdef LOAD_GFXFF
-Serial.println("\n LOAD_GFXFF.\n");
 				drawChar(x, y, uniCode, textcolor, textbgcolor, textsize);
 				if(!gfxFont) { // 'Classic' built-in font
-Serial.println("\n!gfxFont.\n");
 				#ifdef LOAD_GLCD
-Serial.println("\n LOAD_GLCD.\n");
 				  return 6 * textsize;
 				#else
 				  return 0;
@@ -1712,10 +1706,8 @@ Serial.println("\n LOAD_GLCD.\n");
 				}
 			#endif
 			  }
-Serial.println("\n font!=1.\n");
 
 			  if ((font>1) && (font<9) && ((uniCode < 32) || (uniCode > 127))) return 0;
-Serial.println("\n font!=1 next.\n");
 
 			  T_DispCoords width  = 0;
 			  T_DispCoords height = 0;
@@ -1723,8 +1715,6 @@ Serial.println("\n font!=1 next.\n");
 			  uniCode -= 32;
 
 			#ifdef LOAD_FONT2
-Serial.println("\n LOAD_FONT2.\n");
-
 			  if (font == 2)
 			  {
 				flash_address = pgm_read_dword(&chrtbl_f16[uniCode]);
@@ -1737,11 +1727,6 @@ Serial.println("\n LOAD_FONT2.\n");
 			#endif
 
 			#ifdef LOAD_RLE
-Serial.println("\n LOAD_RLE.\n");
-Serial.printf("font=%i.\n", (uint) font);
-Serial.printf("unicode=%i.\n", (uint) uniCode);
-
-
 			  {
 				if ((font>2) && (font<9))
 				{
@@ -1750,8 +1735,6 @@ Serial.printf("unicode=%i.\n", (uint) uniCode);
 				  height= pgm_read_byte( &fontdata[font].height );
 				}
 			  }
-Serial.printf("\n w=%i h=%i.\n", (uint) width,(uint)height);
-
 			#endif
 
 			  int32_t w = width;
@@ -1761,21 +1744,31 @@ Serial.printf("\n w=%i h=%i.\n", (uint) width,(uint)height);
 
 			#ifdef LOAD_FONT2 // chop out code if we do not need it
 			  if (font == 2) {
-Serial.println("\n font==2 LOAD_FONT2.\n");
-
 				w = w + 6; // Should be + 7 but we need to compensate for width increment
 				w = w / 8;
-//				if (x + width * textsize >= (int16_t)_width) return width * textsize ;//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
-				if (x + width * textsize >= (int16_t)Device::Display::Display->width()) return width * textsize ;//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
 
-				if (textcolor == textbgcolor || textsize != 1) {
-				  //spi_begin();          // Sprite class can use this function, avoiding spi_begin()
-//				  inTransaction = true;//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
+#ifndef FONT_SCREEN_HROLL
+				// if printing char goes out of screen then return width of char
+				if (x + width * textsize >= (int16_t)Device::Display::Graphics::Graph->width()) return width * textsize ;
+#else
 
+#endif
+#ifndef FONT_SCREEN_SCROLL
+#ifndef FONT_SCREEN_VROLL
+				// if printing char goes out of screen then return width of char
+				if ( y - height * textsize < 0 ) return height * textsize ;
+				if ( y >= (int16_t)Device::Display::Graphics::Graph->height()) return 0;
+#else
+
+#endif
+#else
+
+#endif
+//				if (textcolor == textbgcolor || textsize != 1) {
+// ToDo remake for block write. Make transparent image with alpha channel and write with image writing function.
 				  for (int32_t i = 0; i < height; i++)
 				  {
-//					if (textcolor != textbgcolor) fillRect(x, pY, width * textsize, textsize, textbgcolor);//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
-					if (textcolor != textbgcolor) Device::Display::Graphics::Graph->fillRect(x, pY, width * textsize, textsize, textbgcolor);//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
+					 if (bgfill) if (textcolor != textbgcolor) Device::Display::Graphics::Graph->fillRect(x, pY, width * textsize, textsize, textbgcolor);
 
 					for (int32_t k = 0; k < w; k++)
 					{
@@ -1784,15 +1777,6 @@ Serial.println("\n font==2 LOAD_FONT2.\n");
 					  if (line) {
 						if (textsize == 1) {
 						  pX = x + k * 8;
-/*						  if (line & 0x80) drawPixel(pX, pY, textcolor);
-						  if (line & 0x40) drawPixel(pX + 1, pY, textcolor);
-						  if (line & 0x20) drawPixel(pX + 2, pY, textcolor);
-						  if (line & 0x10) drawPixel(pX + 3, pY, textcolor);
-						  if (line & 0x08) drawPixel(pX + 4, pY, textcolor);
-						  if (line & 0x04) drawPixel(pX + 5, pY, textcolor);
-						  if (line & 0x02) drawPixel(pX + 6, pY, textcolor);
-						  if (line & 0x01) drawPixel(pX + 7, pY, textcolor);*/
-
 						  if (line & 0x80) Device::Display::Graphics::Graph->drawPixel(pX, pY, textcolor);
 						  if (line & 0x40) Device::Display::Graphics::Graph->drawPixel(pX + 1, pY, textcolor);
 						  if (line & 0x20) Device::Display::Graphics::Graph->drawPixel(pX + 2, pY, textcolor);
@@ -1801,35 +1785,27 @@ Serial.println("\n font==2 LOAD_FONT2.\n");
 						  if (line & 0x04) Device::Display::Graphics::Graph->drawPixel(pX + 5, pY, textcolor);
 						  if (line & 0x02) Device::Display::Graphics::Graph->drawPixel(pX + 6, pY, textcolor);
 						  if (line & 0x01) Device::Display::Graphics::Graph->drawPixel(pX + 7, pY, textcolor);
-
 						}
 						else {
 						  pX = x + k * 8 * textsize;
-/*						  if (line & 0x80) fillRect(pX, pY, textsize, textsize, textcolor);
-						  if (line & 0x40) fillRect(pX + textsize, pY, textsize, textsize, textcolor);
-						  if (line & 0x20) fillRect(pX + 2 * textsize, pY, textsize, textsize, textcolor);
-						  if (line & 0x10) fillRect(pX + 3 * textsize, pY, textsize, textsize, textcolor);
-						  if (line & 0x08) fillRect(pX + 4 * textsize, pY, textsize, textsize, textcolor);
-						  if (line & 0x04) fillRect(pX + 5 * textsize, pY, textsize, textsize, textcolor);
-						  if (line & 0x02) fillRect(pX + 6 * textsize, pY, textsize, textsize, textcolor);
-						  if (line & 0x01) fillRect(pX + 7 * textsize, pY, textsize, textsize, textcolor);*/
+						  if (line & 0x80) Device::Display::Graphics::Graph->fillRect(pX, pY, textsize, textsize, textcolor);
+						  if (line & 0x40) Device::Display::Graphics::Graph->fillRect(pX + textsize, pY, textsize, textsize, textcolor);
+						  if (line & 0x20) Device::Display::Graphics::Graph->fillRect(pX + 2 * textsize, pY, textsize, textsize, textcolor);
+						  if (line & 0x10) Device::Display::Graphics::Graph->fillRect(pX + 3 * textsize, pY, textsize, textsize, textcolor);
+						  if (line & 0x08) Device::Display::Graphics::Graph->fillRect(pX + 4 * textsize, pY, textsize, textsize, textcolor);
+						  if (line & 0x04) Device::Display::Graphics::Graph->fillRect(pX + 5 * textsize, pY, textsize, textsize, textcolor);
+						  if (line & 0x02) Device::Display::Graphics::Graph->fillRect(pX + 6 * textsize, pY, textsize, textsize, textcolor);
+						  if (line & 0x01) Device::Display::Graphics::Graph->fillRect(pX + 7 * textsize, pY, textsize, textsize, textcolor);
 						}
 					  }
-					  // * ///ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
 					}
-					pY += textsize;
+//					pY += textsize;
 				  }
 
-//				  inTransaction = false;//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
-//				  spi_end();//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
-				}
-				else
+//				}
+/*				else
 				  // Faster drawing of characters and background using block write
 				{
-//				  spi_begin();//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
-
-//				  setWindow(x, y, x + width - 1, y + height - 1);//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
-
 				  uint8_t mask;
 				  for (int32_t i = 0; i < height; i++)
 				  {
@@ -1840,16 +1816,14 @@ Serial.println("\n font==2 LOAD_FONT2.\n");
 					  mask = 0x80;
 					  while (mask && pX) {
 						if (line & mask) {tft_Write_16(textcolor);}
-						else {tft_Write_16(textbgcolor);}
+						else {if (bgfill) tft_Write_16(textbgcolor);}
 						pX--;
 						mask = mask >> 1;
 					  }
 					}
 					if (pX) {tft_Write_16(textbgcolor);}
 				  }
-
-//				  spi_end();//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
-				}
+				} // */
 			  }
 
 			  #ifdef LOAD_RLE
@@ -1860,14 +1834,9 @@ Serial.println("\n font==2 LOAD_FONT2.\n");
 			#ifdef LOAD_RLE  //674 bytes of code
 			  // Font is not 2 and hence is RLE encoded
 			  {
-Serial.println("\n LOAD_RLE output.\n");
-
 				w *= height; // Now w is total number of pixels in the character
 				if ((textsize != 1) || (textcolor == textbgcolor)) {
-Serial.println("\n textsize!=1.\n");
-//				  if (textcolor != textbgcolor) fillRect(x, pY, width * textsize, textsize * height, textbgcolor);//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
-				  if (textcolor != textbgcolor) Device::Display::Graphics::Graph->fillRect(x, pY, width * textsize, textsize * height, textbgcolor);//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
-
+				  if (bgfill) if (textcolor != textbgcolor) Device::Display::Graphics::Graph->fillRect(x, pY, width * textsize, textsize * height, textbgcolor);//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
 				  int32_t px = 0, py = pY; // To hold character block start and end column and row values
 				  int32_t pc = 0; // Pixel count
 				  uint8_t np = textsize * textsize; // Number of pixels in a drawn pixel
@@ -1893,11 +1862,13 @@ Serial.println("\n textsize!=1.\n");
 					  }
 					  while (line--) { // In this case the while(line--) is faster
 						pc++; // This is faster than putting pc+=line before while()?
-//						setWindow(px, py, px + ts, py + ts);//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
+						setWindow(px, py, px + ts, py + ts);//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
+
+						Device::Display::Driver->pushColors(uint8_t *data, np);
 
 						if (ts) {
 						  tnp = np;
-						  while (tnp--) {tft_Write_16(textcolor);}
+						  while (tnp--) {tft_Write_16(textcolor);//pushColor(uint16_t color)} //pushColors
 						}
 						else {tft_Write_16(textcolor);}
 						px += textsize;
@@ -1918,26 +1889,18 @@ Serial.println("\n textsize!=1.\n");
 				else // Text colour != background && textsize = 1
 					 // so use faster drawing of characters and background using block write
 				{
-Serial.println("\n textsize==1.\n");
-				  //setWindow(x, y, x + width - 1, y + height - 1);//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
+//				  setWindow(x, y, x + width - 1, y + height - 1);//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
 
 			#ifdef RPI_WRITE_STROBE
-Serial.println("\n RPI_WRITE_STROBE.\n");
 				  uint8_t textcolorBin[] = { (uint8_t) (textcolor >> 8), (uint8_t) textcolor };
 				  uint8_t textbgcolorBin[] = { (uint8_t) (textbgcolor >> 8), (uint8_t) textbgcolor };
 			#endif
 
 				  // Maximum font size is equivalent to 180x180 pixels in area
-Serial.printf("\n w=%i.\n", (uint) w);
-
 				  while (w > 0)
 				  {
-Serial.printf("w=%i.\n", (uint) w);
-
 					line = pgm_read_byte((uint8_t *)flash_address++); // 8 bytes smaller when incrementing here
 					if (line & 0x80) {
-Serial.println("\n Line & 0x80.\n");
-
 					  line &= 0x7F;
 					  line++; w -= line;
 			#ifdef RPI_WRITE_STROBE
@@ -1948,13 +1911,10 @@ Serial.println("\n Line & 0x80.\n");
 						while (line--) {tft_Write_16(textcolor);}
 					  #else
 //						writeBlock(textcolor,line);//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
-					  Device::Display::Graphics::Graph->drawLine(x,y,x+width-1,y+height-1,textcolor);
 					  #endif
 			#endif
 					}
 					else {
-Serial.println("\n line!&0x80.\n");
-
 					  line++; w -= line;
 			#ifdef RPI_WRITE_STROBE
 					  spi.writePattern(&textbgcolorBin[0], 2, 1); line--;
@@ -1964,12 +1924,13 @@ Serial.println("\n line!&0x80.\n");
 						while (line--) {tft_Write_16(textbgcolor);}
 					  #else
 //						writeBlock(textbgcolor,line);//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
-					  Device::Display::Graphics::Graph->drawLine(x,y,x+width-1,y+height-1,textbgcolor);
 					  #endif
 			#endif
 					}
 				  }
 				}
+/*				inTransaction = false;
+				spi_end();*///ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
 			  }
 			  // End of RLE font rendering
 			#endif
@@ -1990,12 +1951,12 @@ Serial.println("\n line!&0x80.\n");
 			***************************************************************************************/
 			void Font::drawChar(T_DispCoords x, T_DispCoords y, uint16_t c, uint32_t color, uint32_t bg, uint8_t size)
 			{
-/*			  if ((x >= _width)            || // Clip right
-				  (y >= _height)           || // Clip bottom
+			  if ((x >= Device::Display::Graphics::Graph->width())            || // Clip right
+				  (y >= Device::Display::Graphics::Graph->height())           || // Clip bottom
 				  ((x + 6 * size - 1) < 0) || // Clip left
 				  ((y + 8 * size - 1) < 0))   // Clip top
-				return;*/ //ToDo: modify to make buffer
-Serial.println("\n Begin drawChar.\n");
+				return; //ToDo: modify to make buffer
+
 			  if (c < 32) return;
 			#ifdef LOAD_GLCD
 			//>>>>>>>>>>>>>>>>>>
@@ -2010,10 +1971,10 @@ Serial.println("\n Begin drawChar.\n");
 			  {
 				uint8_t column[6];
 				uint8_t mask = 0x1;
+//				spi_begin();//ToDo: modify to make buffer
 
 //				setWindow(x, y, x+5, y+8);//ToDo: modify to make buffer
-				ImageBuffer->init(2,sizeof(uint32_t),5,8);
-Serial.println("\n ImageBuffer->init(2,sizeof(uint32_t),5,8);.\n");
+
 				for (int8_t i = 0; i < 5; i++ ) column[i] = pgm_read_byte(font + (c * 5) + i);
 				column[5] = 0;
 
@@ -2080,6 +2041,8 @@ Serial.println("\n ImageBuffer->init(2,sizeof(uint32_t),5,8);.\n");
 					}
 				  }
 				}
+/*				inTransaction = false;
+				spi_end();*///ToDo: modify to make buffer
 			  }
 
 			//>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -2240,8 +2203,69 @@ Serial.println("\n ImageBuffer->init(2,sizeof(uint32_t),5,8);.\n");
 
 
 
+			/***************************************************************************************
+			** Function name:
+			** Description:             c_TextBuffer constructor
+			***************************************************************************************/
 
+			c_TextBuffer::c_TextBuffer(){
+				buffer = Device::Memory::c_Buffer();
+				x=0;
+				y=0;
+			}
+
+			c_TextBuffer::c_TextBuffer(uint16_t length){
+				buffer = Device::Memory::c_Buffer(1,2,length);
+				x=0;
+				y=0;
+			}
+			/***************************************************************************************
+			** Function name:
+			** Description:             c_TextBuffer destructor
+			***************************************************************************************/
+
+			c_TextBuffer::~c_TextBuffer(){
+				buffer->remove();
+			}
+
+			/***************************************************************************************
+			** Function name:
+			** Description:
+			***************************************************************************************/
+
+			T_DispCoords c_TextBuffer::GetX(){
+				return x;
+			}
+
+			/***************************************************************************************
+			** Function name:
+			** Description:
+			***************************************************************************************/
+
+			T_DispCoords c_TextBuffer::GetY(){
+				return y;
+			}
+
+			/***************************************************************************************
+			** Function name:
+			** Description:
+			***************************************************************************************/
+
+			void c_TextBuffer::SetX(T_DispCoords coord){
+				x=coord;
+			}
+
+			/***************************************************************************************
+			** Function name:
+			** Description:
+			***************************************************************************************/
+
+			void c_TextBuffer::SetY(T_DispCoords coord){
+				y=coord;
+			}
 
 		}
 	}
 }
+
+

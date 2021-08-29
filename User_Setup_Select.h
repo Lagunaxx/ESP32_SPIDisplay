@@ -61,6 +61,8 @@
 #endif // USER_SETUP_LOADED
 
 
+//ToDo: implement next feature
+// #define USE_VBUFFER // use vbuffer in RAM
 
 /////////////////////////////////////////////////////////////////////////////////////
 //                                                                                 //
@@ -147,3 +149,12 @@
 
 #define PIN_D11  9  // SD2
 #define PIN_D12 10  // SD4
+
+//#define FONT_SCREEN_SCROLL // uncomment this to turn on scrolling of screen
+#ifndef FONT_SCREEN_SCROLL
+//#define FONT_SCREEN_VROLL //if printing position goes out of screen vertically - it print starts from other side
+//#define FONT_SCREEN_HSCROLL //same horizontal
+#endif
+
+
+

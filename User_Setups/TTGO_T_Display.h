@@ -57,5 +57,6 @@
 	#define SPI_TOUCH_FREQUENCY  2500000
 
 	// #define SUPPORT_TRANSACTIONS
+	#define NO_READ_VBUFFER // Screen do not return video data
 
 #endif

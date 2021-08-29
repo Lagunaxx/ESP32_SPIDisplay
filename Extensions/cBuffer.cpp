@@ -11,7 +11,6 @@ namespace Device {
 namespace Memory {
 
 c_Buffer::c_Buffer() {
-	//Initialize defaults
 	dimensions = 0;
 	unitSize = 0;
 	size = NULL;
@@ -38,23 +37,14 @@ c_Buffer::c_Buffer(uint f_Dimensions, uint f_UnitSize, ...) {
 	uint64_t sizeofbuffer = 1;
 	status = CBUF_OK;
 
-	//Check if Dimensions > 0 (0 = no Dimensions, so no memory need for them)
 	if (f_Dimensions > 0) {
-
-		//Fill main data
 		unitSize = f_UnitSize;
 		dimensions = f_Dimensions;
-
-		//Allocate memory for Dimensions` sizes
 		size = (uint*) malloc(dimensions * sizeof(uint));
-		if (size > 0) { //if memory allocated:
-
-			//Set args to first position and set number of args
+		if (size > 0) {
 			va_start(args, f_Dimensions);
 
-			//Fill sizes of Dimensions (array)
-			//for (int i = 0; i < dimensions; i++) {
-			ListDimensions(i,0){
+			for (int i = 0; i < dimensions; i++) {
 				param = va_arg(args, uint);
 				*(size + i) = param;
 				sizeofbuffer *= param;
@@ -62,7 +52,6 @@ c_Buffer::c_Buffer(uint f_Dimensions, uint f_UnitSize, ...) {
 
 			va_end(args);
 
-			//Allocate memory buffer for data
 			if (sizeofbuffer > 0) {
 				buffer = malloc(sizeofbuffer * unitSize);
 				if (buffer == NULL)
@@ -89,25 +78,19 @@ void c_Buffer::init(uint f_Dimensions, uint f_UnitSize, ...) {
 	 * Same as c_Buffer::c_Buffer(uint f_Dimensions, uint f_UnitSize, ...); but after initializated defaults
 	 *
 	 */
-	// ToDo: check if initialization allready was made
 
 	va_list args;
 	uint param;
 	uint64_t sizeofbuffer = 1;
 
-	//Check if Dimensions > 0
 	if (f_Dimensions > 0) {
 		unitSize = f_UnitSize;
 		dimensions = f_Dimensions;
-
-		// Allocate memory for sizes' array
 		size = (uint*) malloc(dimensions * sizeof(uint));
 
-		// Initialize arguments listing
 		va_start(args, f_Dimensions);
 
 		//for (uint n = 0; n < dimensions; n++) {
-		// Fill sizes' array with data about dimensions and calculate memory need for buffer
 		ListDimensions(i,0){
 			param = va_arg(args, uint);
 			*(size + i) = param;
@@ -117,7 +100,6 @@ void c_Buffer::init(uint f_Dimensions, uint f_UnitSize, ...) {
 		va_end(args);
 
 		if (sizeofbuffer > 0) {
-			//if size of buffer >0 then allocate memory
 			buffer = malloc(sizeofbuffer * unitSize);
 		}
 
@@ -141,7 +123,6 @@ void c_Buffer::remove() {
 }
 
 bool c_Buffer::Initialized(){
-	// Return TRUE if buffer initialized? or FALSE if was any error due initialization
 
 	if (dimensions == 0){
 		status = CBUF_ERR_NODIMENSIONS;
@@ -350,17 +331,17 @@ void* c_Buffer::copyBuffer(void *needPosition, void *needSize){
 	uint8_t *posparam = (uint8_t *) malloc(unitSize); //Contains position of current dimension in dimensions listing
 	uint64_t lastmax=1, *curmax=(uint64_t*)malloc(unitSize);
 
-//Serial.printf("\nstart list");
+Serial.printf("\nstart list");
 	ListDimensions(i,0){
 	// Calculate size we need to malloc
 		tmpsizecur=0;
 		btsmove=1;
-//Serial.printf("\nUnitsize=%i",unitSize);
+Serial.printf("\nUnitsize=%i",unitSize);
 
 		for(tmpbyte=0;tmpbyte<unitSize;tmpbyte++){
 			// Get size of i-dimension
 			tmpsizecur+=uint64_t(*((uint8_t*) needSize + i*unitSize + tmpbyte))*pow(256,tmpbyte);
-//Serial.printf("\ntmpsizecur=%i,%i",(uint)tmpsizecur,(uint)tmpbyte);
+Serial.printf("\ntmpsizecur=%i,%i",(uint)tmpsizecur,(uint)tmpbyte);
 		}
 
 		tmpsize*=tmpsizecur; // count size of matrix need to export (dimension1*dimension2*...*dimensionN)
@@ -371,7 +352,7 @@ void* c_Buffer::copyBuffer(void *needPosition, void *needSize){
 		if (i>0) memcpy(tmpSizePosition+(i-1)*unitSize,needPosition+i*unitSize,unitSize);
 
 	}
-//Serial.printf("\ndatablocks=%i",(uint)datablocks); // blocks of data need to export
+Serial.printf("\ndatablocks=%i",(uint)datablocks); // blocks of data need to export
 	totalblocks = datablocks;
 	void *tmpbuf=malloc(tmpsize*unitSize); // allocate memory for new data
 
@@ -380,11 +361,11 @@ void* c_Buffer::copyBuffer(void *needPosition, void *needSize){
 		f_srcpositionCurDim = 0;
 
 	while ( datablocks > 0){
-//Serial.printf("\n\n");
+Serial.printf("\n\n");
 
 		f_srcposition = 0;
 		memcpy (&f_srcposition,needPosition,unitSize);
-//Serial.printf("\nf_srcpos()=%i",(uint)f_srcposition);
+Serial.printf("\nf_srcpos()=%i",(uint)f_srcposition);
 		memcpy(curmax,size,unitSize);
 		lastmax=(uint64_t)*curmax;
 		ListDimensions(i,1){
@@ -402,9 +383,9 @@ void* c_Buffer::copyBuffer(void *needPosition, void *needSize){
 
 			if (i<(dimensions-1))lastmax*=(uint64_t)*curmax;
 
-//Serial.printf("\i=%i, lastmax=%i,posparam=%i,size+i*unitSize=%i",i,(uint)lastmax,(uint)*posparam,(uint)*((uint*)size+i*unitSize));
+Serial.printf("\i=%i, lastmax=%i,posparam=%i,size+i*unitSize=%i",i,(uint)lastmax,(uint)*posparam,(uint)*((uint*)size+i*unitSize));
 		}
-//Serial.printf("\nf_srcpos=%i",(uint)f_srcposition);
+Serial.printf("\nf_srcpos=%i",(uint)f_srcposition);
 
 		ListDimensions(i,1){
 			// Decrease position we need by dimensions - ToDo: nop.. mast increase by 1 to needSize[dimension] = +done!

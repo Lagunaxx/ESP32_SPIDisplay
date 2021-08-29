@@ -11,48 +11,46 @@ namespace Device {
 	namespace Display {
 		namespace Graphics {
 
-		Graphics* Graph;
+			Graphics* Graph;
+			/***************************************************************************************
+			** Function name:           init
+			** Description:             initialize Graphics module
+			** Usage:
+			** 		Device::Display:Graphics::init(color);	// initialize Graph pointer and
+			** 												// fills screen with specified color
+			**
+			** 		Device::Display::Graphics::init();		// initialize Graph pointer and
+			** 												// fills screen with black color
+			**
+			** 	Return value (bool):
+			** 		true - Graph initialized;
+			** 		false - Graph do not initialized
+			***************************************************************************************/
+			bool init(uint32_t background_color){
+				Graph=new Graphics();
+				if (Graph==0) return false;
+				Graph->fillScreen(background_color);
+				return true;
+			};
+			bool init(){
+				return init(TFT_BLACK);
+			}
 
-		/***************************************************************************************
-		** Function name:           init
-		** Description:             initialize Graphics module
-		** Usage:
-		** 		Device::Display:Graphics::init(color);	// initialize Graph pointer and
-		** 												// fills screen with specified color
-		**
-		** 		Device::Display::Graphics::init();		// initialize Graph pointer and
-		** 												// fills screen with black color
-		**
-		** 	Return value (bool):
-		** 		true - Graph initialized;
-		** 		false - Graph do not initialized
-		***************************************************************************************/
-		// / *	ToDo: Do not work due memory problem
-		bool init(uint32_t background_color){
-			Graph=new Graphics();
-			if (Graph==0) return false;
-			Graph->fillScreen(background_color);
-			return true;
-		};
-		bool init(){
-			return init(TFT_BLACK);
-		}
-
-		/***************************************************************************************
-		** Function name:           remove
-		** Description:             removes Graphics module
-		** Usage:
-		** 		Device::Display::Graphics::remove();	// removes Graph pointer. Do not change screen
-		**
-		** 	Return value (bool):
-		** 		true - Graph removed;
-		** 		false - Graph was not initialized (null-pointer)
-		***************************************************************************************/
-		bool remove(){
-			if (Graph==0) return false;
-			delete(Graph);
-			return true;
-		}
+			/***************************************************************************************
+			** Function name:           remove
+			** Description:             removes Graphics module
+			** Usage:
+			** 		Device::Display::Graphics::remove();	// removes Graph pointer. Do not change screen
+			**
+			** 	Return value (bool):
+			** 		true - Graph removed;
+			** 		false - Graph was not initialized (null-pointer)
+			***************************************************************************************/
+			 bool remove(){
+				if (Graph==0) return false;
+				delete(Graph);
+				return true;
+			}
 
 			Graphics::Graphics() {
 				// TODO Auto-generated constructor stub
@@ -583,13 +581,15 @@ namespace Device {
 			***************************************************************************************/
 			void Graphics::drawImageBufferAlpha(T_DispCoords x, T_DispCoords y, void * buffer, uint8_t* alpha, T_DispCoords w, T_DispCoords h){
 				//ToDo: remove (uint32_t). for this need to modify types in Display::Driver
-
+#ifdef NO_READ_VBUFFER
+				pushImage((uint32_t)x,(uint32_t)y,(uint32_t)w,(uint32_t)h,(uint16_t *)buffer, alpha);
+#else
 				uint16_t *data= (uint16_t*)malloc(w*h*sizeof(uint16_t));
 				upng_s_rgb16b *pixel_screen = new upng_s_rgb16b();
 				upng_s_rgb16b *pixel_buffer = new upng_s_rgb16b();
 				uint8_t a;
-				readRect(x, y, w, h, data);
-
+//				readRect(x, y, w, h, data);
+/*
 				for (T_DispCoords xx=0;xx<w;xx++){
 					for (T_DispCoords yy=0;yy<h;yy++){
 						memcpy(pixel_screen,data+(yy*w+xx)*1,2);
@@ -602,9 +602,10 @@ namespace Device {
 						memcpy(data+(yy*w+xx),pixel_screen,2);
 					}
 				}
-
-				pushImage((uint32_t)x,(uint32_t)y,(uint32_t)w,(uint32_t)h,(uint16_t *)data);
+*/
+				pushImage((uint32_t)x,(uint32_t)y,(uint32_t)w,(uint32_t)h,(uint16_t *)buffer, alpha);
 				free(data);
+#endif
 			}
 
 			/***************************************************************************************
