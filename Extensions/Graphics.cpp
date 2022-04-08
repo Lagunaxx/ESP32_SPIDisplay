@@ -617,32 +617,9 @@ Serial.printf("[Graphics::fillScreen] width=%u; height=%u", width(), height());
 			void Graphics::drawImageBufferAlpha(T_DispCoords x, T_DispCoords y, t_color_r5g6b5 color, uint8_t* alpha, T_DispCoords w, T_DispCoords h){
 				//ToDo: remove (uint32_t). for this need to modify types in Display::Driver
 #ifdef NO_READ_VBUFFER
-/*
-Serial.printf("\n");
-				// Filling stamp with text color
-				uint16_t *data;
-				data=(uint16_t *) malloc(w*h*sizeof(t_color_r5g6b5));
-				for (int b = 0; b < h; b++){
-					for (int a = 0; a < w; a++){
-						memcpy(data+(a*b+a)*sizeof(t_color_r5g6b5),(void *)&color,sizeof(t_color_r5g6b5));
-Serial.printf("%u ", (unsigned int) *((unsigned char *)data+(a*b+a)*sizeof(t_color_r5g6b5)));
-					}
-Serial.printf("\n");
-
-				}
-*/Serial.printf("Start symbol alpha=%u\n",(unsigned int)alpha);
-Serial.printf("Start symbol alpha[5]=%u\n", (unsigned char) *((unsigned char *)alpha+5));
-
-for (uint8_t a=0;a<h;a++){
-	for (uint8_t b=0; b<w;b++){
-Serial.printf("%u ",(unsigned char) *((unsigned char *)alpha+a*w+b));//    *(alpha+a*b+b));
-	}
-	Serial.printf("\n");
-}
-Serial.printf("eoseoseoseos\n\n");
 
 				pushImage(x,y,w,h, color.rgb, alpha);
-//				free(data);
+
 #else
 				uint16_t *data= (uint16_t*)malloc(w*h*sizeof(uint16_t));
 				t_color_r5g6b5 *pixel_screen = new t_color_r5g6b5();

@@ -2047,13 +2047,11 @@ Serial.printf("[Font::setFreeFont] GFXfont: \n");
 			#endif
 			//>>>>>>>>>>>>>>>>>>
 			  boolean fillbg = (bg != color);
-Serial.printf("\n--------------");
+
 			  if ((size==1) && fillbg)
 			  {
 				uint8_t column[6];
 				uint8_t mask = 0x1;
-//				spi_begin();//ToDo: modify to make buffer
-//				setWindow(x, y, x+5, y+8);//ToDo: modify to make buffer
 
 				for (int8_t i = 0; i < 5; i++ ) column[i] = pgm_read_byte(font + (c * 5) + i);
 				column[5] = 0;
@@ -2084,36 +2082,28 @@ Serial.printf("\n--------------");
 				buf_Bitmap=malloc(40);
 				char nul=0, fill=255;
 
+				// load alpha channel for symbol
 				for (int8_t j = 0; j < 8; j++) {
 				  for (int8_t k = 0; k < 5; k++ ) {
-// load alpha channel for symbol
-
 					if (column[k] & mask) {
 						memcpy((unsigned char *)buf_Bitmap+5*j+k,&fill,1);
 					}else{
 						memcpy((unsigned char *)buf_Bitmap+5*j+k,&nul,1);
 					}
-Serial.printf("%u ", (unsigned int) *((unsigned char *)buf_Bitmap+5*j+k));
 				  }
 				  mask <<= 1;
 				  tft_Write_16(bg);
-Serial.printf("\n");
 				}
-Serial.printf("\n--------------");
+
 				t_color_r5g6b5 *pix_dst=new (t_color_r5g6b5);
-				//color_R5G6B5touint16
-				Serial.printf("Start symbol buf_bitmap=%u\n", *(unsigned char*)((unsigned int)buf_Bitmap+5));
 				Device::Display::Graphics::Graph->color_R8G8B8toR5G6B5(pix_dst, (t_color_r8g8b8 *)&color);
 				Device::Display::Graphics::Graph->drawImageBufferAlpha(x, y, *pix_dst, (uint8_t*) buf_Bitmap, 5, 8);
 				delete(pix_dst);
 			#endif
 
-//				spi_end();//ToDo: modify to make buffer
 			  }
 			  else
-			  {
-//				spi_begin();          // Sprite class can use this function, avoiding spi_begin()
-//				inTransaction = true;//ToDo: modify to make buffer
+			  { // size > 1 or fill with background color
 
 				for (int8_t i = 0; i < 6; i++ ) {
 				  uint8_t line;
@@ -2125,20 +2115,17 @@ Serial.printf("\n--------------");
 				  if (size == 1) // default size
 				  {
 					for (int8_t j = 0; j < 8; j++) {
-					  if (line & 0x1) drawPixel(x + i, y + j, color); //ToDo: modify to draw by new lib
+					  if (line & 0x1) drawPixel(x + i, y + j, color);
 					  line >>= 1;
 					}
 				  }
 				  else {  // big size
 					for (int8_t j = 0; j < 8; j++) {
 					  if (line & 0x1) fillRect(x + (i * size), y + (j * size), size, size, color);
-					  else if (fillbg) fillRect(x + i * size, y + j * size, size, size, bg);//ToDo: modify to make buffer
 					  line >>= 1;
 					}
 				  }
 				}
-//				inTransaction = false;
-//				spi_end();//ToDo: modify to make buffer
 			  }
 
 			//>>>>>>>>>>>>>>>>>>>>>>>>>>>

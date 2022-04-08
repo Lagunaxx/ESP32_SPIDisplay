@@ -1204,43 +1204,21 @@ void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
 		return;
 
 	if (SPIStartWrite()) {
-//		data += dx + dy * w;
 
 		int32_t xe = x + dw - 1, ye = y + dh - 1;
 
-//		uint16_t lineBuf[dw];
-
-//		if (!_swapBytes)
-//			transp = transp >> 8 | transp << 8;
-
-
-Serial.printf("Start symbol alpha[[5]]=%u\n",(unsigned int) *((unsigned char *)alpha+5));
-
-for (uint8_t a=0;a<h;a++){
-	for (uint8_t b=0; b<w;b++){
-Serial.printf("%u ",*(alpha+a*w+b));
-	}
-	Serial.printf("\n");
-}
-Serial.printf("eos\n\n");
-
-
 		while (dh--) {
 			int32_t len = dw;
-//			uint16_t *ptr = data;
 			int32_t px = x;
 			boolean move = true;
 			uint16_t np = 0;
 
-//setWindow(px, y, xe, ye);
 			while (len--) {
-Serial.printf("%u ", (unsigned char) *((unsigned char *)alpha+(h-dh-1)*w+(w-len-1)));
 				if (*(alpha+(h-dh-1)*w+(w-len-1)) != 0) {
 					if (move) {
 						move = false;
 						setWindow(px, y, xe, ye);
 					}
-//					lineBuf[np] = *ptr;
 					np++;
 				} else {
 					move = true;
@@ -1250,13 +1228,10 @@ Serial.printf("%u ", (unsigned char) *((unsigned char *)alpha+(h-dh-1)*w+(w-len-
 					}
 				}
 				px++;
-//				ptr++;
 			}
 			if (np)
 				pushColors(&color, np, _swapBytes);
-Serial.printf("\n");
 			y++;
-//			data += w;
 		}
 		SPIEndWrite();
 	} else {
