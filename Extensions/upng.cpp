@@ -4,6 +4,7 @@ auPNG -- derived from LodePNG version 20100808
 Copyright (c) 2005-2010 Lode Vandevenne
 Copyright (c) 2010 Sean Middleditch
 Copyright (c) 2019 Helco
+Copyright (c) 2020-2022 Novoselov Vitaly (Laguna_x) (optimized for ESP32)
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -30,8 +31,11 @@ freely, subject to the following restrictions:
 //#include <string.h>
 //#include <limits.h>
 
-#include "Graphics.h"
+//#include "Graphics.h"
+
 #include "upng.h"
+
+#ifdef GRAPH_PNG
 
 namespace Device {
 	namespace Display {
@@ -1195,116 +1199,11 @@ extern upng_error uz_inflate(unsigned char *out, unsigned long outsize, unsigned
 				return upng->size;
 			}
 
-
-
-
-
-
-
-
-
-
-
 			void c_uPNG::upng_GetPixel(void* pixel, upng_t* upng, int x, int y){
 				unsigned int bpp = upng_get_bpp(upng);
 				unsigned long Bpp = ((bpp+7)/8);
 				unsigned long position = (upng->width*y+x)*Bpp;
 				memcpy(pixel,upng->buffer+position,Bpp);
-			}
-
-
-
-			/*
-			 * Initializing color variables
-			 */
-			upng_s_rgb16b* c_uPNG::InitColorR5G6B5(){
-				upng_s_rgb16b*color=(upng_s_rgb16b*)malloc(sizeof(upng_s_rgb16b));
-				if (color!=0){
-					ResetColor(color);
-				}
-				return color;
-			}
-			upng_s_rgb18b* c_uPNG::InitColorR6G6B6(){
-				upng_s_rgb18b*color=(upng_s_rgb18b*)malloc(sizeof(upng_s_rgb18b));
-				if (color!=0){
-					ResetColor(color);
-				}
-				return color;
-			}
-			upng_s_rgb24b* c_uPNG::InitColorR8G8B8(){
-				upng_s_rgb24b*color=(upng_s_rgb24b*)malloc(sizeof(upng_s_rgb24b));
-				if (color!=0){
-					ResetColor(color);
-				}
-				return color;
-			}
-
-			bool c_uPNG::InitColor(upng_s_rgb16b **dst){
-				*dst=(upng_s_rgb16b*)malloc(sizeof(upng_s_rgb16b));
-				if (dst!=0){
-					ResetColor(*dst);
-					return true;
-				}
-				return false;
-			}
-			bool c_uPNG::InitColor(upng_s_rgb18b **dst){
-				*dst=(upng_s_rgb18b*)malloc(sizeof(upng_s_rgb18b));
-				if (dst!=0){
-					ResetColor(*dst);
-					return true;
-				}
-				return false;
-			}
-			bool c_uPNG::InitColor(upng_s_rgb24b **dst){
-				*dst=(upng_s_rgb24b*)malloc(sizeof(upng_s_rgb24b));
-				if (dst!=0){
-					ResetColor(*dst);
-					return true;
-				}
-				return false;
-			}
-
-			void c_uPNG::ResetColor(upng_s_rgb16b *dst){
-				*dst=(upng_s_rgb16b){0,0,0,0};
-			}
-			void c_uPNG::ResetColor(upng_s_rgb18b *dst){
-				*dst=(upng_s_rgb18b){0,0,0,0};
-			}
-			void c_uPNG::ResetColor(upng_s_rgb24b *dst){
-				*dst=(upng_s_rgb24b){0,0,0,0};
-			}
-
-
-			/*
-			 * Converting between colors
-			 */
-
-			void c_uPNG::color_R8G8B8toR6G6B6(upng_s_rgb18b *dst, upng_s_rgb24b *src){
-				dst->r=src->r>>2;//3;//2;
-				dst->g=src->g>>2;
-				dst->b=src->b>>2;//3;//2;
-			}
-
-			void c_uPNG::color_R8G8B8toR5G6B5(upng_s_rgb16b *dst, upng_s_rgb24b *src){
-				dst->r=src->r>>3;//3;//2;
-				dst->g=src->g>>2;
-				dst->b=src->b>>3;//3;//2;
-			}
-			bool c_uPNG::color_R6G6B6touint32(uint32_t *dst, upng_s_rgb18b *src){
-				if ((dst!=0)&(src!=0)){
-					memcpy(dst,src,sizeof(upng_s_rgb18b));
-					return true;
-				}else{
-					return false;
-				}
-			}
-			bool c_uPNG::color_R5G6B5touint32(uint32_t *dst, upng_s_rgb16b *src){
-				if ((dst!=0)&(src!=0)){
-					memcpy(dst,src,sizeof(upng_s_rgb16b));
-					return true;
-				}else{
-					return false;
-				}
 			}
 
 			/***************************************************************************************
@@ -1315,20 +1214,20 @@ extern upng_error uz_inflate(unsigned char *out, unsigned long outsize, unsigned
 			uint16_t* c_uPNG::colorBuffer_R8G8B8toR5G6B5(upng_t* upng){
 				// Convert colors in buffer, returning new buffer with converted data
 				uint16_t* tmp;
-				upng_s_rgba32b *pix;
-				upng_s_rgb24b *pix_src = InitColorR8G8B8();
-				upng_s_rgb16b *pix_dst = InitColorR5G6B5();
+				t_color_r8g8b8a8 *pix;
+				t_color_r8g8b8 *pix_src = Graph->InitColorR8G8B8();
+				t_color_r5g6b5 *pix_dst = Graph->InitColorR5G6B5();
 				unsigned width = upng_get_width(upng),
 						height = upng_get_height(upng);
 				tmp=(uint16_t*) malloc(width*height*sizeof(uint16_t));
-				pix = (upng_s_rgba32b*) malloc((unsigned long int) ((upng_get_bpp(upng) + 7) / 8));
+				pix = (t_color_r8g8b8a8*) malloc((unsigned long int) ((upng_get_bpp(upng) + 7) / 8));
 
 				if (upng==0) return 0;
 				for (int xx = 0; xx < width; xx++) {
 					for (int yy = 0; yy < height; yy++) {
 						upng_GetPixel((void*) pix, upng, (int) xx, (int) yy);
-						*pix_src = pix->rgb;
-						color_R8G8B8toR5G6B5(pix_dst, pix_src);
+						Graph->color_R8G8B8A8toR8G8B8(pix_src,pix);
+						Graph->color_R8G8B8toR5G6B5(pix_dst, pix_src);
 						memcpy(tmp+(yy*(width)+xx), pix_dst,2);
 					}
 				}
@@ -1347,11 +1246,11 @@ extern upng_error uz_inflate(unsigned char *out, unsigned long outsize, unsigned
 			uint8_t* c_uPNG::colorBuffer_A8R8G8B8toA8(upng_t* upng){
 				// Convert buffer, returning new buffer with Alpha-channel data
 				uint8_t* tmp;
-				upng_s_rgba32b *pix;
+				t_color_r8g8b8a8 *pix;
 				unsigned width = upng_get_width(upng),
 						height = upng_get_height(upng);
 				tmp=(uint8_t*) malloc(width*height*sizeof(uint8_t));
-				pix = (upng_s_rgba32b*) malloc((unsigned long int) ((upng_get_bpp(upng) + 7) / 8));
+				pix = (t_color_r8g8b8a8*) malloc((unsigned long int) ((upng_get_bpp(upng) + 7) / 8));
 
 				if (upng==0) return 0;
 				for (int xx = 0; xx < width; xx++) {
@@ -1468,3 +1367,5 @@ extern upng_error uz_inflate(unsigned char *out, unsigned long outsize, unsigned
 		}
 	}
 }
+
+#endif /* #ifdef GRAPH_PNG */

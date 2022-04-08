@@ -2,7 +2,7 @@
 ** Code for the GFX button UI element
 ** Grabbed from Adafruit_GFX library and enhanced to handle any label font
 ***************************************************************************************/
-#include <Button.h>
+#include "Button.h"
 
 namespace Device{
 	namespace Input{
@@ -24,7 +24,7 @@ namespace Device{
 
 		// Classic initButton() function: pass center & size
 		void onScreen_Button::initButton(
-				Graphics *gfx, _CoordsType x, _CoordsType y, _CoordsType w, _CoordsType h,
+				Graphics *gfx, T_DispCoords x, T_DispCoords y, T_DispCoords w, T_DispCoords h,
 		 uint16_t outline, uint16_t fill, uint16_t textcolor,
 		 char *label, uint8_t textsize)
 		{
@@ -35,7 +35,7 @@ namespace Device{
 
 		// Newer function instead accepts upper-left corner & size
 		void onScreen_Button::initButtonUL(
-				Graphics *gfx, _CoordsType x1, _CoordsType y1, _CoordsType w, _CoordsType h,
+				Graphics *gfx, T_DispCoords x1, T_DispCoords y1, T_DispCoords w, T_DispCoords h,
 		 uint16_t outline, uint16_t fill, uint16_t textcolor,
 		 char *label, uint8_t textsize)
 		{
@@ -77,7 +77,7 @@ namespace Device{
 		  _gfx->setTextDatum(tempdatum);*/
 		}
 
-		boolean onScreen_Button::contains(_CoordsType x, _CoordsType y) {
+		boolean onScreen_Button::contains(T_DispCoords x, T_DispCoords y) {
 		  return ((x >= _x1) && (x < (_x1 + _w)) &&
 				  (y >= _y1) && (y < (_y1 + _h)));
 		}

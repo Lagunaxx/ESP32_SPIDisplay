@@ -10,10 +10,8 @@
 
  Modifyed by Laguna_x 16/oct/2019
  ****************************************************/
-#include <Arduino.h>
-#include <SPI.h>
+
 #include "ESP32_SPIDisplay.h"
-#include <User_Setup_Select.h>
 
 namespace Device {
 namespace Display {
@@ -135,8 +133,8 @@ void init(uint8_t R
  , uint8_t tc
  #endif
 		) {
-	init(TFT_WIDTH,
-	TFT_HEIGHT, R
+	init((T_DispCoords)TFT_WIDTH,
+	(T_DispCoords)TFT_HEIGHT, R
 #ifdef ST7735_DRIVER
  , tc
  #endif
@@ -147,7 +145,7 @@ void init(
  , uint8_t tc
  #endif
 ) {
-	init(0
+	init((uint8_t) 0
 #ifdef ST7735_DRIVER
  , tc
  #endif
@@ -159,7 +157,10 @@ void remove() {
 // */
 void Screen::PrintError(const char message[]) {
 	//use it for debugging spi. Make print to serial or whatever.
-	;
+	// Options defineing in "User_Settup_Select.h"
+	#ifdef DEBUG_PRINT_SERIAL
+		Serial.println(message);
+	#endif
 }
 
 /***************************************************************************************
@@ -1161,6 +1162,101 @@ void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
 
 			y++;
 			data += w;
+		}
+		SPIEndWrite();
+	} else {
+		PrintError("[pushImage]Error: SPI is buisy!");
+	}
+}
+
+/***************************************************************************************
+ ** Function name:           pushImage
+ ** Description:             plot 16 bit color with alpha data
+ ***************************************************************************************/
+void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
+		T_DispCoords h, uint16_t color, uint8_t *alpha) {
+
+	if ((x >= _width) || (y >= _height))
+		return;
+
+	int32_t dx = 0;
+	int32_t dy = 0;
+	int32_t dw = w;
+	int32_t dh = h;
+
+	if (x < 0) {
+		dw += x;
+		dx = -x;
+		x = 0;
+	}
+	if (y < 0) {
+		dh += y;
+		dy = -y;
+		y = 0;
+	}
+
+	if ((x + w) > _width)
+		dw = _width - x;
+	if ((y + h) > _height)
+		dh = _height - y;
+
+	if (dw < 1 || dh < 1)
+		return;
+
+	if (SPIStartWrite()) {
+//		data += dx + dy * w;
+
+		int32_t xe = x + dw - 1, ye = y + dh - 1;
+
+//		uint16_t lineBuf[dw];
+
+//		if (!_swapBytes)
+//			transp = transp >> 8 | transp << 8;
+
+
+Serial.printf("Start symbol alpha[[5]]=%u\n",(unsigned int) *((unsigned char *)alpha+5));
+
+for (uint8_t a=0;a<h;a++){
+	for (uint8_t b=0; b<w;b++){
+Serial.printf("%u ",*(alpha+a*w+b));
+	}
+	Serial.printf("\n");
+}
+Serial.printf("eos\n\n");
+
+
+		while (dh--) {
+			int32_t len = dw;
+//			uint16_t *ptr = data;
+			int32_t px = x;
+			boolean move = true;
+			uint16_t np = 0;
+
+//setWindow(px, y, xe, ye);
+			while (len--) {
+Serial.printf("%u ", (unsigned char) *((unsigned char *)alpha+(h-dh-1)*w+(w-len-1)));
+				if (*(alpha+(h-dh-1)*w+(w-len-1)) != 0) {
+					if (move) {
+						move = false;
+						setWindow(px, y, xe, ye);
+					}
+//					lineBuf[np] = *ptr;
+					np++;
+				} else {
+					move = true;
+					if (np) {
+						pushColors(&color, np, _swapBytes);
+						np = 0;
+					}
+				}
+				px++;
+//				ptr++;
+			}
+			if (np)
+				pushColors(&color, np, _swapBytes);
+Serial.printf("\n");
+			y++;
+//			data += w;
 		}
 		SPIEndWrite();
 	} else {
@@ -2934,7 +3030,6 @@ void Screen::drawFastHLine(T_DispCoords x, T_DispCoords y, T_DispCoords w,
 
 void Screen::fillRect(T_DispCoords x, T_DispCoords y, T_DispCoords w,
 		T_DispCoords h, uint32_t color) {
-
 	// Clipping
 	if ((x >= _width) || (y >= _height))
 		return;

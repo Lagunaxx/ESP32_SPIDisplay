@@ -79,7 +79,7 @@ endchoice
     
     
 config SPIDISPLAY_ARDUHAL_LOG_DEFAULT_LEVEL
-    int
+    int "Log level"
     default 0 if ARDUHAL_LOG_DEFAULT_LEVEL_NONE
     default 1 if ARDUHAL_LOG_DEFAULT_LEVEL_ERROR
     default 2 if ARDUHAL_LOG_DEFAULT_LEVEL_WARN

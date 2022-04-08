@@ -7,17 +7,18 @@
 
 #ifndef DEVIACE_BUTTON_H
 #define DEVIACE_BUTTON_H
-#include <Extensions/Cursor.h>
-#include <Extensions/Graphics.h>
-#include "../ESP32_SPIDisplay.h"
+#include "Cursor.h"
+#include "Graphics.h"
+#include "ESP32_SPIDisplay.h"
+#include "Types.h"
 
 	namespace Device{
 		namespace Input{
 
 			//using namespace Device::Display;
 			using Device::Display::Graphics::Graphics;
+			using Device::Display::T_DispCoords;
 			//class Screen;
-			using Device::Display::Cursor::_CoordsType;
 
 			class onScreen_Button {
 				// Creates Input device as On-screen button within touch-screens
@@ -25,16 +26,16 @@
 			 public:
 				onScreen_Button(void);
 			  // "Classic" initButton() uses center & size
-			  void     initButton(Graphics *gfx, _CoordsType x, _CoordsType y,
-					  _CoordsType w, _CoordsType h, uint16_t outline, uint16_t fill,
+			  void     initButton(Graphics *gfx, T_DispCoords x, T_DispCoords y,
+					  T_DispCoords w, T_DispCoords h, uint16_t outline, uint16_t fill,
 					  uint16_t textcolor, char *label, uint8_t textsize);
 
 			  // New/alt initButton() uses upper-left corner & size
-			  void     initButtonUL(Graphics *gfx, _CoordsType x1, _CoordsType y1,
-					  _CoordsType w, _CoordsType h, uint16_t outline, uint16_t fill,
+			  void     initButtonUL(Graphics *gfx, T_DispCoords x1, T_DispCoords y1,
+					  T_DispCoords w, T_DispCoords h, uint16_t outline, uint16_t fill,
 					  uint16_t textcolor, char *label, uint8_t textsize);
 			  void     drawButton(boolean inverted = false);
-			  boolean  contains(_CoordsType x, _CoordsType y);
+			  boolean  contains(T_DispCoords x, T_DispCoords y);
 
 			  void     press(boolean p);
 			  boolean  isPressed();
@@ -43,8 +44,8 @@
 
 			 private:
 			  Graphics *_gfx;
-			  _CoordsType  _x1, _y1; // Coordinates of top-left corner
-			  _CoordsType _w, _h;
+			  T_DispCoords  _x1, _y1; // Coordinates of top-left corner
+			  T_DispCoords _w, _h;
 			  uint8_t  _textsize;
 			  uint16_t _outlinecolor, _fillcolor, _textcolor;
 			  char     _label[10];

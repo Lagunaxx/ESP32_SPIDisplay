@@ -5,7 +5,7 @@
 
 	#include <Arduino.h>
 	#include <SPI.h>
-	#include "../ESP32_SPIDisplay.h"
+	#include "ESP32_SPIDisplay.h"
 
 namespace Device{
 	namespace Input{

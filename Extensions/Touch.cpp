@@ -16,7 +16,7 @@
 ***************************************************************************************/
 #include "Touch.h"
 
-#include "../ESP32_SPIDisplay.h"
+#include "ESP32_SPIDisplay.h"
 
 namespace Device{
 	namespace Input{

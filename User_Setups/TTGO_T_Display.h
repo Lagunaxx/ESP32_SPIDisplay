@@ -5,6 +5,7 @@
 
 	#define TFT_WIDTH  135
 	#define TFT_HEIGHT 240
+	#define COORDINATES_8b
 
 	#define CGRAM_OFFSET      // Library will add offsets required
 
@@ -58,5 +59,6 @@
 
 	// #define SUPPORT_TRANSACTIONS
 	#define NO_READ_VBUFFER // Screen do not return video data
+	#define TFT_COLOR_R5G6B5 // Define color schema
 
 #endif

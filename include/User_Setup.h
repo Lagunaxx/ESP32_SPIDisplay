@@ -279,3 +279,13 @@
 // so changing it here has no effect
 
 // #define SUPPORT_TRANSACTIONS
+
+// ##################################################################################
+//
+// Section 5. System configuration
+//
+// ##################################################################################
+
+//********** Activating graphics services
+#define GRAPH_PNG			// Activating PNG support (Device::Display::Graphics::uPNG)
+

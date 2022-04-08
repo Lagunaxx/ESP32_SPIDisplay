@@ -149,6 +149,8 @@ public:
 			T_DispCoords h, uint16_t *data, uint16_t transparent);
 	void pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
 			T_DispCoords h, uint16_t *data, uint8_t *alpha);
+	void pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
+			T_DispCoords h, uint16_t color, uint8_t *alpha);
 	/*	*/			// These are used to render images stored in FLASH (PROGMEM)
 	void pushImage(T_DispCoords x0, T_DispCoords y0, T_DispCoords w,
 			T_DispCoords h, const uint16_t *data, uint16_t transparent);

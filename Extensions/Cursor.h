@@ -9,26 +9,11 @@
 	#define EXTENSIONS_CURSOR_H_
 
 #include <Arduino.h>
+#include "Types.h"
 
 	namespace Device {
 		namespace Display {
 			namespace Cursor{
-
-				// define how much bits coordinate will consists
-				#ifdef COORDINATES_8b
-					typedef int8_t _CoordsType;
-				#else
-					#ifdef COORDINATES_16b
-						typedef int16_t _CoordsType;
-					#else
-						#ifdef COORDINATES_32b
-							typedef int32_t _CoordsType;
-						#else
-							typedef int64_t _CoordsType; //by default using 64bit coordinates
-						#endif
-					#endif
-				#endif
-
 
 				class c_Cursor {
 				public:
@@ -40,20 +25,20 @@
 					Cursor& operator=(const Cursor &other);
 					Cursor& operator=(Cursor &&other);
 	*/
-					void			Set(_CoordsType x, _CoordsType y),					//	Set cursor in x,y position (do not change z position)
-									Set(_CoordsType x, _CoordsType y, _CoordsType z);	//	Set cursor to x,y,z position (for 3D space)
+					void			Set(T_DispCoords x, T_DispCoords y);					//	Set cursor in x,y position (do not change z position)
+//									Set(T_DispCoords x, T_DispCoords y, T_DispCoords z);	//	Set cursor to x,y,z position (for 3D space)
 
-					_CoordsType		X(),		//	Get X coordinate
-									Y(),		//	Get Y coordinate
-									Z();		//	Get Z coordinate
+					T_DispCoords		X(),		//	Get X coordinate
+									Y();		//	Get Y coordinate
+//									Z();		//	Get Z coordinate
 
-					void			X(_CoordsType coord),		//	Set X coordinate
-									Y(_CoordsType coord),		//	Set Y coordinate
-									Z(_CoordsType coord);		//	Set Z coordinate
+					void			X(T_DispCoords coord),		//	Set X coordinate
+									Y(T_DispCoords coord);		//	Set Y coordinate
+//									Z(T_DispCoords coord);		//	Set Z coordinate
 
-					bool			MoveX(_CoordsType coord),		//	Move X coordinate by coord
-									MoveY(_CoordsType coord),		//	Move Y coordinate by coord
-									MoveZ(_CoordsType coord);		//	Move Z coordinate by coord
+					bool			MoveX(T_DispCoords coord),		//	Move X coordinate by coord
+									MoveY(T_DispCoords coord);		//	Move Y coordinate by coord
+//									MoveZ(T_DispCoords coord);		//	Move Z coordinate by coord
 
 					//virtual
 					void Draw();
@@ -61,7 +46,7 @@
 					void Redraw();
 
 				private:
-					_CoordsType			x, y, z;					//Cursor's coordinates
+					T_DispCoords			x, y;//, z;					//Cursor's coordinates
 					bool			visible;				//Does cursor visible
 				};
 			}	/* namespace Cursor */

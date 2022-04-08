@@ -1,6 +1,7 @@
- // Coded by Bodmer 10/2/18, see license in root directory.
+
+// Coded by Bodmer 10/2/18, see license in root directory.
  // This is part of the Screen class and is associated with anti-aliased font functions
- 
+
 /***************************************************************************************
 ** Function name:
 ** Description:
@@ -15,6 +16,7 @@
 ** Description:             loads parameters from a new font vlw file
 *************************************************************************************x*/
 #include "Font.h"
+//#include "Types.h"
 
 namespace Device{
 	namespace Display{
@@ -42,48 +44,49 @@ namespace Device{
 		textsize=0;
 		_cp437    = true;
 		_utf8     = true;
-		  isDigits   = false;   // No bounding box adjustment
-		  textwrapX  = true;    // Wrap text at end of line when using print stream
-		  textwrapY  = false;   // Wrap text at bottom of screen when using print stream
-		  textdatum = TL_DATUM; // Top Left text alignment is default
-		  padX = 0;             // No padding
-		  glyph_bb=0;
-		  glyph_ab=0;
+		isDigits   = false;   // No bounding box adjustment
+		textwrapX  = true;    // Wrap text at end of line when using print stream
+		textwrapY  = false;   // Wrap text at bottom of screen when using print stream
+		textdatum = TL_DATUM; // Top Left text alignment is default
+		padX = 0;             // No padding
+		glyph_bb=0;
+		glyph_ab=0;
 
-		  ImageBuffer=new c_TextBuffer();
+//		  ImageBuffer=new c_TextBuffer(10);
 
-#ifdef LOAD_GLCD
-  fontsloaded  = 0x0002; // Bit 1 set
-#endif
+		#ifdef LOAD_GLCD
+		  fontsloaded  = 0x0002; // Bit 1 set
+		#endif
 
-#ifdef LOAD_FONT2
-  fontsloaded |= 0x0004; // Bit 2 set
-#endif
+		#ifdef LOAD_FONT2
+		  fontsloaded |= 0x0004; // Bit 2 set
+		#endif
 
-#ifdef LOAD_FONT4
-  fontsloaded |= 0x0010; // Bit 4 set
-#endif
+		#ifdef LOAD_FONT4
+		  fontsloaded |= 0x0010; // Bit 4 set
+		#endif
 
-#ifdef LOAD_FONT6
-  fontsloaded |= 0x0040; // Bit 6 set
-#endif
+		#ifdef LOAD_FONT6
+		  fontsloaded |= 0x0040; // Bit 6 set
+		#endif
 
-#ifdef LOAD_FONT7
-  fontsloaded |= 0x0080; // Bit 7 set
-#endif
+		#ifdef LOAD_FONT7
+		  fontsloaded |= 0x0080; // Bit 7 set
+		#endif
 
-#ifdef LOAD_FONT8
-  fontsloaded |= 0x0100; // Bit 8 set
-#endif
+		#ifdef LOAD_FONT8
+		  fontsloaded |= 0x0100; // Bit 8 set
+		#endif
 
-#ifdef LOAD_FONT8N
-  fontsloaded |= 0x0200; // Bit 9 set
-#endif
+		#ifdef LOAD_FONT8N
+		  fontsloaded |= 0x0200; // Bit 9 set
+		#endif
 
-#ifdef SMOOTH_FONT
-  fontsloaded |= 0x8000; // Bit 15 set
-#endif
+		#ifdef SMOOTH_FONT
+		  fontsloaded |= 0x8000; // Bit 15 set
+		#endif
 	}
+
 	Font::~Font(){
 
 	}
@@ -196,7 +199,7 @@ namespace Device{
 		  // Fetch the metrics for each glyph
 		  loadMetrics(gFont.gCount);
 
-		  //fontFile.close();
+		  //fontFile.close(); <-- check Font::unloadFont
 		}
 
 
@@ -358,8 +361,7 @@ namespace Device{
 		** Function name:           decodeUTF8
 		** Description:             Line buffer UTF-8 decoder with fall-back to extended ASCII
 		*************************************************************************************x*/
-		/* Function moved to Screen.cpp
-		#define DECODE_UTF8
+
 		uint16_t Font::decodeUTF8(uint8_t *buf, uint16_t *index, uint16_t remaining)
 		{
 		  byte c = buf[(*index)++];
@@ -386,13 +388,12 @@ namespace Device{
 
 		  return c; // fall-back to extended ASCII
 		}
-//		*/
+
 
 		/***************************************************************************************
 		** Function name:           decodeUTF8
 		** Description:             Serial UTF-8 decoder with fall-back to extended ASCII
 		*************************************************************************************x*/
-		/* Function moved to Screen.cpp
 		uint16_t Font::decodeUTF8(uint8_t c)
 		{
 
@@ -444,7 +445,6 @@ namespace Device{
 		  decoderState = 0;
 		  return (uint16_t)c; // fall-back to extended ASCII
 		}
-//		*/
 
 
 
@@ -452,6 +452,7 @@ namespace Device{
 		** Function name:           alphaBlend
 		** Description:             Blend foreground and background and return new colour
 		*************************************************************************************x*/
+#ifdef FONT_ALPHABLEND
 		uint16_t Font::alphaBlend(uint8_t alpha, uint16_t fgc, uint16_t bgc)
 		{
 		  // For speed use fixed point maths and rounding to permit a power of 2 division
@@ -473,7 +474,7 @@ namespace Device{
 		  //return ((r&0x1E) << 11) | ((g&0x3C) << 5) | ((b&0x1E) << 0); // 4 bit greyscale
 		  return (r << 11) | (g << 5) | (b << 0);
 		}
-
+#endif
 
 		/***************************************************************************************
 		** Function name:           readInt32
@@ -496,6 +497,7 @@ namespace Device{
 		*************************************************************************************x*/
 		bool Font::getUnicodeIndex(uint16_t unicode, uint16_t *index)
 		{
+Serial.printf("[Font::getUnicodeIndex] gFont.gCount = %u, unicode = %u \n", gFont.gCount, unicode);
 		  for (uint16_t i = 0; i < gFont.gCount; i++)
 		  {
 			if (gUnicode[i] == unicode)
@@ -513,14 +515,18 @@ namespace Device{
 		** Description:             Write a character to the position
 		*************************************************************************************x*/
 		// Expects file to be open
-		void Font::drawGlyph(uint16_t code, T_DispCoords x, T_DispCoords y)//, c_Cursor &cursor)
+		void Font::drawGlyph(uint16_t code, T_DispCoords cx, T_DispCoords cy)//, c_Cursor &cursor)
 		{
-			//_CoordsType cursor_x = x;
-			//_CoordsType cursor_y = y;
+Serial.printf("[Font::drawGlyph] Started. Code %s = %u\n", (char*) &code, code);
+			//T_DispCoords cursor_x = x;
+			//T_DispCoords cursor_y = y;
 #ifndef FONT_SCREEN_SCROLL
-#ifdef FONT_SCREEN_VROLL
+//#ifdef FONT_SCREEN_VROLL
 #endif
-		  if (code < 0x21)
+/**********
+ * Commented block calculates position of symbol and set cursor value
+ * Need to move this to external function of printing texts, not drawing symbols
+			if (code < 0x21)
 		  {
 			if (code == 0x20) {
 			  x += gFont.spaceWidth;
@@ -536,16 +542,20 @@ namespace Device{
 			  return;
 			}
 		  }
-
+**********/
 		  uint16_t gNum = 0;
 		  bool found = getUnicodeIndex(code, &gNum);
 
-		  uint16_t fg = _textcolor();
-		  uint16_t bg = _textbgcolor();
+		  // ToDo: remove it, use colors from _textcolor()
+		  //uint16_t fg = _textcolor();
+		  //uint16_t bg = _textbgcolor();
 
 		  if (found)
 		  {
-
+Serial.printf("[Font::drawGlyph] found = true\n");
+/*****************
+ * ToDo: move it to printing texts
+ *
 			if (textwrapX && (cursor_x + gWidth[gNum] + gdX[gNum] > Device::Display::Driver->width()))
 			{
 			  cursor_y += gFont.yAdvance;
@@ -553,20 +563,45 @@ namespace Device{
 			}
 			if (textwrapY && ((cursor_y + gFont.yAdvance) >= Device::Display::Driver->height())) cursor_y = 0;
 			if (cursor_x == 0) cursor_x -= gdX[gNum];
-
+****************/
 			fontFile->seek(gBitmap[gNum], fs::SeekSet); // This is taking >30ms for a significant position shift
 
-			uint8_t pbuffer[gWidth[gNum]];
 
-			_CoordsType xs = 0;
+//was only gWidth for line by line draw - return it if will be low RAM
+			uint8_t pbuffer[gWidth[gNum]*gHeight[gNum]];
+Serial.printf("[Font::drawGlyph] font widh %u, height %u\n\n", gWidth[gNum], gHeight[gNum]);
+			T_DispCoords xs = 0;
 			uint32_t dl = 0;
 
-			_CoordsType cy = cursor_y + gFont.maxAscent - gdY[gNum];
-			_CoordsType cx = cursor_x + gdX[gNum];
+/*****************
+* ToDo: move it to printing texts
+*
+			T_DispCoords cy = cursor_y + gFont.maxAscent - gdY[gNum];
+			T_DispCoords cx = cursor_x + gdX[gNum];
 			ImageBuffer->init(2,sizeof(uint16_t),cx,cy);
-
+****************/
 //			startWrite(); // Avoid slow ESP32 transaction overhead for every pixel
 
+			// Read font data to alpha-array
+			fontFile->read(pbuffer, gWidth[gNum]*gHeight[gNum]);
+			// Createbuffer with foreground color
+			// ToDo: Create function in Display for drawing one color by alpha-mask
+			uint16_t *data;
+			t_color_r5g6b5 *pix_dst=new (t_color_r5g6b5);
+			Device::Display::Graphics::Graph->color_R8G8B8toR5G6B5(pix_dst, (t_color_r8g8b8 *)&this->textcolor);
+Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this->textcolor, *((uint32_t*) pix_dst));
+			data=(uint16_t *) malloc(gWidth[gNum]*gHeight[gNum]*sizeof(t_color_r5g6b5));
+			for (int y = 0; y < gHeight[gNum]; y++){
+				for (int x = 0; x < gWidth[gNum]; x++){
+					memcpy(data+x*y,pix_dst,sizeof(t_color_r5g6b5));
+				}
+			}
+			// Pushing data to draw
+			Device::Display::Graphics::Graph->drawImageBufferAlpha(cx, cy, data, pbuffer, gWidth[gNum], gHeight[gNum]);
+
+
+/*
+// ToDo: next is old code from original, need to comment it or remove
 			for (int y = 0; y < gHeight[gNum]; y++)
 			{
 			  if (spiffs)
@@ -587,7 +622,7 @@ namespace Device{
 				uint8_t pixel = pbuffer[x]; //<//
 				if (pixel)
 				{
-/*
+*//*
 					if (pixel != 0xFF)
 				  {
 					if (dl) {
@@ -595,13 +630,19 @@ namespace Device{
 					  else drawFastHLine( xs, y + cy, dl, fg);
 					  dl = 0;
 					}
-					drawPixel(x + cx, y + cy, alphaBlend(pixel, fg, bg));
+					drawPixel(x + cx, y + cy,
+						#ifdef FONT_ALPHABLEND
+							alphaBlend(pixel, fg, bg)
+						#else
+							fg
+						#endif
+						);
 				  }
 				  else
 				  {
 					if (dl==0) xs = x + cx;
 					dl++;
-				  }// */
+				  }// * /
 
 				}
 				else
@@ -612,16 +653,51 @@ namespace Device{
 //			  if (dl) { drawFastHLine( xs, y + cy, dl, fg); dl = 0; }
 			}// */
 
-			cursor_x += gxAdvance[gNum];
+// Move to text printing			cursor_x += gxAdvance[gNum];
 //			endWrite();
 		  }
 		  else
 		  {
+//testing font 1
+			  //cheight = (glyph_ab + glyph_bb) * textsize;
+			  // Get the offset for the first character only to allow for negative offsets
+			  uint16_t c2 = 0;
+			  //uint16_t len = strlen(string);
+			  uint16_t n = 0;
+
+			  //while (n < len && c2 == 0) c2 = decodeUTF8((uint8_t*)string, &n, len - n);
+
+			  if((c2 >= pgm_read_word(&gfxFont->first)) && (c2 <= pgm_read_word(&gfxFont->last) ))
+			  {
+				c2 -= pgm_read_word(&gfxFont->first);
+				GFXglyph *glyph = &(((GFXglyph *)pgm_read_dword(&gfxFont->glyph))[c2]);
+				//xo = pgm_read_byte(&glyph->xOffset) * textsize;
+				// Adjust for negative xOffset
+				//if (xo > 0) xo = 0;
+				//else cwidth -= xo;
+				// Add 1 pixel of padding all round
+				//cheight +=2;
+				//fillRect(poX+xo-1, poY - 1 - glyph_ab * textsize, cwidth+2, cheight, textbgcolor);
+				//Device::Display::Graphics::Graph->fillRect(poX+xo, poY - glyph_ab * textsize, cwidth, cheight, textbgcolor); //ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
+			  }
+				uint16_t *data;
+				t_color_r5g6b5 *pix_dst=new (t_color_r5g6b5);
+				Device::Display::Graphics::Graph->color_R8G8B8toR5G6B5(pix_dst, (t_color_r8g8b8 *)&this->textcolor);
+	Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this->textcolor, *((uint32_t*) pix_dst));
+				data=(uint16_t *) malloc(gWidth[gNum]*gHeight[gNum]*sizeof(t_color_r5g6b5));
+				for (int y = 0; y < gHeight[gNum]; y++){
+					for (int x = 0; x < gWidth[gNum]; x++){
+						memcpy(data+x*y,pix_dst,sizeof(t_color_r5g6b5));
+					}
+				}
+				// Pushing data to draw
+				//Device::Display::Graphics::Graph->drawImageBufferAlpha(cx, cy, data, pbuffer, gWidth[gNum], gHeight[gNum]);
+//end of testing font 1
 			// Not a Unicode in font so draw a rectangle and move on cursor
 //			drawRect(cursor_x, cursor_y + gFont.maxAscent - gFont.ascent, gFont.spaceWidth, gFont.ascent, fg);
-			cursor_x += gFont.spaceWidth + 1;
+// move to printing text			cursor_x += gFont.spaceWidth + 1;
 		  }
-		  ImageBuffer->Set(cursor_x, cursor_y);
+// move to printing text		  ImageBuffer->Set(cursor_x, cursor_y);
 		}
 
 		/***************************************************************************************
@@ -1096,12 +1172,12 @@ namespace Device{
 			//fontFile = SPIFFS.open( _gFontFilename, "r");
 			if(!fontFile) return 0;
 
-			ImageBuffer->Set(poX, poY);
+//			ImageBuffer->Set(poX, poY);
 
 			while (n < len)
 			{
 			  uint16_t uniCode = decodeUTF8((uint8_t*)string, &n, len - n);
-			  drawGlyph(uniCode);//, *cursor); //ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
+			  drawGlyph(uniCode, poX, poY);//, *cursor); //ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
 			}
 			sumX += cwidth;
 			//fontFile.close();
@@ -1348,7 +1424,7 @@ namespace Device{
 
 		  textfont = 1;
 		  gfxFont = (GFXfont *)f;
-
+Serial.printf("[Font::setFreeFont] GFXfont: \n");
 		  glyph_ab = 0;
 		  glyph_bb = 0;
 		  uint16_t numChars = pgm_read_word(&gfxFont->last) - pgm_read_word(&gfxFont->first);
@@ -1414,7 +1490,7 @@ namespace Device{
 			** Function name:           decodeUTF8
 			** Description:             Serial UTF-8 decoder with fall-back to extended ASCII
 			*************************************************************************************x*/
-			#define DECODE_UTF8 // Test only, comment out to stop decoding
+/*			#define DECODE_UTF8 // Test only, comment out to stop decoding
 			uint16_t Font::decodeUTF8(uint8_t c)
 			{
 			#ifdef DECODE_UTF8
@@ -1466,12 +1542,12 @@ namespace Device{
 			  return (uint16_t)c; // fall-back to extended ASCII
 			}
 
-
+*/
 			/***************************************************************************************
 			** Function name:           decodeUTF8
 			** Description:             Line buffer UTF-8 decoder with fall-back to extended ASCII
 			*************************************************************************************x*/
-			uint16_t Font::decodeUTF8(uint8_t *buf, uint16_t *index, uint16_t remaining)
+/*			uint16_t Font::decodeUTF8(uint8_t *buf, uint16_t *index, uint16_t remaining)
 			{
 			  uint16_t c = buf[(*index)++];
 			  //Serial.print("Byte from string = 0x"); Serial.println(c, HEX);
@@ -1498,7 +1574,7 @@ namespace Device{
 			  return c; // fall-back to extended ASCII
 			}
 
-
+*/
 			/***************************************************************************************
 			** Function name:           write
 			** Description:             draw characters piped through serial stream
@@ -1668,7 +1744,6 @@ namespace Device{
 			T_DispCoords Font::drawChar(uint16_t uniCode, T_DispCoords x, T_DispCoords y, uint8_t font)
 			{
 			  if (!uniCode) return 0;
-
 			  if (font==1)
 			  {
 			#ifdef LOAD_GLCD
@@ -1707,13 +1782,14 @@ namespace Device{
 			#endif
 			  }
 
-			  if ((font>1) && (font<9) && ((uniCode < 32) || (uniCode > 127))) return 0;
+			  if ((font>1) && (font<9) && ((uniCode < 32) || (uniCode > 127))) return 0; //skip some codes for some fonts
 
 			  T_DispCoords width  = 0;
 			  T_DispCoords height = 0;
 			  uint32_t flash_address = 0;
 			  uniCode -= 32;
 
+			  // Finding width and height of symbol
 			#ifdef LOAD_FONT2
 			  if (font == 2)
 			  {
@@ -1755,7 +1831,7 @@ namespace Device{
 #endif
 #ifndef FONT_SCREEN_SCROLL
 #ifndef FONT_SCREEN_VROLL
-				// if printing char goes out of screen then return width of char
+				// if printing char goes out of screen then return height of char
 				if ( y - height * textsize < 0 ) return height * textsize ;
 				if ( y >= (int16_t)Device::Display::Graphics::Graph->height()) return 0;
 #else
@@ -1764,11 +1840,16 @@ namespace Device{
 #else
 
 #endif
+
+				// ToDo: Make this to draw symbol with remade classes
+//				if (bgfill) if (textcolor != textbgcolor) Device::Display::Graphics::Graph->fillRect(x, pY, width * textsize, height * textsize, textbgcolor);
+//				Device::Display::Driver->pushImage(px, py, px + ts, py + ts, data, alpha)
+
 //				if (textcolor == textbgcolor || textsize != 1) {
 // ToDo remake for block write. Make transparent image with alpha channel and write with image writing function.
 				  for (int32_t i = 0; i < height; i++)
 				  {
-					 if (bgfill) if (textcolor != textbgcolor) Device::Display::Graphics::Graph->fillRect(x, pY, width * textsize, textsize, textbgcolor);
+
 
 					for (int32_t k = 0; k < w; k++)
 					{
@@ -1862,15 +1943,17 @@ namespace Device{
 					  }
 					  while (line--) { // In this case the while(line--) is faster
 						pc++; // This is faster than putting pc+=line before while()?
-						setWindow(px, py, px + ts, py + ts);//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
+						Device::Display::Driver->setWindow(px, py, px + ts, py + ts);//ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
 
-						Device::Display::Driver->pushColors(uint8_t *data, np);
+//						Device::Display::Driver->pushColors(uint8_t *data, np);
 
 						if (ts) {
 						  tnp = np;
-						  while (tnp--) {tft_Write_16(textcolor);//pushColor(uint16_t color)} //pushColors
-						}
-						else {tft_Write_16(textcolor);}
+						  while (tnp--) {
+							  tft_Write_16(textcolor);
+							  //pushColor(uint16_t color)
+						  } //pushColors
+						}else {tft_Write_16(textcolor);}
 						px += textsize;
 
 						if (px >= (x + width * textsize))
@@ -1956,7 +2039,6 @@ namespace Device{
 				  ((x + 6 * size - 1) < 0) || // Clip left
 				  ((y + 8 * size - 1) < 0))   // Clip top
 				return; //ToDo: modify to make buffer
-
 			  if (c < 32) return;
 			#ifdef LOAD_GLCD
 			//>>>>>>>>>>>>>>>>>>
@@ -1964,15 +2046,13 @@ namespace Device{
 			  if(!gfxFont) { // 'Classic' built-in font
 			#endif
 			//>>>>>>>>>>>>>>>>>>
-
 			  boolean fillbg = (bg != color);
-
+Serial.printf("\n--------------");
 			  if ((size==1) && fillbg)
 			  {
 				uint8_t column[6];
 				uint8_t mask = 0x1;
 //				spi_begin();//ToDo: modify to make buffer
-
 //				setWindow(x, y, x+5, y+8);//ToDo: modify to make buffer
 
 				for (int8_t i = 0; i < 5; i++ ) column[i] = pgm_read_byte(font + (c * 5) + i);
@@ -2001,24 +2081,40 @@ namespace Device{
 				  while(SPI1CMD & SPIBUSY) {}
 				}
 			#else // for ESP32 or ILI9488
+				buf_Bitmap=malloc(40);
+				char nul=0, fill=255;
 
 				for (int8_t j = 0; j < 8; j++) {
 				  for (int8_t k = 0; k < 5; k++ ) {
-					if (column[k] & mask) {tft_Write_16(color);}
-					else {tft_Write_16(bg);}
+// load alpha channel for symbol
+
+					if (column[k] & mask) {
+						memcpy((unsigned char *)buf_Bitmap+5*j+k,&fill,1);
+					}else{
+						memcpy((unsigned char *)buf_Bitmap+5*j+k,&nul,1);
+					}
+Serial.printf("%u ", (unsigned int) *((unsigned char *)buf_Bitmap+5*j+k));
 				  }
 				  mask <<= 1;
 				  tft_Write_16(bg);
+Serial.printf("\n");
 				}
-
+Serial.printf("\n--------------");
+				t_color_r5g6b5 *pix_dst=new (t_color_r5g6b5);
+				//color_R5G6B5touint16
+				Serial.printf("Start symbol buf_bitmap=%u\n", *(unsigned char*)((unsigned int)buf_Bitmap+5));
+				Device::Display::Graphics::Graph->color_R8G8B8toR5G6B5(pix_dst, (t_color_r8g8b8 *)&color);
+				Device::Display::Graphics::Graph->drawImageBufferAlpha(x, y, *pix_dst, (uint8_t*) buf_Bitmap, 5, 8);
+				delete(pix_dst);
 			#endif
 
 //				spi_end();//ToDo: modify to make buffer
 			  }
 			  else
 			  {
-				//spi_begin();          // Sprite class can use this function, avoiding spi_begin()
+//				spi_begin();          // Sprite class can use this function, avoiding spi_begin()
 //				inTransaction = true;//ToDo: modify to make buffer
+
 				for (int8_t i = 0; i < 6; i++ ) {
 				  uint8_t line;
 				  if (i == 5)
@@ -2029,20 +2125,20 @@ namespace Device{
 				  if (size == 1) // default size
 				  {
 					for (int8_t j = 0; j < 8; j++) {
-//					  if (line & 0x1) drawPixel(x + i, y + j, color);
+					  if (line & 0x1) drawPixel(x + i, y + j, color); //ToDo: modify to draw by new lib
 					  line >>= 1;
 					}
 				  }
 				  else {  // big size
 					for (int8_t j = 0; j < 8; j++) {
-/*					  if (line & 0x1) fillRect(x + (i * size), y + (j * size), size, size, color);
-					  else if (fillbg) fillRect(x + i * size, y + j * size, size, size, bg);*///ToDo: modify to make buffer
+					  if (line & 0x1) fillRect(x + (i * size), y + (j * size), size, size, color);
+					  else if (fillbg) fillRect(x + i * size, y + j * size, size, size, bg);//ToDo: modify to make buffer
 					  line >>= 1;
 					}
 				  }
 				}
-/*				inTransaction = false;
-				spi_end();*///ToDo: modify to make buffer
+//				inTransaction = false;
+//				spi_end();//ToDo: modify to make buffer
 			  }
 
 			//>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -2056,7 +2152,7 @@ namespace Device{
 				// Filter out bad characters not present in font
 				if ((c >= pgm_read_word(&gfxFont->first)) && (c <= pgm_read_word(&gfxFont->last )))
 				{
-				  //spi_begin();          // Sprite class can use this function, avoiding spi_begin()
+//				  spi_begin();          // Sprite class can use this function, avoiding spi_begin()
 //				  inTransaction = true; //ToDo: modify to make buffer
 			//>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -2115,8 +2211,8 @@ namespace Device{
 					  else {
 					   if (hpc) {
 			#ifndef FIXED_SIZE
-/*						  if(size == 1) drawFastHLine(x+xo+xx-hpc, y+yo+yy, hpc, color);
-						  else fillRect(x+(xo16+xx-hpc)*size, y+(yo16+yy)*size, size*hpc, size, color);*///ToDo: modify to make buffer
+						  if(size == 1) drawFastHLine(x+xo+xx-hpc, y+yo+yy, hpc, color);
+						  else fillRect(x+(xo16+xx-hpc)*size, y+(yo16+yy)*size, size*hpc, size, color);//ToDo: modify to make buffer
 			#else
 						  drawFastHLine(x+xx-hpc, y+yy, hpc, color);
 			#endif
@@ -2128,8 +2224,8 @@ namespace Device{
 				  // Draw pixels for this line as we are about to increment yy
 					if (hpc) {
 			#ifndef FIXED_SIZE
-/*					  if(size == 1) drawFastHLine(x+xo+xx-hpc, y+yo+yy, hpc, color);
-					  else fillRect(x+(xo16+xx-hpc)*size, y+(yo16+yy)*size, size*hpc, size, color);*///ToDo: modify to make buffer
+					  if(size == 1) drawFastHLine(x+xo+xx-hpc, y+yo+yy, hpc, color);
+					  else fillRect(x+(xo16+xx-hpc)*size, y+(yo16+yy)*size, size*hpc, size, color);//ToDo: modify to make buffer
 			#else
 					  drawFastHLine(x+xx-hpc, y+yy, hpc, color);
 			#endif
@@ -2179,8 +2275,8 @@ namespace Device{
 					}
 				  }
 			#endif
-/*				  inTransaction = false;
-				  spi_end();*///ToDo: modify to make buffer
+//				  inTransaction = false;
+//				  spi_end();//ToDo: modify to make buffer
 				}
 			#endif
 
@@ -2194,28 +2290,19 @@ namespace Device{
 			}
 
 
-			_CoordsType Font::__width(){
-				return 2000;
-			}
-			_CoordsType Font::__height(){
-				return 2000;
-			}
-
-
-
 			/***************************************************************************************
 			** Function name:
 			** Description:             c_TextBuffer constructor
 			***************************************************************************************/
 
 			c_TextBuffer::c_TextBuffer(){
-				buffer = Device::Memory::c_Buffer();
+				buffer = new Device::Memory::c_Buffer();
 				x=0;
 				y=0;
 			}
 
 			c_TextBuffer::c_TextBuffer(uint16_t length){
-				buffer = Device::Memory::c_Buffer(1,2,length);
+				buffer = new Device::Memory::c_Buffer(1,2,length);
 				x=0;
 				y=0;
 			}

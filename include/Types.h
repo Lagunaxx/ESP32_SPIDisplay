@@ -43,31 +43,6 @@ namespace Device{
 	#endif
 #endif
 
-
-	struct upng_s_rgb16b{
-		int b:5;
-		int g:6;
-		int r:5;
-		int null : 16;
-	};
-	struct upng_s_rgb18b{
-		int b:6;
-		int g:6;
-		int r:6;
-		int null:14;
-	};
-	struct upng_s_rgb24b{
-		int r:8;
-		int g:8;
-		int b:8;
-		int null:8;
-	};
-
-	struct upng_s_rgba32b{
-		upng_s_rgb24b rgb;
-		byte alpha;
-	};
-
 	struct st_Size2D{
 		T_DispCoords width;
 		T_DispCoords height;

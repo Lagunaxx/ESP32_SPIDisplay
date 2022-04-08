@@ -3,6 +3,9 @@
 //#include <string.h>
 //#include <limits.h>
 #include "upng.h"
+
+#ifdef GRAPH_PNG
+
 namespace Device {
 	namespace Display {
 		namespace uPNG {
@@ -615,3 +618,5 @@ namespace Device {
 		}
 	}
 }
+
+#endif /* #ifdef GRAPH_PNG */

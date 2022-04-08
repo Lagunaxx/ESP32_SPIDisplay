@@ -20,13 +20,18 @@
 		#include <SPIFFS.h>
 	#endif
 
-	#include <ESP32_SPIDisplay.h>
-	#include <Extensions/Cursor.h>
-	#include <Extensions/cBuffer.h>
-	#include <Extensions/Graphics.h>
+	#include "ESP32_SPIDisplay.h"
+	#include "Cursor.h"
+	#include "cBuffer.h"
+	#include "Graphics.h"
+	#include "Types.h"
 	//#include <Extensions/Sprite.h>
 
+// ToDo: move color convertion (888 to 565, 888 to 555, etc) to external extension
+#include "upng.h"
+
 	#include "FontTypes.h"
+	#include "GFXFF/gfxfont.h"
 
 	namespace Device{
 		namespace Display{
@@ -65,7 +70,7 @@
 				// Only load the fonts defined in User_Setup.h (to save space)
 				// Set flag so RLE rendering code is optionally compiled
 				#ifdef LOAD_GLCD
-				  #include <Fonts/glcdfont.c>
+				  #include "Fonts/glcdfont.h"
 				#endif
 
 				#ifdef LOAD_FONT2
@@ -239,7 +244,7 @@
 				};
 
 
-				class Font{
+				class Font: public Screen {
 				 public:
 					Font();
 					virtual ~Font();
@@ -326,16 +331,16 @@
 				  void     loadFont(String fontName, bool flash = true);
 				  void     unloadFont( void );
 				  bool     getUnicodeIndex(uint16_t unicode, uint16_t *index);
-
+#ifdef FONT_ALPHABLEND
 				  uint16_t alphaBlend(uint8_t alpha, uint16_t fgc, uint16_t bgc);
-
+#endif
 				  virtual void drawGlyph(uint16_t code, T_DispCoords x, T_DispCoords y);//, c_Cursor &cursor);
 
 				  void     showFont(uint32_t td, Device::Display::Screen &display);
 
 				 protected:
-				  uint16_t decodeUTF8(uint8_t *buf, uint16_t *index, uint16_t remaining);
-				  uint16_t decodeUTF8(uint8_t c);
+//				  uint16_t decodeUTF8(uint8_t *buf, uint16_t *index, uint16_t remaining);
+//				  uint16_t decodeUTF8(uint8_t c);
 
 				  private:
 				  	  uint32_t textcolor, textbgcolor;
@@ -367,7 +372,9 @@
 					uint8_t  glyph_ab,   // glyph delta Y (height) above baseline
 						   glyph_bb;   // glyph delta Y (height) below baseline
 
-					c_TextBuffer *ImageBuffer;
+//					c_TextBuffer *ImageBuffer;
+					//Device::Memory::c_Buffer *ImageBuffer;
+					void* buf_Bitmap;
 
 
 				};

@@ -7,9 +7,12 @@
 #ifndef ESPRITE_CLASS_DEFINATION
 #define ESPRITE_CLASS_DEFINATION
 
-#include <Extensions/Graphics.h>
-#include <Extensions/Cursor.h>
-#include <Extensions/Font/Font.h>
+#include "Graphics.h"
+#include "Cursor.h"
+#include "Font.h"
+//#include <Extensions/Graphics.h>
+//#include <Extensions/Cursor.h>
+//#include <Extensions/Font/Font.h>
 
 namespace Device{
 	namespace Display{

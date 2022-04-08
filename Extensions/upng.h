@@ -28,12 +28,16 @@ freely, subject to the following restrictions:
 #if !defined(UPNG_H)
 #define UPNG_H
 
-	#include <Arduino.h>
-	#include <FS.h>
-	#include "SPIFFS.h"
+#include "ESP32_SPIDisplay.h"
+
+#ifdef GRAPH_PNG
+
+#include <Arduino.h>
+#include <FS.h>
+#include "SPIFFS.h"
 #include <Types.h>
-#include "../ESP32_SPIDisplay.h"
 #include "pebble.h"
+#include "Graphics.h"
 
 //using namespace Device::Display;
 
@@ -56,12 +60,18 @@ namespace Device {
 	namespace Display {
 		namespace uPNG {
 
+			using Device::Display::Graphics::t_color_r5g6b5;
+			using Device::Display::Graphics::t_color_r6g6b6;
+			using Device::Display::Graphics::t_color_r8g8b8;
+			using Device::Display::Graphics::t_color_r8g8b8a8;
+			using Device::Display::Graphics::Graph;
+
 			typedef enum upng_format {
 				UPNG_BADFORMAT,
-			  UPNG_INDEXED1,
-			  UPNG_INDEXED2,
-			  UPNG_INDEXED4,
-			  UPNG_INDEXED8,
+				UPNG_INDEXED1,
+				UPNG_INDEXED2,
+				UPNG_INDEXED4,
+				UPNG_INDEXED8,
 				UPNG_RGB8,
 				UPNG_RGB16,
 				UPNG_RGBA8,
@@ -97,7 +107,7 @@ namespace Device {
 			class c_uPNG{
 			public:
 				void DrawFile(char *filename, T_DispCoords x, T_DispCoords y); // Open and draw file
-			private:
+//			private:
 				#ifndef UPNG_USE_STDIO
 				upng_t*		upng_new_from_file	 (char* path);
 				#endif
@@ -135,19 +145,6 @@ namespace Device {
 
 				void upng_GetPixel(void* pixel, upng_t* upng, int x, int y); //Get pixel info from buffer
 
-				upng_s_rgb16b* InitColorR5G6B5();
-				upng_s_rgb18b* InitColorR6G6B6();
-				upng_s_rgb24b* InitColorR8G8B8();
-				bool InitColor(upng_s_rgb16b **dst);
-				bool InitColor(upng_s_rgb18b **dst);
-				bool InitColor(upng_s_rgb24b **dst);
-				void ResetColor(upng_s_rgb16b *dst);
-				void ResetColor(upng_s_rgb18b *dst);
-				void ResetColor(upng_s_rgb24b *dst);
-				void color_R8G8B8toR6G6B6(upng_s_rgb18b *dst, upng_s_rgb24b *src); //Converts 24bit-color(r8,g8,b8) into 18bit-color(r6,g6,b6)
-				void color_R8G8B8toR5G6B5(upng_s_rgb16b *dst, upng_s_rgb24b *src); //Converts 24bit-color(r8,g8,b8) into 16bit-color(r5,g6,b5)
-				bool color_R6G6B6touint32(uint32_t *dst, upng_s_rgb18b *src);
-				bool color_R5G6B5touint32(uint32_t *dst, upng_s_rgb16b *src);
 				uint16_t* colorBuffer_R8G8B8toR5G6B5(upng_t* upng);
 				uint8_t* colorBuffer_A8R8G8B8toA8(upng_t* upng);
 				upng_t* upng_new(void);
@@ -162,4 +159,8 @@ namespace Device {
 		}
 	}
 }
+
+#endif /*#ifdef GRAPH_PNG*/
+
 #endif /*defined(UPNG_H)*/
+

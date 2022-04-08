@@ -329,8 +329,10 @@ void* c_Buffer::copyBuffer(void *needPosition, void *needSize){
 	bool DecreaseNextDimension=false;
 	void *tmpSizePosition = (uint*)malloc((dimensions-1)*unitSize); //Contains positions for data-blocks (without first dimension)
 	uint8_t *posparam = (uint8_t *) malloc(unitSize); //Contains position of current dimension in dimensions listing
-	uint64_t lastmax=1, *curmax=(uint64_t*)malloc(unitSize);
-
+	uint64_t lastmax=1, *curmax=(uint64_t*)malloc(unitSize), nul64 = (uint64_t)0;
+for (uint c_curmax=0; c_curmax<unitSize; c_curmax++){
+	memcpy((void*)(curmax+c_curmax), &nul64, sizeof(uint64_t));
+}
 Serial.printf("\nstart list");
 	ListDimensions(i,0){
 	// Calculate size we need to malloc

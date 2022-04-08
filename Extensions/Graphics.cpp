@@ -327,6 +327,7 @@ namespace Device {
 			***************************************************************************************/
 			void Graphics::fillScreen(uint32_t color)
 			{
+Serial.printf("[Graphics::fillScreen] width=%u; height=%u", width(), height());
 			  fillRect(0, 0, width(), height(), color);
 			}
 
@@ -585,8 +586,8 @@ namespace Device {
 				pushImage((uint32_t)x,(uint32_t)y,(uint32_t)w,(uint32_t)h,(uint16_t *)buffer, alpha);
 #else
 				uint16_t *data= (uint16_t*)malloc(w*h*sizeof(uint16_t));
-				upng_s_rgb16b *pixel_screen = new upng_s_rgb16b();
-				upng_s_rgb16b *pixel_buffer = new upng_s_rgb16b();
+				t_color_r5g6b5 *pixel_screen = new t_color_r5g6b5();
+				t_color_r5g6b5 *pixel_buffer = new t_color_r5g6b5();
 				uint8_t a;
 //				readRect(x, y, w, h, data);
 /*
@@ -606,6 +607,191 @@ namespace Device {
 				pushImage((uint32_t)x,(uint32_t)y,(uint32_t)w,(uint32_t)h,(uint16_t *)buffer, alpha);
 				free(data);
 #endif
+			}
+
+			/***************************************************************************************
+			** Function name:           drawImageBufferAlpha
+			** Description:             Calling Display function to draw buffer data on screen
+			** 							with alpha-channel support
+			***************************************************************************************/
+			void Graphics::drawImageBufferAlpha(T_DispCoords x, T_DispCoords y, t_color_r5g6b5 color, uint8_t* alpha, T_DispCoords w, T_DispCoords h){
+				//ToDo: remove (uint32_t). for this need to modify types in Display::Driver
+#ifdef NO_READ_VBUFFER
+/*
+Serial.printf("\n");
+				// Filling stamp with text color
+				uint16_t *data;
+				data=(uint16_t *) malloc(w*h*sizeof(t_color_r5g6b5));
+				for (int b = 0; b < h; b++){
+					for (int a = 0; a < w; a++){
+						memcpy(data+(a*b+a)*sizeof(t_color_r5g6b5),(void *)&color,sizeof(t_color_r5g6b5));
+Serial.printf("%u ", (unsigned int) *((unsigned char *)data+(a*b+a)*sizeof(t_color_r5g6b5)));
+					}
+Serial.printf("\n");
+
+				}
+*/Serial.printf("Start symbol alpha=%u\n",(unsigned int)alpha);
+Serial.printf("Start symbol alpha[5]=%u\n", (unsigned char) *((unsigned char *)alpha+5));
+
+for (uint8_t a=0;a<h;a++){
+	for (uint8_t b=0; b<w;b++){
+Serial.printf("%u ",(unsigned char) *((unsigned char *)alpha+a*w+b));//    *(alpha+a*b+b));
+	}
+	Serial.printf("\n");
+}
+Serial.printf("eoseoseoseos\n\n");
+
+				pushImage(x,y,w,h, color.rgb, alpha);
+//				free(data);
+#else
+				uint16_t *data= (uint16_t*)malloc(w*h*sizeof(uint16_t));
+				t_color_r5g6b5 *pixel_screen = new t_color_r5g6b5();
+				t_color_r5g6b5 *pixel_buffer = new t_color_r5g6b5();
+				uint8_t a;
+//				readRect(x, y, w, h, data);
+/*
+				for (T_DispCoords xx=0;xx<w;xx++){
+					for (T_DispCoords yy=0;yy<h;yy++){
+						memcpy(pixel_screen,data+(yy*w+xx)*1,2);
+						memcpy(pixel_buffer,(uint16_t *)buffer+(yy*w+xx)*1,2);
+						a=*(alpha+yy*w+xx);
+						//memcpy(&a,alpha+yy*w+xx,1);
+						pixel_screen->r=pixel_screen->r*(255-a)/255 + pixel_buffer->r*a/255;
+						pixel_screen->g=pixel_screen->g*(255-a)/255 + pixel_buffer->g*a/255;
+						pixel_screen->b=pixel_screen->b*(255-a)/255 + pixel_buffer->b*a/255;
+						memcpy(data+(yy*w+xx),pixel_screen,2);
+					}
+				}
+*/
+				pushImage((T_DispCoords)x,(T_DispCoords)y,(T_DispCoords)w,(T_DispCoords)h,(uint16_t *)buffer, alpha);
+				free(data);
+#endif
+			}
+
+
+			/***************************************************************************************
+			** Function name:           InitColor*
+			** Description:             Initialize variables with specified colors-schema
+			*************************************************************************************x*/
+
+			t_color_r5g6b5* Graphics::InitColorR5G6B5(){
+				t_color_r5g6b5*color=(t_color_r5g6b5*)malloc(sizeof(t_color_r5g6b5));
+				if (color!=0){
+					ResetColor(color);
+				}
+				return color;
+			}
+			t_color_r6g6b6* Graphics::InitColorR6G6B6(){
+				t_color_r6g6b6*color=(t_color_r6g6b6*)malloc(sizeof(t_color_r6g6b6));
+				if (color!=0){
+					ResetColor(color);
+				}
+				return color;
+			}
+			t_color_r8g8b8* Graphics::InitColorR8G8B8(){
+				t_color_r8g8b8*color=(t_color_r8g8b8*)malloc(sizeof(t_color_r8g8b8));
+				if (color!=0){
+					ResetColor(color);
+				}
+				return color;
+			}
+
+			bool Graphics::InitColor(t_color_r5g6b5 **dst){
+				*dst=(t_color_r5g6b5*)malloc(sizeof(t_color_r5g6b5));
+				if (dst!=0){
+					ResetColor(*dst);
+					return true;
+				}
+				return false;
+			}
+			bool Graphics::InitColor(t_color_r6g6b6 **dst){
+				*dst=(t_color_r6g6b6*)malloc(sizeof(t_color_r6g6b6));
+				if (dst!=0){
+					ResetColor(*dst);
+					return true;
+				}
+				return false;
+			}
+			bool Graphics::InitColor(t_color_r8g8b8 **dst){
+				*dst=(t_color_r8g8b8*)malloc(sizeof(t_color_r8g8b8));
+				if (dst!=0){
+					ResetColor(*dst);
+					return true;
+				}
+				return false;
+			}
+
+			/***************************************************************************************
+			** Function name:           ResetColor
+			** Description:             Set coloe to black (0x0)
+			*************************************************************************************x*/
+
+			void Graphics::ResetColor(t_color_r5g6b5 *dst){
+				*dst=(t_color_r5g6b5){0,0,0,0};
+			}
+			void Graphics::ResetColor(t_color_r6g6b6 *dst){
+				*dst=(t_color_r6g6b6){0,0,0,0};
+			}
+			void Graphics::ResetColor(t_color_r8g8b8 *dst){
+				*dst=(t_color_r8g8b8){0,0,0,0};
+			}
+
+			/***************************************************************************************
+			** Function name:           color_*to**
+			** Description:             Converts color-schema * into color-schema **
+			*************************************************************************************x*/
+			/*
+			 * Converting between colors
+			 */
+
+			void Graphics::color_R8G8B8A8toR8G8B8(t_color_r8g8b8 *dst, t_color_r8g8b8a8 *src){
+				dst->r=src->r;
+				dst->g=src->g;
+				dst->b=src->b;
+			}
+
+			void Graphics::color_R8G8B8toR6G6B6(t_color_r6g6b6 *dst, t_color_r8g8b8 *src){
+				dst->r=src->r>>2;
+				dst->g=src->g>>2;
+				dst->b=src->b>>2;
+			}
+
+			void Graphics::color_R8G8B8toR5G6B5(t_color_r5g6b5 *dst, t_color_r8g8b8 *src){
+				dst->r=src->r>>3;
+				dst->g=src->g>>2;
+				dst->b=src->b>>3;
+			}
+			bool Graphics::color_R6G6B6touint32(uint32_t *dst, t_color_r6g6b6 *src){
+				if ((dst!=0)&(src!=0)){
+					memcpy(dst,src,sizeof(t_color_r6g6b6));
+					return true;
+				}else{
+					return false;
+				}
+			}
+			bool Graphics::color_R5G6B5touint32(uint32_t *dst, t_color_r5g6b5 *src){
+				if ((dst!=0)&(src!=0)){
+					memcpy(dst,src,sizeof(t_color_r5g6b5));
+					return true;
+				}else{
+					return false;
+				}
+			}
+			bool Graphics::color_R6G6B6touint16(uint16_t *dst, t_color_r6g6b6 *src){
+				if ((dst!=0)&(src!=0)){
+					memcpy(dst,src,sizeof(uint16_t));
+					return true;
+				}else{
+					return false;
+				}
+			}
+			bool Graphics::color_R5G6B5touint16(uint16_t *dst, t_color_r5g6b5 *src){
+				if ((dst!=0)&(src!=0)){
+					memcpy(dst,src,sizeof(uint16_t));
+					return true;
+				}else{
+					return false;
+				}
 			}
 
 			/***************************************************************************************
