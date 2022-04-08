@@ -1880,7 +1880,7 @@ Serial.printf("[Font::setFreeFont] GFXfont: \n");
 						}
 					  }
 					}
-//					pY += textsize;
+					pY += textsize;
 				  }
 
 //				}
