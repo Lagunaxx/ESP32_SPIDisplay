@@ -883,7 +883,7 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 
 		T_DispCoords Font::textWidth(const char *string, uint8_t font)
 		{
-			T_DispCoords str_width = 0;
+		  T_DispCoords str_width = 0;
 		  uint16_t uniCode  = 0;
 
 		#ifdef SMOOTH_FONT
@@ -959,6 +959,90 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 		  return str_width * textsize;
 		}
 
+		/***************************************************************************************
+		** Function name:           textWidthFit
+		** Description:             Return amount of symbols fits in the width
+		***************************************************************************************/
+		uint8_t Font::textWidthFit(const char *string, uint8_t font, T_DispCoords twidth){
+			  T_DispCoords str_width = 0;
+			  uint16_t uniCode  = 0;
+			  uint8_t scount = 0; // counting symbols
+
+			#ifdef SMOOTH_FONT
+			  if(fontLoaded)
+			  {
+				while (*string)
+				{
+				  uniCode = decodeUTF8(*string++);
+				  if (uniCode)
+				  {
+					if (uniCode == 0x20) str_width += gFont.spaceWidth * textsize;
+					else
+					{
+					  uint16_t gNum = 0;
+					  bool found = getUnicodeIndex(uniCode, &gNum);
+					  if (found)
+					  {
+						if(str_width == 0 && gdX[gNum] < 0) str_width -= gdX[gNum] * textsize;
+						if (*string || isDigits) str_width += gxAdvance[gNum] * textsize;
+						else str_width += (gdX[gNum] + gWidth[gNum]) * textsize;
+					  }
+					  else str_width += (gFont.spaceWidth + 1) * textsize;
+					}
+				  }
+				  if ( str_width < twidth) scount++; else break;
+				}
+				isDigits = false;
+				return scount;
+			  }
+			#endif
+
+			  if (font>1 && font<9)
+			  {
+				char *widthtable = (char *)pgm_read_dword( &(fontdata[font].widthtbl ) ) - 32; //subtract the 32 outside the loop
+
+				while (*string)
+				{
+				  uniCode = *(string++);
+				  if (uniCode > 31 && uniCode < 128)
+				  str_width += pgm_read_byte( widthtable + uniCode) * textsize; // Normally we need to subtract 32 from uniCode
+				  else str_width += pgm_read_byte( widthtable + 32) * textsize; // Set illegal character = space width
+				  if ( str_width < twidth) scount++; else break;
+				}
+
+			  }
+			  else
+			  {
+
+			#ifdef LOAD_GFXFF
+				if(gfxFont) // New font
+				{
+				  while (*string)
+				  {
+					uniCode = decodeUTF8(*string++);
+					if ((uniCode >= pgm_read_word(&gfxFont->first)) && (uniCode <= pgm_read_word(&gfxFont->last )))
+					{
+					  uniCode -= pgm_read_word(&gfxFont->first);
+					  GFXglyph *glyph  = &(((GFXglyph *)pgm_read_dword(&gfxFont->glyph))[uniCode]);
+					  // If this is not the  last character or is a digit then use xAdvance
+					  if (*string  || isDigits) str_width += pgm_read_byte(&glyph->xAdvance) * textsize;
+					  // Else use the offset plus width since this can be bigger than xAdvance
+					  else str_width += ((int8_t)pgm_read_byte(&glyph->xOffset) + pgm_read_byte(&glyph->width)) * textsize;
+					}
+					if ( str_width < twidth) scount++; else break;
+				  }
+				}
+				else
+			#endif
+				{
+			#ifdef LOAD_GLCD
+				  while (*string++) { str_width += 6 * textsize; if ( str_width < twidth) scount++; else break;}
+			#endif
+				}
+			  }
+			  isDigits = false;
+			  return scount;
+		}
 
 		/***************************************************************************************
 		** Function name:           fontsLoaded
@@ -998,6 +1082,7 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 		{
 		  return fontHeight(textfont);
 		}
+
 		/***************************************************************************************
 		** Function name:           drawString (with or without user defined font)
 		** Description :            draw string with padding if it is defined
@@ -1030,8 +1115,8 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 		{
 		  int16_t sumX = 0;
 		  uint8_t padding = 1, baseline = 0;
-		  uint16_t cwidth = textWidth(string, font); // Find the pixel width of the string in the font
-		  uint16_t cheight = 8 * textsize;
+		  T_DispCoords cwidth = textWidth(string, font); // Find the pixel width of the string in the font
+		  T_DispCoords cheight = 8 * textsize;
 
 		#ifdef LOAD_GFXFF
 		  #ifdef SMOOTH_FONT
@@ -1440,7 +1525,6 @@ Serial.printf("[Font::setFreeFont] GFXfont: \n");
 		  }
 		}
 
-
 		/***************************************************************************************
 		** Function name:           setTextFont
 		** Description:             Set the font for the print stream
@@ -1477,15 +1561,24 @@ Serial.printf("[Font::setFreeFont] GFXfont: \n");
 
 		#endif
 
-		  uint32_t Font::_textcolor(){
-			  return (unsigned int)textcolor;
-		  }
-		  uint32_t Font::_textbgcolor(){
-			  return (unsigned int)textbgcolor;
-		  }
-		  uint8_t Font::_textsize(){
-			  return (uint8_t)textsize;
-		  }
+		/***************************************************************************************
+		** Function name:           fillBackground
+		** Description:             Set to fill/not fill backgrounf of symbols while drawing
+		***************************************************************************************/
+		void Font::fillBackground(bool fill)
+		{
+		  bgfill=fill;
+		}
+
+		uint32_t Font::_textcolor(){
+			return (unsigned int)textcolor;
+		}
+		uint32_t Font::_textbgcolor(){
+			return (unsigned int)textbgcolor;
+		}
+		uint8_t Font::_textsize(){
+			return (uint8_t)textsize;
+		}
 			/***************************************************************************************
 			** Function name:           decodeUTF8
 			** Description:             Serial UTF-8 decoder with fall-back to extended ASCII
@@ -1814,8 +1907,8 @@ Serial.printf("[Font::setFreeFont] GFXfont: \n");
 			#endif
 
 			  int32_t w = width;
-			  int32_t pX      = 0;
-			  int32_t pY      = y;
+			  int32_t pX = 0;
+			  int32_t pY = y;
 			  uint8_t line = 0;
 
 			#ifdef LOAD_FONT2 // chop out code if we do not need it
@@ -1842,12 +1935,12 @@ Serial.printf("[Font::setFreeFont] GFXfont: \n");
 #endif
 
 				// ToDo: Make this to draw symbol with remade classes
-//				if (bgfill) if (textcolor != textbgcolor) Device::Display::Graphics::Graph->fillRect(x, pY, width * textsize, height * textsize, textbgcolor);
+				if (bgfill) if (textcolor != textbgcolor) Device::Display::Graphics::Graph->fillRect(x, pY, width * textsize, height * textsize, textbgcolor);
 //				Device::Display::Driver->pushImage(px, py, px + ts, py + ts, data, alpha)
 
 //				if (textcolor == textbgcolor || textsize != 1) {
-// ToDo remake for block write. Make transparent image with alpha channel and write with image writing function.
-				  for (int32_t i = 0; i < height; i++)
+
+				for (int32_t i = 0; i < height; i++)
 				  {
 
 

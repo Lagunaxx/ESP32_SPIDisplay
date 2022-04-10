@@ -615,7 +615,7 @@ Serial.printf("[Graphics::fillScreen] width=%u; height=%u", width(), height());
 			** 							with alpha-channel support
 			***************************************************************************************/
 			void Graphics::drawImageBufferAlpha(T_DispCoords x, T_DispCoords y, t_color_r5g6b5 color, uint8_t* alpha, T_DispCoords w, T_DispCoords h){
-				//ToDo: remove (uint32_t). for this need to modify types in Display::Driver
+
 #ifdef NO_READ_VBUFFER
 
 				pushImage(x,y,w,h, color.rgb, alpha);
@@ -625,8 +625,8 @@ Serial.printf("[Graphics::fillScreen] width=%u; height=%u", width(), height());
 				t_color_r5g6b5 *pixel_screen = new t_color_r5g6b5();
 				t_color_r5g6b5 *pixel_buffer = new t_color_r5g6b5();
 				uint8_t a;
-//				readRect(x, y, w, h, data);
-/*
+				readRect(x, y, w, h, data);
+
 				for (T_DispCoords xx=0;xx<w;xx++){
 					for (T_DispCoords yy=0;yy<h;yy++){
 						memcpy(pixel_screen,data+(yy*w+xx)*1,2);
@@ -639,7 +639,7 @@ Serial.printf("[Graphics::fillScreen] width=%u; height=%u", width(), height());
 						memcpy(data+(yy*w+xx),pixel_screen,2);
 					}
 				}
-*/
+
 				pushImage((T_DispCoords)x,(T_DispCoords)y,(T_DispCoords)w,(T_DispCoords)h,(uint16_t *)buffer, alpha);
 				free(data);
 #endif
@@ -700,7 +700,7 @@ Serial.printf("[Graphics::fillScreen] width=%u; height=%u", width(), height());
 
 			/***************************************************************************************
 			** Function name:           ResetColor
-			** Description:             Set coloe to black (0x0)
+			** Description:             Set color to black (0x0)
 			*************************************************************************************x*/
 
 			void Graphics::ResetColor(t_color_r5g6b5 *dst){

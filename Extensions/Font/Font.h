@@ -33,6 +33,8 @@
 	#include "FontTypes.h"
 	#include "GFXFF/gfxfont.h"
 
+
+
 	namespace Device{
 		namespace Display{
 			namespace Graphics{
@@ -249,6 +251,88 @@
 					Font();
 					virtual ~Font();
 
+					uint16_t fontsLoaded(void);
+
+					//virtual c_Cursor* Cursor();
+					//virtual void Cursor(c_Cursor& _cursor);
+					//virtual T_DispCoords __width();
+					//virtual T_DispCoords __height();
+
+
+					virtual T_DispCoords	drawChar(uint16_t uniCode, T_DispCoords x, T_DispCoords y, uint8_t font),
+											drawChar(uint16_t uniCode, T_DispCoords x, T_DispCoords y);
+
+					void	drawChar(T_DispCoords x, T_DispCoords y, uint16_t c, uint32_t color, uint32_t bg, uint8_t size),
+							setTextColor(uint16_t color),
+							setTextColor(uint16_t fgcolor, uint16_t bgcolor),
+							setTextSize(uint8_t size),
+
+							setTextWrap(boolean wrapX, boolean wrapY = false),
+							setTextDatum(uint8_t datum),
+							setTextPadding(T_DispCoords x_width),
+
+					#ifdef LOAD_GFXFF
+							setFreeFont(const GFXfont *f = NULL),
+							setTextFont(uint8_t font),
+							fillBackground(bool fill);
+					#else
+							setFreeFont(uint8_t font),
+							setTextFont(uint8_t font);
+					#endif
+
+					T_DispCoords	textWidth(const char *string, uint8_t font),
+								textWidth(const char *string),
+								textWidth(const String& string, uint8_t font),
+								textWidth(const String& string),
+								fontHeight(int16_t font),
+								fontHeight(void);
+					uint8_t		textWidthFit(const char *string, uint8_t font, T_DispCoords twidth);
+					uint16_t	decodeUTF8(uint8_t *buf, uint16_t *index, uint16_t remaining);
+					uint16_t	decodeUTF8(uint8_t c);
+					size_t		write(uint8_t);
+					// Set or get an arbitrary library attribute or configuration option
+					void		setAttribute(uint8_t id = 0, uint8_t a = 0);
+					uint8_t		getAttribute(uint8_t id = 0);
+					uint32_t	_textcolor(), _textbgcolor(); //ToDo: text mast be with transparent background
+					uint8_t		_textsize();
+
+					T_DispCoords	drawNumber(long long_num, T_DispCoords poX, T_DispCoords poY, uint8_t font),
+									drawNumber(long long_num, T_DispCoords poX, T_DispCoords poY),
+									drawFloat(float floatNumber, uint8_t decimal, T_DispCoords poX, T_DispCoords poY, uint8_t font),
+									drawFloat(float floatNumber, uint8_t decimal, T_DispCoords poX, T_DispCoords poY),
+
+									// Handle char arrays
+									drawString(const char *string, T_DispCoords poX, T_DispCoords poY, uint8_t font),
+									drawString(const char *string, T_DispCoords poX, T_DispCoords poY),
+									drawCentreString(const char *string, T_DispCoords dX, T_DispCoords poY, uint8_t font), // Deprecated, use setTextDatum() and drawString()
+									drawRightString(const char *string, T_DispCoords dX, T_DispCoords poY, uint8_t font),  // Deprecated, use setTextDatum() and drawString()
+
+									// Handle String type
+									drawString(const String& string, T_DispCoords poX, T_DispCoords poY, uint8_t font),
+									drawString(const String& string, T_DispCoords poX, T_DispCoords poY),
+									drawCentreString(const String& string, T_DispCoords dX, T_DispCoords poY, uint8_t font), // Deprecated, use setTextDatum() and drawString()
+									drawRightString(const String& string, T_DispCoords dX, T_DispCoords poY, uint8_t font);  // Deprecated, use setTextDatum() and drawString()
+					uint8_t	getTextDatum(void);
+
+					// These are for the new antialiased fonts
+					void     loadFont(String fontName, fs::FS &ffs);
+					void     loadFont(String fontName, bool flash = true);
+					void     unloadFont( void );
+					bool     getUnicodeIndex(uint16_t unicode, uint16_t *index);
+#ifdef FONT_ALPHABLEND
+					uint16_t alphaBlend(uint8_t alpha, uint16_t fgc, uint16_t bgc);
+#endif
+					virtual void drawGlyph(uint16_t code, T_DispCoords x, T_DispCoords y);//, c_Cursor &cursor);
+
+					void     showFont(uint32_t td, Device::Display::Screen &display);
+
+
+				 protected:
+//					uint16_t decodeUTF8(uint8_t *buf, uint16_t *index, uint16_t remaining);
+//					uint16_t decodeUTF8(uint8_t c);
+
+				 private:
+
 					fontMetrics gFont;
 
 					// These are for the metrics for each individual glyph (so we don't need to seek this in file and waste time)
@@ -266,87 +350,10 @@
 					//_CoordsType  _width, _height;           // Display w/h as modified by current rotation
 					bool     textwrapX, textwrapY;   // If set, 'wrap' text at right and optionally bottom edge of display
 
-					uint16_t fontsLoaded(void);
-
-					//virtual c_Cursor* Cursor();
-					//virtual void Cursor(c_Cursor& _cursor);
-					//virtual T_DispCoords __width();
-					//virtual T_DispCoords __height();
+					uint32_t	textcolor, textbgcolor;
 
 
-					virtual T_DispCoords  drawChar(uint16_t uniCode, T_DispCoords x, T_DispCoords y, uint8_t font),
-							drawChar(uint16_t uniCode, T_DispCoords x, T_DispCoords y);
-					void 		drawChar(T_DispCoords x, T_DispCoords y, uint16_t c, uint32_t color, uint32_t bg, uint8_t size),
-										   setTextColor(uint16_t color),
-							   setTextColor(uint16_t fgcolor, uint16_t bgcolor),
-							   setTextSize(uint8_t size),
-
-							   setTextWrap(boolean wrapX, boolean wrapY = false),
-							   setTextDatum(uint8_t datum),
-							   setTextPadding(T_DispCoords x_width),
-
-					#ifdef LOAD_GFXFF
-							   setFreeFont(const GFXfont *f = NULL),
-							   setTextFont(uint8_t font);
-					#else
-							   setFreeFont(uint8_t font),
-							   setTextFont(uint8_t font);
-					#endif
-
-								  T_DispCoords  textWidth(const char *string, uint8_t font),
-										   textWidth(const char *string),
-										   textWidth(const String& string, uint8_t font),
-										   textWidth(const String& string),
-										   fontHeight(int16_t font),
-										   fontHeight(void);
-								  uint16_t decodeUTF8(uint8_t *buf, uint16_t *index, uint16_t remaining);
-								  uint16_t decodeUTF8(uint8_t c);
-								  size_t   write(uint8_t);
-								  // Set or get an arbitrary library attribute or configuration option
-								  void     setAttribute(uint8_t id = 0, uint8_t a = 0);
-								  uint8_t  getAttribute(uint8_t id = 0);
-								  uint32_t _textcolor(), _textbgcolor(); //ToDo: text mast be with transparent background
-								  uint8_t _textsize();
-
-									T_DispCoords  drawNumber(long long_num, T_DispCoords poX, T_DispCoords poY, uint8_t font),
-											drawNumber(long long_num, T_DispCoords poX, T_DispCoords poY),
-											drawFloat(float floatNumber, uint8_t decimal, T_DispCoords poX, T_DispCoords poY, uint8_t font),
-											drawFloat(float floatNumber, uint8_t decimal, T_DispCoords poX, T_DispCoords poY),
-
-											// Handle char arrays
-											drawString(const char *string, T_DispCoords poX, T_DispCoords poY, uint8_t font),
-											drawString(const char *string, T_DispCoords poX, T_DispCoords poY),
-											drawCentreString(const char *string, T_DispCoords dX, T_DispCoords poY, uint8_t font), // Deprecated, use setTextDatum() and drawString()
-											drawRightString(const char *string, T_DispCoords dX, T_DispCoords poY, uint8_t font),  // Deprecated, use setTextDatum() and drawString()
-
-											// Handle String type
-											drawString(const String& string, T_DispCoords poX, T_DispCoords poY, uint8_t font),
-											drawString(const String& string, T_DispCoords poX, T_DispCoords poY),
-											drawCentreString(const String& string, T_DispCoords dX, T_DispCoords poY, uint8_t font), // Deprecated, use setTextDatum() and drawString()
-											drawRightString(const String& string, T_DispCoords dX, T_DispCoords poY, uint8_t font);  // Deprecated, use setTextDatum() and drawString()
-									uint8_t	getTextDatum(void);
-
-				  // These are for the new antialiased fonts
-				  void     loadFont(String fontName, fs::FS &ffs);
-				  void     loadFont(String fontName, bool flash = true);
-				  void     unloadFont( void );
-				  bool     getUnicodeIndex(uint16_t unicode, uint16_t *index);
-#ifdef FONT_ALPHABLEND
-				  uint16_t alphaBlend(uint8_t alpha, uint16_t fgc, uint16_t bgc);
-#endif
-				  virtual void drawGlyph(uint16_t code, T_DispCoords x, T_DispCoords y);//, c_Cursor &cursor);
-
-				  void     showFont(uint32_t td, Device::Display::Screen &display);
-
-				 protected:
-//				  uint16_t decodeUTF8(uint8_t *buf, uint16_t *index, uint16_t remaining);
-//				  uint16_t decodeUTF8(uint8_t c);
-
-				  private:
-				  	  uint32_t textcolor, textbgcolor;
-
-
-				  	uint8_t  textfont,  // Current selected font
+				  	uint8_t	textfont,  // Current selected font
 							textsize,  // Current font size multiplier
 							textdatum; // Text reference datum
 
@@ -362,15 +369,15 @@
 				#ifdef LOAD_GFXFF
 					GFXfont  *gfxFont;
 				#endif
-					uint8_t  decoderState = 0;   // UTF8 decoder state
-					uint16_t decoderBuffer;      // Unicode code-point buffer
-					bool     _cp437;     // If set, use correct CP437 charset (default is ON)
-					bool     _utf8;      // If set, use UTF-8 decoder in print stream 'write()' function (default ON)
-					T_DispCoords  padX; // Padding (from top, from bottom, from left, from tight)
-					bool     isDigits;   // adjust bounding box for numbers to reduce visual jiggling
-					uint32_t fontsloaded;
-					uint8_t  glyph_ab,   // glyph delta Y (height) above baseline
-						   glyph_bb;   // glyph delta Y (height) below baseline
+					uint8_t		decoderState = 0;   // UTF8 decoder state
+					uint16_t	decoderBuffer;      // Unicode code-point buffer
+					bool		_cp437;     // If set, use correct CP437 charset (default is ON)
+					bool		_utf8;      // If set, use UTF-8 decoder in print stream 'write()' function (default ON)
+					T_DispCoords  padX;		// Padding (from top, from bottom, from left, from tight)
+					bool		isDigits;   // adjust bounding box for numbers to reduce visual jiggling
+					uint32_t	fontsloaded;
+					uint8_t		glyph_ab,   // glyph delta Y (height) above baseline
+								glyph_bb;   // glyph delta Y (height) below baseline
 
 //					c_TextBuffer *ImageBuffer;
 					//Device::Memory::c_Buffer *ImageBuffer;

@@ -8,6 +8,13 @@
 #ifndef DEVICE_DISPLAY_GRAPHICS_FONT_FONTTYPES_H_
 	#define DEVICE_DISPLAY_GRAPHICS_FONT_FONTTYPES_H_
 
+#define FONT_TYPE_NOTINITIALIZED 0 // default for not initialized
+#define FONT_TYPE_BUILTIN	1	// Built-in fonts (numbers from 1 to 9 in setTextFont-function of Fonts object)
+#define FONT_TYPE_FREEFONT	2	// Freefonts
+#define FONT_TYPE_TRUETYPE	4	// TrueType fonts
+#define FONT_TYPE_VLW		8	// VLW fonts
+
+
 	namespace Device{
 		namespace Display{
 			namespace Graphics{

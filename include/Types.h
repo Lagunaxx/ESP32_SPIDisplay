@@ -43,11 +43,6 @@ namespace Device{
 	#endif
 #endif
 
-	struct st_Size2D{
-		T_DispCoords width;
-		T_DispCoords height;
-	};
-
 	struct st_Size3D{
 		T_DispCoords width;
 		T_DispCoords height;

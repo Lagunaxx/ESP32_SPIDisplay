@@ -47,6 +47,16 @@ namespace Device {
 				byte alpha;
 			};
 
+			struct t_Coordinate2D{
+				T_DispCoords x;
+				T_DispCoords y;
+			};
+
+			struct t_Size2D{
+				T_DispCoords width;
+				T_DispCoords height;
+			};
+
 
 			class Graphics: public Screen {
 			public:

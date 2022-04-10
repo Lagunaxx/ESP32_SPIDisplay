@@ -288,4 +288,5 @@
 
 //********** Activating graphics services
 #define GRAPH_PNG			// Activating PNG support (Device::Display::Graphics::uPNG)
+#define GRAPH_TEXTBLOCK		// Activating TextBlock support (Device::Display::Graphics::TextBlock class)
 
