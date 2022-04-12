@@ -64,7 +64,7 @@ namespace Device{
 			** Description:             Create a sprite (bitmap) of defined width and height
 			*************************************************************************************x*/
 			// cast returned value to (uint8_t*) for 8 bit or (uint16_t*) for 16 bit colours
-			void* TFT_eSprite::createSprite(T_DispCoords w, T_DispCoords h, uint8_t frames)
+			void* TFT_eSprite::createSprite(t_DispCoords w, t_DispCoords h, uint8_t frames)
 			{
 
 			  if ( _created ) return _img8_1;
@@ -115,7 +115,7 @@ namespace Device{
 			** Description:             Allocate a memory area for the Sprite and return pointer
 			*************************************************************************************x*/
 
-			void* TFT_eSprite::callocSprite(T_DispCoords w, T_DispCoords h, uint8_t frames)
+			void* TFT_eSprite::callocSprite(t_DispCoords w, t_DispCoords h, uint8_t frames)
 			{
 			  // Add one extra "off screen" pixel to point out-of-bounds setWindow() coordinates
 			  // this means push/writeColor functions do not need additional bounds checks and
@@ -250,7 +250,7 @@ namespace Device{
 			** Function name:           setPivot
 			** Description:             Set the pivot point in this Sprite
 			*************************************************************************************x*/
-			void TFT_eSprite::setPivot(T_DispCoords x, T_DispCoords y)
+			void TFT_eSprite::setPivot(t_DispCoords x, t_DispCoords y)
 			{
 			  _xpivot = x;
 			  _ypivot = y;
@@ -261,7 +261,7 @@ namespace Device{
 			** Function name:           getPivotX
 			** Description:             Get the x pivot position
 			***************************************************************************************/
-			T_DispCoords TFT_eSprite::getPivotX(void)
+			t_DispCoords TFT_eSprite::getPivotX(void)
 			{
 			  return _xpivot;
 			}
@@ -271,7 +271,7 @@ namespace Device{
 			** Function name:           getPivotY
 			** Description:             Get the y pivot position
 			***************************************************************************************/
-			T_DispCoords TFT_eSprite::getPivotY(void)
+			t_DispCoords TFT_eSprite::getPivotY(void)
 			{
 			  return _ypivot;
 			}
@@ -291,10 +291,10 @@ namespace Device{
 			  float cosra = cos(radAngle);
 
 			  // Bounding box parameters
-			  T_DispCoords min_x;
-			  T_DispCoords min_y;
-			  T_DispCoords max_x;
-			  T_DispCoords max_y;
+			  t_DispCoords min_x;
+			  t_DispCoords min_y;
+			  t_DispCoords max_x;
+			  t_DispCoords max_y;
 
 			  // Get the bounding box of this rotated source Sprite relative to Sprite pivot
 			  getRotatedBounds(sinra, cosra, width(), height(), _xpivot, _ypivot, &min_x, &min_y, &max_x, &max_y);
@@ -323,18 +323,18 @@ namespace Device{
 //			  Device::Display::Graphics::Graph->SPIStartWrite(); // ESP32: avoid transaction overhead for every tft pixel
 
 			  // Scan destination bounding box and fetch transformed pixels from source Sprite
-			  for (T_DispCoords x = min_x; x <= max_x; x++) {
-				  T_DispCoords xt = x - Device::Display::Graphics::Graph->__xpivot();
+			  for (t_DispCoords x = min_x; x <= max_x; x++) {
+				  t_DispCoords xt = x - Device::Display::Graphics::Graph->__xpivot();
 				float cxt = cosra * xt + _xpivot;
 				float sxt = sinra * xt + _ypivot;
 				bool column_drawn = false;
-				for (T_DispCoords y = min_y; y <= max_y; y++) {
-					T_DispCoords yt = y - Device::Display::Graphics::Graph->__ypivot();
-					T_DispCoords xs = (int32_t)round(cxt - sinra * yt);
+				for (t_DispCoords y = min_y; y <= max_y; y++) {
+					t_DispCoords yt = y - Device::Display::Graphics::Graph->__ypivot();
+					t_DispCoords xs = (int32_t)round(cxt - sinra * yt);
 				  // Do not calculate ys unless xs is in bounds
 				  if (xs >= 0 && xs < width())
 				  {
-					  T_DispCoords ys = (int32_t)round(sxt + cosra * yt);
+					  t_DispCoords ys = (int32_t)round(sxt + cosra * yt);
 					// Check if ys is in bounds
 					if (ys >= 0 && ys < height()) {
 					  uint32_t rp = readPixel(xs, ys);
@@ -367,10 +367,10 @@ namespace Device{
 			  float cosra = cos(radAngle);
 
 			  // Bounding box parameters
-			  T_DispCoords min_x;
-			  T_DispCoords min_y;
-			  T_DispCoords max_x;
-			  T_DispCoords max_y;
+			  t_DispCoords min_x;
+			  t_DispCoords min_y;
+			  t_DispCoords max_x;
+			  t_DispCoords max_y;
 
 			  // Get the bounding box of this rotated source Sprite
 			  getRotatedBounds(sinra, cosra, width(), height(), _xpivot, _ypivot, &min_x, &min_y, &max_x, &max_y);
@@ -432,24 +432,24 @@ namespace Device{
 			** Function name:           rotatedBounds
 			** Description:             Get bounding box of a rotated Sprite wrt pivot
 			*************************************************************************************x*/
-			void TFT_eSprite::getRotatedBounds(float sina, float cosa, T_DispCoords w, T_DispCoords h, T_DispCoords xp, T_DispCoords yp,
-					T_DispCoords *min_x, T_DispCoords *min_y, T_DispCoords *max_x, T_DispCoords *max_y)
+			void TFT_eSprite::getRotatedBounds(float sina, float cosa, t_DispCoords w, t_DispCoords h, t_DispCoords xp, t_DispCoords yp,
+					t_DispCoords *min_x, t_DispCoords *min_y, t_DispCoords *max_x, t_DispCoords *max_y)
 			{
 			  w -= xp; // w is now right edge coordinate relative to xp
 			  h -= yp; // h is now bottom edge coordinate relative to yp
 
 			  // Calculate new corner coordinates
-			  T_DispCoords x0 = -xp * cosa - yp * sina;
-			  T_DispCoords y0 =  xp * sina - yp * cosa;
+			  t_DispCoords x0 = -xp * cosa - yp * sina;
+			  t_DispCoords y0 =  xp * sina - yp * cosa;
 
-			  T_DispCoords x1 =  w * cosa - yp * sina;
-			  T_DispCoords y1 = -w * sina - yp * cosa;
+			  t_DispCoords x1 =  w * cosa - yp * sina;
+			  t_DispCoords y1 = -w * sina - yp * cosa;
 
-			  T_DispCoords x2 =  h * sina + w * cosa;
-			  T_DispCoords y2 =  h * cosa - w * sina;
+			  t_DispCoords x2 =  h * sina + w * cosa;
+			  t_DispCoords y2 =  h * cosa - w * sina;
 
-			  T_DispCoords x3 =  h * sina - xp * cosa;
-			  T_DispCoords y3 =  h * cosa + xp * sina;
+			  t_DispCoords x3 =  h * sina - xp * cosa;
+			  t_DispCoords y3 =  h * cosa + xp * sina;
 
 			  // Find bounding box extremes, enlarge box to accomodate rounding errors
 			  *min_x = x0-2;
@@ -479,7 +479,7 @@ namespace Device{
 			** Function name:           pushSprite
 			** Description:             Push the sprite to the TFT at x, y
 			*************************************************************************************x*/
-			void TFT_eSprite::pushSprite(T_DispCoords x, T_DispCoords y)
+			void TFT_eSprite::pushSprite(t_DispCoords x, t_DispCoords y)
 			{
 			  if (!_created) return;
 
@@ -494,7 +494,7 @@ namespace Device{
 			** Function name:           pushSprite
 			** Description:             Push the sprite to the TFT at x, y with transparent colour
 			*************************************************************************************x*/
-			void TFT_eSprite::pushSprite(T_DispCoords x, T_DispCoords y, uint16_t transp)
+			void TFT_eSprite::pushSprite(t_DispCoords x, t_DispCoords y, uint16_t transp)
 			{
 	/*		  if (!_created) return;
 
@@ -512,7 +512,7 @@ namespace Device{
 			** Function name:           readPixel
 			** Description:             Read 565 colour of a pixel at defined coordinates
 			*************************************************************************************x*/
-			uint16_t TFT_eSprite::readPixel(T_DispCoords x, T_DispCoords y)
+			uint16_t TFT_eSprite::readPixel(t_DispCoords x, t_DispCoords y)
 			{
 			  if ((x < 0) || (x >= _iwidth) || (y < 0) || (y >= _iheight) || !_created) return 0;
 
@@ -563,7 +563,7 @@ namespace Device{
 			** Function name:           pushImage
 			** Description:             push 565 colour image into a defined area of a sprite
 			*************************************************************************************x*/
-			void  TFT_eSprite::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w, T_DispCoords h, uint16_t *data)
+			void  TFT_eSprite::pushImage(t_DispCoords x, t_DispCoords y, t_DispCoords w, t_DispCoords h, uint16_t *data)
 			{
 			  if ((x >= _iwidth) || (y >= _iheight) || (w == 0) || (h == 0) || !_created) return;
 			  if ((x + w < 0) || (y + h < 0)) return;
@@ -655,7 +655,7 @@ namespace Device{
 			** Function name:           pushImage
 			** Description:             push 565 colour FLASH (PROGMEM) image into a defined area
 			*************************************************************************************x*/
-			void  TFT_eSprite::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w, T_DispCoords h, const uint16_t *data)
+			void  TFT_eSprite::pushImage(t_DispCoords x, t_DispCoords y, t_DispCoords w, t_DispCoords h, const uint16_t *data)
 			{
 			#ifdef ESP32
 			  pushImage(x, y, w, h, (uint16_t*) data);
@@ -774,7 +774,7 @@ namespace Device{
 			** Function name:           setWindow
 			** Description:             Set the bounds of a window for pushColor and writeColor
 			*************************************************************************************x*/
-			void TFT_eSprite::setWindow(T_DispCoords x0, T_DispCoords y0, T_DispCoords x1, T_DispCoords y1)
+			void TFT_eSprite::setWindow(t_DispCoords x0, t_DispCoords y0, t_DispCoords x1, t_DispCoords y1)
 			{
 			  bool duff_coord = false;
 
@@ -897,7 +897,7 @@ namespace Device{
 			** Function name:           setScrollRect
 			** Description:             Set scroll area within the sprite and the gap fill colour
 			*************************************************************************************x*/
-			void TFT_eSprite::setScrollRect(T_DispCoords x, T_DispCoords y, T_DispCoords w, T_DispCoords h, uint16_t color)
+			void TFT_eSprite::setScrollRect(t_DispCoords x, t_DispCoords y, t_DispCoords w, t_DispCoords h, uint16_t color)
 			{
 			  if ((x >= _iwidth) || (y >= _iheight) || !_created ) return;
 
@@ -922,7 +922,7 @@ namespace Device{
 			** Function name:           scroll
 			** Description:             Scroll dx,dy pixels, positive right,down, negative left,up
 			*************************************************************************************x*/
-			void TFT_eSprite::scroll(T_DispCoords dx, T_DispCoords dy)
+			void TFT_eSprite::scroll(t_DispCoords dx, t_DispCoords dy)
 			{
 			  if (abs(dx) >= _sw || abs(dy) >= _sh)
 			  {
@@ -931,15 +931,15 @@ namespace Device{
 			  }
 
 			  // Fetch the scroll area width and height set by setScrollRect()
-			  T_DispCoords w  = _sw - abs(dx); // line width to copy
-			  T_DispCoords h  = _sh - abs(dy); // lines to copy
-			  T_DispCoords iw  = _iwidth;       // width of sprite
+			  t_DispCoords w  = _sw - abs(dx); // line width to copy
+			  t_DispCoords h  = _sh - abs(dy); // lines to copy
+			  t_DispCoords iw  = _iwidth;       // width of sprite
 
 			  // Fetch the x,y origin set by setScrollRect()
-			  T_DispCoords tx = _sx; // to x
-			  T_DispCoords fx = _sx; // from x
-			  T_DispCoords ty = _sy; // to y
-			  T_DispCoords fy = _sy; // from y
+			  t_DispCoords tx = _sx; // to x
+			  t_DispCoords fx = _sx; // from x
+			  t_DispCoords ty = _sy; // to y
+			  t_DispCoords fy = _sy; // from y
 
 			  // Adjust for x delta
 			  if (dx <= 0) fx -= dx;
@@ -955,8 +955,8 @@ namespace Device{
 			  }
 
 			  // Calculate "from y" and "to y" pointers in RAM
-			  T_DispCoords fyp = fx + fy * _iwidth;
-			  T_DispCoords typ = tx + ty * _iwidth;
+			  t_DispCoords fyp = fx + fy * _iwidth;
+			  t_DispCoords typ = tx + ty * _iwidth;
 
 			  // Now move the pixels in RAM
 			  if (_bpp == 16)
@@ -1044,7 +1044,7 @@ namespace Device{
 			** Description:             Return the width of sprite
 			*************************************************************************************x*/
 			// Return the size of the display
-			T_DispCoords TFT_eSprite::width(void)
+			t_DispCoords TFT_eSprite::width(void)
 			{
 			  if (!_created ) return 0;
 
@@ -1060,7 +1060,7 @@ namespace Device{
 			** Function name:           height
 			** Description:             Return the height of sprite
 			*************************************************************************************x*/
-			T_DispCoords TFT_eSprite::height(void)
+			t_DispCoords TFT_eSprite::height(void)
 			{
 			  if (!_created ) return 0;
 
@@ -1104,7 +1104,7 @@ namespace Device{
 			** Function name:           drawPixel
 			** Description:             push a single pixel at an arbitrary position
 			*************************************************************************************x*/
-			void TFT_eSprite::drawPixel(T_DispCoords x, T_DispCoords y, uint32_t color)
+			void TFT_eSprite::drawPixel(t_DispCoords x, t_DispCoords y, uint32_t color)
 			{
 			  // Range checking
 			  if ((x < 0) || (y < 0) || !_created) return;
@@ -1153,7 +1153,7 @@ namespace Device{
 			** Function name:           drawLine
 			** Description:             draw a line between 2 arbitrary points
 			*************************************************************************************x*/
-			void TFT_eSprite::drawLine(T_DispCoords x0, T_DispCoords y0, T_DispCoords x1, T_DispCoords y1, uint32_t color)
+			void TFT_eSprite::drawLine(t_DispCoords x0, t_DispCoords y0, t_DispCoords x1, t_DispCoords y1, uint32_t color)
 			{
 			  if (!_created ) return;
 
@@ -1209,7 +1209,7 @@ namespace Device{
 			** Function name:           drawFastVLine
 			** Description:             draw a vertical line
 			*************************************************************************************x*/
-			void TFT_eSprite::drawFastVLine(T_DispCoords x, T_DispCoords y, T_DispCoords h, uint32_t color)
+			void TFT_eSprite::drawFastVLine(t_DispCoords x, t_DispCoords y, t_DispCoords h, uint32_t color)
 			{
 
 			  if ((x < 0) || (x >= _iwidth) || (y >= _iheight) || !_created) return;
@@ -1246,7 +1246,7 @@ namespace Device{
 			** Function name:           drawFastHLine
 			** Description:             draw a horizontal line
 			*************************************************************************************x*/
-			void TFT_eSprite::drawFastHLine(T_DispCoords x, T_DispCoords y, T_DispCoords w, uint32_t color)
+			void TFT_eSprite::drawFastHLine(t_DispCoords x, t_DispCoords y, t_DispCoords w, uint32_t color)
 			{
 
 			  if ((y < 0) || (x >= _iwidth) || (y >= _iheight) || !_created) return;
@@ -1282,7 +1282,7 @@ namespace Device{
 			** Function name:           fillRect
 			** Description:             draw a filled rectangle
 			*************************************************************************************x*/
-			void TFT_eSprite::fillRect(T_DispCoords x, T_DispCoords y, T_DispCoords w, T_DispCoords h, uint32_t color)
+			void TFT_eSprite::fillRect(t_DispCoords x, t_DispCoords y, t_DispCoords w, t_DispCoords h, uint32_t color)
 			{
 			  if (!_created ) return;
 
@@ -1483,7 +1483,7 @@ namespace Device{
 			** Function name:           drawChar
 			** Description:             draw a single character in the Adafruit GLCD or freefont
 			*************************************************************************************x*/
-			void TFT_eSprite::drawChar(T_DispCoords x, T_DispCoords y, uint16_t c, uint32_t color, uint32_t bg, uint8_t size)
+			void TFT_eSprite::drawChar(t_DispCoords x, t_DispCoords y, uint16_t c, uint32_t color, uint32_t bg, uint8_t size)
 			{
 /*			  if (!_created ) return;
 
@@ -1626,14 +1626,14 @@ namespace Device{
 			** Description:             draw a unicode onto the screen
 			*************************************************************************************x*/
 			  // Any UTF-8 decoding must be done before calling drawChar()
-			T_DispCoords TFT_eSprite::drawChar(uint16_t uniCode, T_DispCoords x, T_DispCoords y)
+			t_DispCoords TFT_eSprite::drawChar(uint16_t uniCode, t_DispCoords x, t_DispCoords y)
 			{
 //			  return drawChar(uniCode, x, y, textfont);
 				return 0;
 			}
 
 			  // Any UTF-8 decoding must be done before calling drawChar()
-			T_DispCoords TFT_eSprite::drawChar(uint16_t uniCode, T_DispCoords x, T_DispCoords y, uint8_t font)
+			t_DispCoords TFT_eSprite::drawChar(uint16_t uniCode, t_DispCoords x, t_DispCoords y, uint8_t font)
 			{
 /*			  if (!_created ) return 0;
 
@@ -2003,7 +2003,7 @@ namespace Device{
 			** Function name:           printToSprite
 			** Description:             Print character in a Sprite, create sprite if needed
 			*************************************************************************************x*/
-			int16_t TFT_eSprite::printToSprite(T_DispCoords x, T_DispCoords y, uint16_t index)
+			int16_t TFT_eSprite::printToSprite(t_DispCoords x, t_DispCoords y, uint16_t index)
 			{
 /*			  bool newSprite = !_created;
 			  int16_t sWidth = this->gWidth[index];

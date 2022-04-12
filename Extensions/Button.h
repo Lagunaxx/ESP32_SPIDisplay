@@ -17,7 +17,7 @@
 
 			//using namespace Device::Display;
 			using Device::Display::Graphics::Graphics;
-			using Device::Display::T_DispCoords;
+			using Device::Display::t_DispCoords;
 			//class Screen;
 
 			class onScreen_Button {
@@ -26,16 +26,16 @@
 			 public:
 				onScreen_Button(void);
 			  // "Classic" initButton() uses center & size
-			  void     initButton(Graphics *gfx, T_DispCoords x, T_DispCoords y,
-					  T_DispCoords w, T_DispCoords h, uint16_t outline, uint16_t fill,
+			  void     initButton(Graphics *gfx, t_DispCoords x, t_DispCoords y,
+					  t_DispCoords w, t_DispCoords h, uint16_t outline, uint16_t fill,
 					  uint16_t textcolor, char *label, uint8_t textsize);
 
 			  // New/alt initButton() uses upper-left corner & size
-			  void     initButtonUL(Graphics *gfx, T_DispCoords x1, T_DispCoords y1,
-					  T_DispCoords w, T_DispCoords h, uint16_t outline, uint16_t fill,
+			  void     initButtonUL(Graphics *gfx, t_DispCoords x1, t_DispCoords y1,
+					  t_DispCoords w, t_DispCoords h, uint16_t outline, uint16_t fill,
 					  uint16_t textcolor, char *label, uint8_t textsize);
 			  void     drawButton(boolean inverted = false);
-			  boolean  contains(T_DispCoords x, T_DispCoords y);
+			  boolean  contains(t_DispCoords x, t_DispCoords y);
 
 			  void     press(boolean p);
 			  boolean  isPressed();
@@ -44,8 +44,8 @@
 
 			 private:
 			  Graphics *_gfx;
-			  T_DispCoords  _x1, _y1; // Coordinates of top-left corner
-			  T_DispCoords _w, _h;
+			  t_DispCoords  _x1, _y1; // Coordinates of top-left corner
+			  t_DispCoords _w, _h;
 			  uint8_t  _textsize;
 			  uint16_t _outlinecolor, _fillcolor, _textcolor;
 			  char     _label[10];

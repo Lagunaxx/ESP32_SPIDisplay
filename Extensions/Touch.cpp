@@ -84,7 +84,7 @@ namespace Device{
 
 
 		//uint8_t Screen::getTouchRaw(uint16_t *x, uint16_t *y){
-		uint8_t Touch::getTouchRaw(T_DispCoords *x, T_DispCoords *y){
+		uint8_t Touch::getTouchRaw(t_DispCoords *x, t_DispCoords *y){
 		  uint16_t tmp;
 
 		  spi_begin_touch();
@@ -147,8 +147,8 @@ namespace Device{
 		** Description:             read validated position. Return false if not pressed.
 		***************************************************************************************/
 		#define _RAWERR 20 // Deadband error allowed in successive position samples
-		uint8_t Touch::validTouch(T_DispCoords *x, T_DispCoords *y, uint16_t threshold){
-			T_DispCoords x_tmp, y_tmp, x_tmp2, y_tmp2;
+		uint8_t Touch::validTouch(t_DispCoords *x, t_DispCoords *y, uint16_t threshold){
+			t_DispCoords x_tmp, y_tmp, x_tmp2, y_tmp2;
 
 		  // Wait until pressure stops increasing to debounce pressure
 		  uint16_t z1 = 1;
@@ -192,8 +192,8 @@ namespace Device{
 		** Description:             read callibrated position. Return false if not pressed.
 		***************************************************************************************/
 		#define Z_THRESHOLD 350 // Touch pressure threshold for validating touches
-		uint8_t Touch::getTouch(T_DispCoords *x, T_DispCoords *y, uint16_t threshold){
-			T_DispCoords x_tmp, y_tmp;
+		uint8_t Touch::getTouch(t_DispCoords *x, t_DispCoords *y, uint16_t threshold){
+			t_DispCoords x_tmp, y_tmp;
 
 		  if (threshold<20) threshold = 20;
 		  if (_pressTime > millis()) threshold=20;
@@ -224,7 +224,7 @@ namespace Device{
 		** Function name:           convertRawXY
 		** Description:             convert raw touch x,y values to screen coordinates
 		***************************************************************************************/
-		void Touch::convertRawXY(T_DispCoords *x, T_DispCoords *y)
+		void Touch::convertRawXY(t_DispCoords *x, t_DispCoords *y)
 		{
 		  uint16_t x_tmp = *x, y_tmp = *y, xx, yy;
 
@@ -253,7 +253,7 @@ namespace Device{
 		***************************************************************************************/
 		void Touch::calibrateTouch(uint16_t *parameters, uint32_t color_fg, uint32_t color_bg, uint8_t size){
 		  int16_t values[] = {0,0,0,0,0,0,0,0};
-		  T_DispCoords x_tmp, y_tmp;
+		  t_DispCoords x_tmp, y_tmp;
 
 
 

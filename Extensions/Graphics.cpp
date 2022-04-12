@@ -70,7 +70,7 @@ namespace Device {
 			** Description:             Draw a circle outline
 			***************************************************************************************/
 			// Optimised midpoint circle algorithm
-			void Graphics::drawCircle(T_DispCoords x0, T_DispCoords y0, T_DispCoords r, uint32_t color)
+			void Graphics::drawCircle(t_DispCoords x0, t_DispCoords y0, t_DispCoords r, uint32_t color)
 			{
 			  int32_t  x  = 0;
 			  int32_t  dx = 1;
@@ -117,7 +117,7 @@ namespace Device {
 			** Function name:           drawCircleHelper
 			** Description:             Support function for circle drawing
 			***************************************************************************************/
-			void Graphics::drawCircleHelper( T_DispCoords x0, T_DispCoords y0, T_DispCoords r, uint8_t cornername, uint32_t color)
+			void Graphics::drawCircleHelper( t_DispCoords x0, t_DispCoords y0, t_DispCoords r, uint8_t cornername, uint32_t color)
 			{
 			  int32_t f     = 1 - r;
 			  int32_t ddF_x = 1;
@@ -158,7 +158,7 @@ namespace Device {
 			** Description:             draw a filled circle
 			***************************************************************************************/
 			// Optimised midpoint circle algorithm, changed to horizontal lines (faster in sprites)
-			void Graphics::fillCircle(T_DispCoords x0, T_DispCoords y0, T_DispCoords r, uint32_t color)
+			void Graphics::fillCircle(t_DispCoords x0, t_DispCoords y0, t_DispCoords r, uint32_t color)
 			{
 			  int32_t  x  = 0;
 			  int32_t  dx = 1;
@@ -195,7 +195,7 @@ namespace Device {
 			** Description:             Support function for filled circle drawing
 			***************************************************************************************/
 			// Used to support drawing roundrects, changed to horizontal lines (faster in sprites)
-			void Graphics::fillCircleHelper(T_DispCoords x0, T_DispCoords y0, T_DispCoords r, uint8_t cornername, int32_t delta, uint32_t color)
+			void Graphics::fillCircleHelper(t_DispCoords x0, t_DispCoords y0, t_DispCoords r, uint8_t cornername, int32_t delta, uint32_t color)
 			{
 			  int32_t f     = 1 - r;
 			  int32_t ddF_x = 1;
@@ -231,11 +231,11 @@ namespace Device {
 			** Function name:           drawEllipse
 			** Description:             Draw a ellipse outline
 			***************************************************************************************/
-			void Graphics::drawEllipse(T_DispCoords x0, T_DispCoords y0, T_DispCoords rx, T_DispCoords ry, uint16_t color)
+			void Graphics::drawEllipse(t_DispCoords x0, t_DispCoords y0, t_DispCoords rx, t_DispCoords ry, uint16_t color)
 			{
 			  if (rx<2) return;
 			  if (ry<2) return;
-			  T_DispCoords x, y;
+			  t_DispCoords x, y;
 			  int32_t rx2 = rx * rx;
 			  int32_t ry2 = ry * ry;
 			  int32_t fx2 = 4 * rx2;
@@ -281,11 +281,11 @@ namespace Device {
 			** Function name:           fillEllipse
 			** Description:             draw a filled ellipse
 			***************************************************************************************/
-			void Graphics::fillEllipse(T_DispCoords x0, T_DispCoords y0, T_DispCoords rx, T_DispCoords ry, uint16_t color)
+			void Graphics::fillEllipse(t_DispCoords x0, t_DispCoords y0, t_DispCoords rx, t_DispCoords ry, uint16_t color)
 			{
 			  if (rx<2) return;
 			  if (ry<2) return;
-			  T_DispCoords x, y;
+			  t_DispCoords x, y;
 			  int32_t rx2 = rx * rx;
 			  int32_t ry2 = ry * ry;
 			  int32_t fx2 = 4 * rx2;
@@ -337,7 +337,7 @@ Serial.printf("[Graphics::fillScreen] width=%u; height=%u", width(), height());
 			** Description:             Draw a rectangle outline
 			***************************************************************************************/
 			// Draw a rectangle
-			void Graphics::drawRect(T_DispCoords x, T_DispCoords y, T_DispCoords w, T_DispCoords h, uint32_t color)
+			void Graphics::drawRect(t_DispCoords x, t_DispCoords y, t_DispCoords w, t_DispCoords h, uint32_t color)
 			{
 
 			  drawFastHLine(x, y, w, color);
@@ -354,7 +354,7 @@ Serial.printf("[Graphics::fillScreen] width=%u; height=%u", width(), height());
 			** Description:             Draw a rounded corner rectangle outline
 			***************************************************************************************/
 			// Draw a rounded rectangle
-			void Graphics::drawRoundRect(T_DispCoords x, T_DispCoords y, T_DispCoords w, T_DispCoords h, T_DispCoords r, uint32_t color)
+			void Graphics::drawRoundRect(t_DispCoords x, t_DispCoords y, t_DispCoords w, t_DispCoords h, t_DispCoords r, uint32_t color)
 			{
 			  // smarter version
 			  drawFastHLine(x + r  , y    , w - r - r, color); // Top
@@ -375,7 +375,7 @@ Serial.printf("[Graphics::fillScreen] width=%u; height=%u", width(), height());
 			** Description:             Draw a rounded corner filled rectangle
 			***************************************************************************************/
 			// Fill a rounded rectangle, changed to horizontal lines (faster in sprites)
-			void Graphics::fillRoundRect(T_DispCoords x, T_DispCoords y, T_DispCoords w, T_DispCoords h, T_DispCoords r, uint32_t color)
+			void Graphics::fillRoundRect(t_DispCoords x, t_DispCoords y, t_DispCoords w, t_DispCoords h, t_DispCoords r, uint32_t color)
 			{
 			  // smarter version
 			  fillRect(x, y + r, w, h - r - r, color);
@@ -392,7 +392,7 @@ Serial.printf("[Graphics::fillScreen] width=%u; height=%u", width(), height());
 			** Description:             Draw a triangle outline using 3 arbitrary points
 			***************************************************************************************/
 			// Draw a triangle
-			void Graphics::drawTriangle(T_DispCoords x0, T_DispCoords y0, T_DispCoords x1, T_DispCoords y1, T_DispCoords x2, T_DispCoords y2, uint32_t color)
+			void Graphics::drawTriangle(t_DispCoords x0, t_DispCoords y0, t_DispCoords x1, t_DispCoords y1, t_DispCoords x2, t_DispCoords y2, uint32_t color)
 			{
 			  drawLine(x0, y0, x1, y1, color);
 			  drawLine(x1, y1, x2, y2, color);
@@ -406,7 +406,7 @@ Serial.printf("[Graphics::fillScreen] width=%u; height=%u", width(), height());
 			** Description:             Draw a filled triangle using 3 arbitrary points
 			***************************************************************************************/
 			// Fill a triangle - original Adafruit function works well and code footprint is small
-			void Graphics::fillTriangle ( T_DispCoords x0, T_DispCoords y0, T_DispCoords x1, T_DispCoords y1, T_DispCoords x2, T_DispCoords y2, uint32_t color)
+			void Graphics::fillTriangle ( t_DispCoords x0, t_DispCoords y0, t_DispCoords x1, t_DispCoords y1, t_DispCoords x2, t_DispCoords y2, uint32_t color)
 			{
 			  int32_t a, b, y, last;
 
@@ -481,7 +481,7 @@ Serial.printf("[Graphics::fillScreen] width=%u; height=%u", width(), height());
 			** Function name:           drawBitmap
 			** Description:             Draw an image stored in an array on the TFT
 			***************************************************************************************/
-			void Graphics::drawBitmap(T_DispCoords x, T_DispCoords y, const uint8_t *bitmap, T_DispCoords w, T_DispCoords h, uint16_t color)
+			void Graphics::drawBitmap(t_DispCoords x, t_DispCoords y, const uint8_t *bitmap, t_DispCoords w, t_DispCoords h, uint16_t color)
 			{
 
 			  int32_t i, j, byteWidth = (w + 7) / 8;
@@ -501,7 +501,7 @@ Serial.printf("[Graphics::fillScreen] width=%u; height=%u", width(), height());
 			** Function name:           drawXBitmap
 			** Description:             Draw an image stored in an XBM array onto the TFT
 			***************************************************************************************/
-			void Graphics::drawXBitmap(T_DispCoords x, T_DispCoords y, const uint8_t *bitmap, T_DispCoords w, T_DispCoords h, uint16_t color)
+			void Graphics::drawXBitmap(t_DispCoords x, t_DispCoords y, const uint8_t *bitmap, t_DispCoords w, t_DispCoords h, uint16_t color)
 			{
 
 			  int32_t i, j, byteWidth = (w + 7) / 8;
@@ -521,7 +521,7 @@ Serial.printf("[Graphics::fillScreen] width=%u; height=%u", width(), height());
 			** Function name:           drawXBitmap
 			** Description:             Draw an XBM image with foreground and background colors
 			***************************************************************************************/
-			void Graphics::drawXBitmap(T_DispCoords x, T_DispCoords y, const uint8_t *bitmap, T_DispCoords w, T_DispCoords h, uint16_t color, uint16_t bgcolor)
+			void Graphics::drawXBitmap(t_DispCoords x, t_DispCoords y, const uint8_t *bitmap, t_DispCoords w, t_DispCoords h, uint16_t color, uint16_t bgcolor)
 			{
 
 			  int32_t i, j, byteWidth = (w + 7) / 8;
@@ -570,7 +570,7 @@ Serial.printf("[Graphics::fillScreen] width=%u; height=%u", width(), height());
 			** Function name:           drawImageBuffer
 			** Description:             Calling Display function to draw buffer data on screen
 			***************************************************************************************/
-			void Graphics::drawImageBuffer(T_DispCoords x, T_DispCoords y, void * buffer, T_DispCoords w, T_DispCoords h){
+			void Graphics::drawImageBuffer(t_DispCoords x, t_DispCoords y, void * buffer, t_DispCoords w, t_DispCoords h){
 				//ToDo: remove (uint32_t). for this need to modify types in Display::Driver
 				pushImage((uint32_t)x,(uint32_t)y,(uint32_t)w,(uint32_t)h,(uint16_t *)buffer);
 			}
@@ -580,7 +580,7 @@ Serial.printf("[Graphics::fillScreen] width=%u; height=%u", width(), height());
 			** Description:             Calling Display function to draw buffer data on screen
 			** 							with alpha-channel support
 			***************************************************************************************/
-			void Graphics::drawImageBufferAlpha(T_DispCoords x, T_DispCoords y, void * buffer, uint8_t* alpha, T_DispCoords w, T_DispCoords h){
+			void Graphics::drawImageBufferAlpha(t_DispCoords x, t_DispCoords y, void * buffer, uint8_t* alpha, t_DispCoords w, t_DispCoords h){
 				//ToDo: remove (uint32_t). for this need to modify types in Display::Driver
 #ifdef NO_READ_VBUFFER
 				pushImage((uint32_t)x,(uint32_t)y,(uint32_t)w,(uint32_t)h,(uint16_t *)buffer, alpha);
@@ -591,8 +591,8 @@ Serial.printf("[Graphics::fillScreen] width=%u; height=%u", width(), height());
 				uint8_t a;
 //				readRect(x, y, w, h, data);
 /*
-				for (T_DispCoords xx=0;xx<w;xx++){
-					for (T_DispCoords yy=0;yy<h;yy++){
+				for (t_DispCoords xx=0;xx<w;xx++){
+					for (t_DispCoords yy=0;yy<h;yy++){
 						memcpy(pixel_screen,data+(yy*w+xx)*1,2);
 						memcpy(pixel_buffer,(uint16_t *)buffer+(yy*w+xx)*1,2);
 						a=*(alpha+yy*w+xx);
@@ -614,7 +614,7 @@ Serial.printf("[Graphics::fillScreen] width=%u; height=%u", width(), height());
 			** Description:             Calling Display function to draw buffer data on screen
 			** 							with alpha-channel support
 			***************************************************************************************/
-			void Graphics::drawImageBufferAlpha(T_DispCoords x, T_DispCoords y, t_color_r5g6b5 color, uint8_t* alpha, T_DispCoords w, T_DispCoords h){
+			void Graphics::drawImageBufferAlpha(t_DispCoords x, t_DispCoords y, t_color_r5g6b5 color, uint8_t* alpha, t_DispCoords w, t_DispCoords h){
 
 #ifdef NO_READ_VBUFFER
 
@@ -627,8 +627,8 @@ Serial.printf("[Graphics::fillScreen] width=%u; height=%u", width(), height());
 				uint8_t a;
 				readRect(x, y, w, h, data);
 
-				for (T_DispCoords xx=0;xx<w;xx++){
-					for (T_DispCoords yy=0;yy<h;yy++){
+				for (t_DispCoords xx=0;xx<w;xx++){
+					for (t_DispCoords yy=0;yy<h;yy++){
 						memcpy(pixel_screen,data+(yy*w+xx)*1,2);
 						memcpy(pixel_buffer,(uint16_t *)buffer+(yy*w+xx)*1,2);
 						a=*(alpha+yy*w+xx);
@@ -640,7 +640,7 @@ Serial.printf("[Graphics::fillScreen] width=%u; height=%u", width(), height());
 					}
 				}
 
-				pushImage((T_DispCoords)x,(T_DispCoords)y,(T_DispCoords)w,(T_DispCoords)h,(uint16_t *)buffer, alpha);
+				pushImage((t_DispCoords)x,(t_DispCoords)y,(t_DispCoords)w,(t_DispCoords)h,(uint16_t *)buffer, alpha);
 				free(data);
 #endif
 			}
@@ -775,7 +775,7 @@ Serial.printf("[Graphics::fillScreen] width=%u; height=%u", width(), height());
 			** Function name:           setPivot
 			** Description:             Set the pivot point on the TFT
 			*************************************************************************************x*/
-			void Graphics::setPivot(T_DispCoords x, T_DispCoords y)
+			void Graphics::setPivot(t_DispCoords x, t_DispCoords y)
 			{
 			  _xpivot = x;
 			  _ypivot = y;
@@ -787,10 +787,10 @@ Serial.printf("[Graphics::fillScreen] width=%u; height=%u", width(), height());
 			  void Graphics::_bitmap_bg(uint32_t c){
 				  bitmap_bg=c;
 			  }
-			  T_DispCoords Graphics::__xpivot(){
+			  t_DispCoords Graphics::__xpivot(){
 				  return _xpivot;
 			  }
-			  T_DispCoords Graphics::__ypivot(){
+			  t_DispCoords Graphics::__ypivot(){
 				  return _xpivot;
 			  }
 

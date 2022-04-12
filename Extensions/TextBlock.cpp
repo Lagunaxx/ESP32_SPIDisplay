@@ -15,21 +15,18 @@ namespace Graphics {
 TextBlock::TextBlock() {
 	x = 0;
 	y = 0;
-	width = 0;
-	height = 0;
+	TBwidth = 0;
+	TBheight = 0;
 	lineSpace = 0;
-	symbolSpace = 0;
-	buffer = new(c_Buffer);
-	fonttype = 0;
-	bifont = 0;
-	Gfont = 0;
-	foregroundColor = 0;
-	backgroundColor = 0;
+	buffer = new(char);
+	foregroundColor = (t_color_r8g8b8){0,0,0,0};
+	backgroundColor = (t_color_r8g8b8){0,0,0,0};
 	fillBackground = false;
 	fitText = false;
 	moveWholeWord = false;
 	drawSymbolPart = false;
-	fontsize = 1;
+	skipFirstSpace = false;
+	bufLength = 0;
 }
 
 TextBlock::~TextBlock() {
@@ -47,29 +44,6 @@ TextBlock::TextBlock(TextBlock &&other) {
 }
 
 /***************************************************************************************
-** Function name:           setFont
-** Description :            sets font for text inside TextBlock
-** Args:
-** 		Font - uint8_t type (from 1 to 9) for built in, or GFXfont-value
-** 				for freefont or truetype
-***************************************************************************************/
-
-void TextBlock::setFont(uint8_t Font) {
-	fonttype = FONT_TYPE_BUILTIN;
-	bifont = Font;
-}
-
-void TextBlock::setFont(GFXfont Font) {
-#warning "Initialize and remove GFXfont youself. TextBlock::setFont(GFXfont) do not initialize and do not delete it! Comment or remove this line to remove warning!"
-	/* Gfont mast be initialized out of class TextBlock,
-	 * also it mast be deleted out of class TextBlock.
-	 * In this class only stores address for initialized GFXfont
-	 */
-	fonttype = FONT_TYPE_FREEFONT;
-	Gfont = Font;
-}
-
-/***************************************************************************************
 ** Function name:           setPosition
 ** Description :            sets position for TextBlock in pixels
 ** Args:
@@ -77,7 +51,7 @@ void TextBlock::setFont(GFXfont Font) {
 **		sety - value for Y-coordinate
 ***************************************************************************************/
 
-void TextBlock::setPosition(T_DispCoords setx, T_DispCoords sety){
+void TextBlock::setPosition(t_DispCoords setx, t_DispCoords sety){
 	x = setx;
 	y = sety;
 }
@@ -90,9 +64,9 @@ void TextBlock::setPosition(T_DispCoords setx, T_DispCoords sety){
 **		setheight - height of TextBlock
 ***************************************************************************************/
 
-void TextBlock::setSize(T_DispCoords setwidth, T_DispCoords setheight){
-	width = setwidth;
-	height = setheight;
+void TextBlock::setSize(t_DispCoords setwidth, t_DispCoords setheight){
+	TBwidth = setwidth;
+	TBheight = setheight;
 }
 
 /***************************************************************************************
@@ -102,19 +76,8 @@ void TextBlock::setSize(T_DispCoords setwidth, T_DispCoords setheight){
 **		size - size of space
 ***************************************************************************************/
 
-void TextBlock::setLineSpace(T_DispCoords size){
+void TextBlock::setLineSpace(t_DispCoords size){
 	lineSpace = size;
-}
-
-/***************************************************************************************
-** Function name:           setSymbolSpace
-** Description :            sets size of space between symbols in TextBlock in pixels
-** Args:
-**		size - size of space
-***************************************************************************************/
-
-void TextBlock::setSymbolSpace(T_DispCoords size){
-	symbolSpace = size;
 }
 
 /***************************************************************************************
@@ -141,66 +104,6 @@ void TextBlock::setBGColor(t_color_r8g8b8 color){
 }
 
 /***************************************************************************************
-** Function name:			setTextBlock
-** Description :			set most params for TextBlock
-** Args:
-**		Font - uint8_t type (from 1 to 9) for built in, or GFXfont-value for freefont or truetype
-**		setx - value for X-coordinate
-**		sety - value for Y-coordinate
-**		setwidth - width of TextBlock
-**		setheight - height of TextBlock
-**		FGcolor - RGB(R8G8B8)-value of color for text
-**		BGcolor - RGB(R8G8B8)-value of background color
-** 		Font - uint8_t type (from 1 to 9) for built in font
-**		linespace - size of space between lines
-**		symbolspace - size of space between symbols
-***************************************************************************************/
-void TextBlock::setTextBlock(T_DispCoords setx, T_DispCoords sety, T_DispCoords setwidth, T_DispCoords setheight,
-		t_color_r8g8b8 FGcolor, t_color_r8g8b8 BGcolor,
-		uint8_t Font, T_DispCoords linespace, T_DispCoords symbolspace){
-	fonttype = FONT_TYPE_BUILTIN;
-	bifont = Font;
-	x = setx;
-	y = sety;
-	width = setwidth;
-	height = setheight;
-	lineSpace = linespace;
-	symbolSpace = symbolspace;
-	foregroundColor = FGcolor;
-	backgroundColor = BGcolor;
-}
-
-/***************************************************************************************
-** Function name:			setTextBlock
-** Description :			set most params for TextBlock
-** Args:
-**		Font - uint8_t type (from 1 to 9) for built in, or GFXfont-value for freefont or truetype
-**		setx - value for X-coordinate
-**		sety - value for Y-coordinate
-**		setwidth - width of TextBlock
-**		setheight - height of TextBlock
-**		FGcolor - RGB(R8G8B8)-value of color for text
-**		BGcolor - RGB(R8G8B8)-value of background color
-** 		Font - GFXfont-value for freefont or truetype
-**		linespace - size of space between lines
-**		symbolspace - size of space between symbols
-***************************************************************************************/
-void TextBlock::setTextBlock(T_DispCoords setx, T_DispCoords sety, T_DispCoords setwidth, T_DispCoords setheight,
-		t_color_r8g8b8 FGcolor, t_color_r8g8b8 BGcolor,
-		GFXfont Font, T_DispCoords linespace, T_DispCoords symbolspace){
-	fonttype = FONT_TYPE_FREEFONT;
-	Gfont = Font;
-	x = setx;
-	y = sety;
-	width = setwidth;
-	height = setheight;
-	lineSpace = linespace;
-	symbolSpace = symbolspace;
-	foregroundColor = FGcolor;
-	backgroundColor = BGcolor;
-}
-
-/***************************************************************************************
 ** Function name:			getPosition
 ** Description :			returns position of TextBlock
 ***************************************************************************************/
@@ -217,8 +120,8 @@ t_Coordinate2D TextBlock::getPosition(){
 ***************************************************************************************/
 t_Size2D TextBlock::getSize(){
 	t_Size2D rvalue;
-	rvalue.width = width;
-	rvalue.height = height;
+	rvalue.width = TBwidth;
+	rvalue.height = TBheight;
 	return rvalue;
 }
 
@@ -243,13 +146,14 @@ void TextBlock::setFillBackground(bool fill){
 }
 
 void TextBlock::setText(const char *string){
-	uint16_t len = strlen(string);
-	if(buffer != 0) free(buffer);
-	buffer = malloc(sizeof(const char)*(len+1));
+	bufLength = strlen(string);
+	if(buffer != 0) free((void *)buffer);
+	buffer = (char *)malloc(sizeof(const char)*(bufLength));
 
-	for (uint16_t i=0; i<len; i++) {
-		memcpy(buffer+i,string+i,sizeof(const char));
+	for (uint16_t i=0; i<bufLength; i++) {
+		memcpy((void *)(buffer+i),string+i,sizeof(const char));
 	}
+	memset((void *)(buffer+bufLength),0,1);
 }
 
 /***************************************************************************************
@@ -258,16 +162,181 @@ void TextBlock::setText(const char *string){
 ***************************************************************************************/
 void TextBlock::Draw(){
 	char* line;
-	T_DispCoords lettersFit = 0;
-	if (fonttype == FONT_TYPE_NOTINITIALIZED) return; // exit if no info about font
-	if ((fonttype = FONT_TYPE_BUILTIN) & ((bifont < 1) | (bifont > 9))) return; // exit if wrong font for built-in fonts
-	if ((fonttype == FONT_TYPE_FREEFONT) & (Gfont == 0)) return; // exit if font not initialized for freefont
-	if ((fonttype == FONT_TYPE_VLW) & (VLWFont == "")) return; // exit if font not initialized for vlw-font
+	t_DispCoords lettersFit = 0;
+	t_DispCoords cnt = 0;
+	uint8_t lettersPrinted = 0,
+			lineNumber = 0;
 
 	// Calculate simbols that fits in line
-	if (fonttype = FONT_TYPE_BUILTIN) lettersFit = width / (5 * fontsize + symbolSpace);
-	if (fonttype = FONT_TYPE_FREEFONT)
+
+	while(lettersPrinted < bufLength) {
+		if (lineNumber >= textHeightFit()) break;
+		lettersFit = textWidthFit(lettersPrinted);
+		if (skipFirstSpace) {
+			cnt = 0;
+			while ((*(buffer + cnt + lettersPrinted) == ' ') && (cnt < lettersFit)) {
+				cnt++;
+			}
+			if (cnt != 0) {
+				lettersPrinted += cnt;
+				continue;
+			}
+		}
+
+		if (moveWholeWord){
+			cnt = lettersFit; if((cnt + lettersPrinted) < bufLength) cnt++;
+			if ((bufLength - lettersPrinted - cnt) != 0 ){
+				while ((*(buffer + cnt + lettersPrinted - 1) != ' ') && (cnt > 0)) {
+					cnt--;
+				}
+				if (cnt > 0) lettersFit = cnt;
+			}
+		}
+
+		line = (char *) malloc(sizeof(char)*(lettersFit + 1));
+
+		if(line){
+			memset(line, 0, lettersFit + 1);
+			memcpy((void *)line,(buffer + lettersPrinted), lettersFit);
+
+//			if (lineNumber >= textHeightFit()) {if(line)free(line); break;}
+
+			if ((y + (lineNumber * fontHeight()) < Graph->height()) && (y + (lineNumber * fontHeight()) > 0))
+				drawString(line, x, y + (lineNumber * (fontHeight() + ( (lineNumber == 0) ? 0 : lineSpace ) ) ) );
+			free(line);
+			lineNumber++;
+			lettersPrinted+=lettersFit;
+		}
+	}
+
+
 }
+
+/***************************************************************************************
+** Function name:           textWidthFit
+** Description:             Return amount of symbols fits in the width
+** Args:
+** 				skip - start position in buffer
+***************************************************************************************/
+t_DispCoords TextBlock::textWidthFit(t_DispCoords skip){
+	  t_DispCoords str_width = 0;
+	  uint16_t uniCode  = 0;
+	  uint8_t scount = 0; // counting symbols
+	  uint32_t position = 0;
+	#ifdef SMOOTH_FONT
+	  if(fontLoaded)
+	  {
+		while (*(buffer + skip + position))
+		{
+		  uniCode = decodeUTF8(*buffer + skip + position); position++;
+		  if (uniCode)
+		  {
+			if (uniCode == 0x20) { str_width += gFont.spaceWidth * textsize; if (position > 0) str_width += symbolSpace;}
+			else
+			{
+			  uint16_t gNum = 0;
+			  bool found = getUnicodeIndex(uniCode, &gNum);
+			  if (found)
+			  {
+				if(str_width == 0 && gdX[gNum] < 0) {str_width -= gdX[gNum] * textsize;if (position > 0) str_width += symbolSpace;}
+				if (*(buffer + position) || isDigits) {str_width += gxAdvance[gNum] * textsize;if (position > 0) str_width += symbolSpace;}
+				else {str_width += (gdX[gNum] + gWidth[gNum]) * textsize;if (position > 0) str_width += symbolSpace;}
+			  }
+			  else {str_width += (gFont.spaceWidth + 1) * textsize;if (position > 0) str_width += symbolSpace;}
+			}
+		  }
+		  if ( str_width < TBwidth) scount++; else break;
+		}
+		isDigits = false;
+		return scount;
+	  }
+	#endif
+
+	  if (textfont>1 && textfont<9)
+	  {
+		char *widthtable = (char *)pgm_read_dword( &(fontdata[textfont].widthtbl ) ) - 32; //subtract the 32 outside the loop
+
+		while (*(buffer + skip + position))
+		{
+		  uniCode = *(buffer + skip + position); position++;
+		  if (uniCode > 31 && uniCode < 128){
+			  str_width += pgm_read_byte( widthtable + uniCode) * textsize; // Normally we need to subtract 32 from uniCode
+			  if (position > 0) str_width += symbolSpace;
+		  }
+		  else {
+			  str_width += pgm_read_byte( widthtable + 32) * textsize; // Set illegal character = space width
+			  if (position > 0) str_width += symbolSpace;
+		  }
+		  if ( str_width < TBwidth) scount++; else break;
+		}
+
+	  }
+	  else
+	  {
+
+	#ifdef LOAD_GFXFF
+		if(gfxFont) // New font
+		{
+
+		  while (*(buffer + skip + position))
+		  {
+			uniCode = decodeUTF8(*buffer + skip + position); position++;
+			if ((uniCode >= pgm_read_word(&gfxFont->first)) && (uniCode <= pgm_read_word(&gfxFont->last )))
+			{
+			  uniCode -= pgm_read_word(&gfxFont->first);
+			  GFXglyph *glyph  = &(((GFXglyph *)pgm_read_dword(&gfxFont->glyph))[uniCode]);
+			  // If this is not the  last character or is a digit then use xAdvance
+			  if (*(buffer + skip + position)  || isDigits) { str_width += pgm_read_byte(&glyph->xAdvance) * textsize;;if (position > 0) str_width += symbolSpace;}
+			  // Else use the offset plus TBwidth since this can be bigger than xAdvance
+			  else {str_width += ((int8_t)pgm_read_byte(&glyph->xOffset) + pgm_read_byte(&glyph->width)) * textsize;;if (position > 0) str_width += symbolSpace;}
+			}
+			if ( str_width < TBwidth) scount++; else break;
+		  }
+		}
+		else
+	#endif
+		{
+	#ifdef LOAD_GLCD
+		  while (*(buffer + skip + position)) { position++; str_width += 6 * textsize;if (position > 0) str_width += symbolSpace; if ( str_width < TBwidth) scount++; else break;}
+	#endif
+		}
+	  }
+	  isDigits = false;
+	  return scount;
+}
+
+/***************************************************************************************
+** Function name:           textHeightFit
+** Description:             Return amount of lines fits in the TBheight
+***************************************************************************************/
+t_DispCoords TextBlock::textHeightFit() {
+	t_DispCoords lines, fh;
+	fh = fontHeight();
+	lines = (TBheight / ( fh + lineSpace ));
+	if ((lines * (fh + lineSpace) + fh) <= TBheight) lines++;
+	return lines;
+}
+
+/***************************************************************************************
+** Function name:			setMoveWholeWord
+** Description :			if true, then try to move whole word on new line
+** Args:
+**			move - value to set
+***************************************************************************************/
+void TextBlock::setMoveWholeWord(bool move) {
+	moveWholeWord = move;
+}
+
+/***************************************************************************************
+** Function name:			setSkipFistSpace
+** Description :			if true, then skip all ' '(space)-chars at line beginning
+** Args:
+**			skip - value to set
+***************************************************************************************/
+void TextBlock::setSkipFistSpace(bool skip) {
+	skipFirstSpace = skip;
+}
+
 /***************************************************************************************
 ** Function name:			name
 ** Description :			desc

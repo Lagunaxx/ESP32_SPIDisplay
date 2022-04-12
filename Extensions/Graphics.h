@@ -48,13 +48,13 @@ namespace Device {
 			};
 
 			struct t_Coordinate2D{
-				T_DispCoords x;
-				T_DispCoords y;
+				t_DispCoords x;
+				t_DispCoords y;
 			};
 
 			struct t_Size2D{
-				T_DispCoords width;
-				T_DispCoords height;
+				t_DispCoords width;
+				t_DispCoords height;
 			};
 
 
@@ -64,28 +64,28 @@ namespace Device {
 				virtual ~Graphics();
 
 			void	fillScreen(uint32_t color),
-					drawRect(T_DispCoords x, T_DispCoords y, T_DispCoords w, T_DispCoords h, uint32_t color),
-					drawRoundRect(T_DispCoords x0, T_DispCoords y0, T_DispCoords w, T_DispCoords h, T_DispCoords radius, uint32_t color),
-					fillRoundRect(T_DispCoords x0, T_DispCoords y0, T_DispCoords w, T_DispCoords h, T_DispCoords radius, uint32_t color),
+					drawRect(t_DispCoords x, t_DispCoords y, t_DispCoords w, t_DispCoords h, uint32_t color),
+					drawRoundRect(t_DispCoords x0, t_DispCoords y0, t_DispCoords w, t_DispCoords h, t_DispCoords radius, uint32_t color),
+					fillRoundRect(t_DispCoords x0, t_DispCoords y0, t_DispCoords w, t_DispCoords h, t_DispCoords radius, uint32_t color),
 
-					drawCircle(T_DispCoords x0, T_DispCoords y0, T_DispCoords r, uint32_t color),
-					drawCircleHelper(T_DispCoords x0, T_DispCoords y0, T_DispCoords r, uint8_t cornername, uint32_t color),
-					fillCircle(T_DispCoords x0, T_DispCoords y0, T_DispCoords r, uint32_t color),
-					fillCircleHelper(T_DispCoords x0, T_DispCoords y0, T_DispCoords r, uint8_t cornername, int32_t delta, uint32_t color),
+					drawCircle(t_DispCoords x0, t_DispCoords y0, t_DispCoords r, uint32_t color),
+					drawCircleHelper(t_DispCoords x0, t_DispCoords y0, t_DispCoords r, uint8_t cornername, uint32_t color),
+					fillCircle(t_DispCoords x0, t_DispCoords y0, t_DispCoords r, uint32_t color),
+					fillCircleHelper(t_DispCoords x0, t_DispCoords y0, t_DispCoords r, uint8_t cornername, int32_t delta, uint32_t color),
 
-					drawEllipse(T_DispCoords x0, T_DispCoords y0, T_DispCoords rx, T_DispCoords ry, uint16_t color),
-					fillEllipse(T_DispCoords x0, T_DispCoords y0, T_DispCoords rx, T_DispCoords ry, uint16_t color),
+					drawEllipse(t_DispCoords x0, t_DispCoords y0, t_DispCoords rx, t_DispCoords ry, uint16_t color),
+					fillEllipse(t_DispCoords x0, t_DispCoords y0, t_DispCoords rx, t_DispCoords ry, uint16_t color),
 
-					drawTriangle(T_DispCoords x0, T_DispCoords y0, T_DispCoords x1, T_DispCoords y1, T_DispCoords x2, T_DispCoords y2, uint32_t color),
-					fillTriangle(T_DispCoords x0, T_DispCoords y0, T_DispCoords x1, T_DispCoords y1, T_DispCoords x2, T_DispCoords y2, uint32_t color),
+					drawTriangle(t_DispCoords x0, t_DispCoords y0, t_DispCoords x1, t_DispCoords y1, t_DispCoords x2, t_DispCoords y2, uint32_t color),
+					fillTriangle(t_DispCoords x0, t_DispCoords y0, t_DispCoords x1, t_DispCoords y1, t_DispCoords x2, t_DispCoords y2, uint32_t color),
 
-					drawBitmap(T_DispCoords x, T_DispCoords y, const uint8_t *bitmap, T_DispCoords w, T_DispCoords h, uint16_t color),
-					drawXBitmap(T_DispCoords x, T_DispCoords y, const uint8_t *bitmap, T_DispCoords w, T_DispCoords h, uint16_t color),
-					drawXBitmap(T_DispCoords x, T_DispCoords y, const uint8_t *bitmap, T_DispCoords w, T_DispCoords h, uint16_t fgcolor, uint16_t bgcolor),
+					drawBitmap(t_DispCoords x, t_DispCoords y, const uint8_t *bitmap, t_DispCoords w, t_DispCoords h, uint16_t color),
+					drawXBitmap(t_DispCoords x, t_DispCoords y, const uint8_t *bitmap, t_DispCoords w, t_DispCoords h, uint16_t color),
+					drawXBitmap(t_DispCoords x, t_DispCoords y, const uint8_t *bitmap, t_DispCoords w, t_DispCoords h, uint16_t fgcolor, uint16_t bgcolor),
 					setBitmapColor(uint16_t fgcolor, uint16_t bgcolor), // For 1bpp sprites
-					drawImageBuffer(T_DispCoords x, T_DispCoords y, void * buffer, T_DispCoords widh, T_DispCoords height),
-					drawImageBufferAlpha(T_DispCoords x, T_DispCoords y, void * buffer, uint8_t* alpha, T_DispCoords widh, T_DispCoords height),
-					drawImageBufferAlpha(T_DispCoords x, T_DispCoords y, t_color_r5g6b5 color, uint8_t* alpha, T_DispCoords widh, T_DispCoords height);
+					drawImageBuffer(t_DispCoords x, t_DispCoords y, void * buffer, t_DispCoords widh, t_DispCoords height),
+					drawImageBufferAlpha(t_DispCoords x, t_DispCoords y, void * buffer, uint8_t* alpha, t_DispCoords widh, t_DispCoords height),
+					drawImageBufferAlpha(t_DispCoords x, t_DispCoords y, t_color_r5g6b5 color, uint8_t* alpha, t_DispCoords widh, t_DispCoords height);
 
 			// Functions to work with colors
 			t_color_r5g6b5* InitColorR5G6B5();
@@ -108,17 +108,17 @@ namespace Device {
 
 			  void _bitmap_fg(uint32_t c);
 			  void _bitmap_bg(uint32_t c);
-			  T_DispCoords __xpivot();
-			  T_DispCoords __ypivot();
+			  t_DispCoords __xpivot();
+			  t_DispCoords __ypivot();
 
 
 			int16_t getPivotX(void);
 			int16_t getPivotY(void);
-			void setPivot(T_DispCoords x, T_DispCoords y);
+			void setPivot(t_DispCoords x, t_DispCoords y);
 
 			uint32_t bitmap_fg, bitmap_bg;
-			T_DispCoords _xpivot;   // x pivot point coordinate
-			T_DispCoords _ypivot;   // y pivot point coordinate
+			t_DispCoords _xpivot;   // x pivot point coordinate
+			t_DispCoords _ypivot;   // y pivot point coordinate
 
 
 			};

@@ -51,6 +51,8 @@ namespace Device{
 		padX = 0;             // No padding
 		glyph_bb=0;
 		glyph_ab=0;
+		symbolSpace = 0;
+		buf_Bitmap = 0;
 
 //		  ImageBuffer=new c_TextBuffer(10);
 
@@ -509,17 +511,28 @@ Serial.printf("[Font::getUnicodeIndex] gFont.gCount = %u, unicode = %u \n", gFon
 		  return false;
 		}
 
+		/***************************************************************************************
+		** Function name:           setSymbolSpace
+		** Description :            sets size of space between symbols in TextBlock in pixels
+		** Args:
+		**		size - size of space
+		***************************************************************************************/
+
+		void Font::setSymbolSpace(t_DispCoords size){
+			symbolSpace = size;
+		}
+
 
 		/***************************************************************************************
 		** Function name:           drawGlyph
 		** Description:             Write a character to the position
 		*************************************************************************************x*/
 		// Expects file to be open
-		void Font::drawGlyph(uint16_t code, T_DispCoords cx, T_DispCoords cy)//, c_Cursor &cursor)
+		uint8_t Font::drawGlyph(uint16_t code, t_DispCoords cx, t_DispCoords cy)//, c_Cursor &cursor)
 		{
 Serial.printf("[Font::drawGlyph] Started. Code %s = %u\n", (char*) &code, code);
-			//T_DispCoords cursor_x = x;
-			//T_DispCoords cursor_y = y;
+			//t_DispCoords cursor_x = x;
+			//t_DispCoords cursor_y = y;
 #ifndef FONT_SCREEN_SCROLL
 //#ifdef FONT_SCREEN_VROLL
 #endif
@@ -570,14 +583,14 @@ Serial.printf("[Font::drawGlyph] found = true\n");
 //was only gWidth for line by line draw - return it if will be low RAM
 			uint8_t pbuffer[gWidth[gNum]*gHeight[gNum]];
 Serial.printf("[Font::drawGlyph] font widh %u, height %u\n\n", gWidth[gNum], gHeight[gNum]);
-			T_DispCoords xs = 0;
+			t_DispCoords xs = 0;
 			uint32_t dl = 0;
 
 /*****************
 * ToDo: move it to printing texts
 *
-			T_DispCoords cy = cursor_y + gFont.maxAscent - gdY[gNum];
-			T_DispCoords cx = cursor_x + gdX[gNum];
+			t_DispCoords cy = cursor_y + gFont.maxAscent - gdY[gNum];
+			t_DispCoords cx = cursor_x + gdX[gNum];
 			ImageBuffer->init(2,sizeof(uint16_t),cx,cy);
 ****************/
 //			startWrite(); // Avoid slow ESP32 transaction overhead for every pixel
@@ -698,6 +711,7 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 // move to printing text			cursor_x += gFont.spaceWidth + 1;
 		  }
 // move to printing text		  ImageBuffer->Set(cursor_x, cursor_y);
+		  return gWidth[gNum];
 		}
 
 		/***************************************************************************************
@@ -851,7 +865,7 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 		** Function name:           setTextPadding
 		** Description:             Define padding width (aids erasing old text and numbers)
 		***************************************************************************************/
-		void Font::setTextPadding(T_DispCoords x_width)
+		void Font::setTextPadding(t_DispCoords x_width)
 		{
 		  padX = x_width;
 		}
@@ -860,7 +874,7 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 		** Function name:           textWidth
 		** Description:             Return the width in pixels of a string in a given font
 		***************************************************************************************/
-		T_DispCoords Font::textWidth(const String& string)
+		t_DispCoords Font::textWidth(const String& string)
 		{
 		  int16_t len = string.length() + 2;
 		  char buffer[len];
@@ -868,7 +882,7 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 		  return textWidth(buffer, textfont);
 		}
 
-		T_DispCoords Font::textWidth(const String& string, uint8_t font)
+		t_DispCoords Font::textWidth(const String& string, uint8_t font)
 		{
 		  int16_t len = string.length() + 2;
 		  char buffer[len];
@@ -876,14 +890,14 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 		  return textWidth(buffer, font);
 		}
 
-		T_DispCoords Font::textWidth(const char *string)
+		t_DispCoords Font::textWidth(const char *string)
 		{
 		  return textWidth(string, textfont);
 		}
 
-		T_DispCoords Font::textWidth(const char *string, uint8_t font)
+		t_DispCoords Font::textWidth(const char *string, uint8_t font)
 		{
-		  T_DispCoords str_width = 0;
+		  t_DispCoords str_width = 0;
 		  uint16_t uniCode  = 0;
 
 		#ifdef SMOOTH_FONT
@@ -910,7 +924,7 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 			  }
 			}
 			isDigits = false;
-			return str_width;
+			return str_width + (strlen(string) - 1) * symbolSpace;
 		  }
 		#endif
 
@@ -956,92 +970,7 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 			}
 		  }
 		  isDigits = false;
-		  return str_width * textsize;
-		}
-
-		/***************************************************************************************
-		** Function name:           textWidthFit
-		** Description:             Return amount of symbols fits in the width
-		***************************************************************************************/
-		uint8_t Font::textWidthFit(const char *string, uint8_t font, T_DispCoords twidth){
-			  T_DispCoords str_width = 0;
-			  uint16_t uniCode  = 0;
-			  uint8_t scount = 0; // counting symbols
-
-			#ifdef SMOOTH_FONT
-			  if(fontLoaded)
-			  {
-				while (*string)
-				{
-				  uniCode = decodeUTF8(*string++);
-				  if (uniCode)
-				  {
-					if (uniCode == 0x20) str_width += gFont.spaceWidth * textsize;
-					else
-					{
-					  uint16_t gNum = 0;
-					  bool found = getUnicodeIndex(uniCode, &gNum);
-					  if (found)
-					  {
-						if(str_width == 0 && gdX[gNum] < 0) str_width -= gdX[gNum] * textsize;
-						if (*string || isDigits) str_width += gxAdvance[gNum] * textsize;
-						else str_width += (gdX[gNum] + gWidth[gNum]) * textsize;
-					  }
-					  else str_width += (gFont.spaceWidth + 1) * textsize;
-					}
-				  }
-				  if ( str_width < twidth) scount++; else break;
-				}
-				isDigits = false;
-				return scount;
-			  }
-			#endif
-
-			  if (font>1 && font<9)
-			  {
-				char *widthtable = (char *)pgm_read_dword( &(fontdata[font].widthtbl ) ) - 32; //subtract the 32 outside the loop
-
-				while (*string)
-				{
-				  uniCode = *(string++);
-				  if (uniCode > 31 && uniCode < 128)
-				  str_width += pgm_read_byte( widthtable + uniCode) * textsize; // Normally we need to subtract 32 from uniCode
-				  else str_width += pgm_read_byte( widthtable + 32) * textsize; // Set illegal character = space width
-				  if ( str_width < twidth) scount++; else break;
-				}
-
-			  }
-			  else
-			  {
-
-			#ifdef LOAD_GFXFF
-				if(gfxFont) // New font
-				{
-				  while (*string)
-				  {
-					uniCode = decodeUTF8(*string++);
-					if ((uniCode >= pgm_read_word(&gfxFont->first)) && (uniCode <= pgm_read_word(&gfxFont->last )))
-					{
-					  uniCode -= pgm_read_word(&gfxFont->first);
-					  GFXglyph *glyph  = &(((GFXglyph *)pgm_read_dword(&gfxFont->glyph))[uniCode]);
-					  // If this is not the  last character or is a digit then use xAdvance
-					  if (*string  || isDigits) str_width += pgm_read_byte(&glyph->xAdvance) * textsize;
-					  // Else use the offset plus width since this can be bigger than xAdvance
-					  else str_width += ((int8_t)pgm_read_byte(&glyph->xOffset) + pgm_read_byte(&glyph->width)) * textsize;
-					}
-					if ( str_width < twidth) scount++; else break;
-				  }
-				}
-				else
-			#endif
-				{
-			#ifdef LOAD_GLCD
-				  while (*string++) { str_width += 6 * textsize; if ( str_width < twidth) scount++; else break;}
-			#endif
-				}
-			  }
-			  isDigits = false;
-			  return scount;
+		  return str_width * textsize + (strlen(string) - 1) * symbolSpace;
 		}
 
 		/***************************************************************************************
@@ -1060,7 +989,7 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 		** Function name:           fontHeight
 		** Description:             return the height of a font (yAdvance for free fonts)
 		***************************************************************************************/
-		T_DispCoords Font::fontHeight(int16_t font)
+		t_DispCoords Font::fontHeight(int16_t font)
 		{
 		#ifdef SMOOTH_FONT
 		  if(fontLoaded) return gFont.yAdvance;
@@ -1078,7 +1007,7 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 		  return pgm_read_byte( &fontdata[font].height ) * textsize;
 		}
 
-		T_DispCoords Font::fontHeight(void)
+		t_DispCoords Font::fontHeight(void)
 		{
 		  return fontHeight(textfont);
 		}
@@ -1088,7 +1017,7 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 		** Description :            draw string with padding if it is defined
 		***************************************************************************************/
 		// Without font number, uses font set by setTextFont()
-		T_DispCoords Font::drawString(const String& string, T_DispCoords poX, T_DispCoords poY)
+		t_DispCoords Font::drawString(const String& string, t_DispCoords poX, t_DispCoords poY)
 		{
 		  int16_t len = string.length() + 2;
 		  char buffer[len];
@@ -1096,7 +1025,7 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 		  return drawString(buffer, poX, poY, textfont);
 		}
 		// With font number
-		T_DispCoords Font::drawString(const String& string, T_DispCoords poX, T_DispCoords poY, uint8_t font)
+		t_DispCoords Font::drawString(const String& string, t_DispCoords poX, t_DispCoords poY, uint8_t font)
 		{
 		  int16_t len = string.length() + 2;
 		  char buffer[len];
@@ -1105,18 +1034,18 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 		}
 
 		// Without font number, uses font set by setTextFont()
-		T_DispCoords Font::drawString(const char *string, T_DispCoords poX, T_DispCoords poY)
+		t_DispCoords Font::drawString(const char *string, t_DispCoords poX, t_DispCoords poY)
 		{
 		  return drawString(string, poX, poY, textfont);
 		}
 
 		// With font number. Note: font number is over-ridden if a smooth font is loaded
-		T_DispCoords Font::drawString(const char *string, T_DispCoords poX, T_DispCoords poY, uint8_t font)
+		t_DispCoords Font::drawString(const char *string, t_DispCoords poX, t_DispCoords poY, uint8_t font)
 		{
 		  int16_t sumX = 0;
 		  uint8_t padding = 1, baseline = 0;
-		  T_DispCoords cwidth = textWidth(string, font); // Find the pixel width of the string in the font
-		  T_DispCoords cheight = 8 * textsize;
+		  t_DispCoords cwidth = textWidth(string, font); // Find the pixel width of the string in the font
+		  t_DispCoords cheight = 8 * textsize;
 
 		#ifdef LOAD_GFXFF
 		  #ifdef SMOOTH_FONT
@@ -1262,7 +1191,9 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 			while (n < len)
 			{
 			  uint16_t uniCode = decodeUTF8((uint8_t*)string, &n, len - n);
-			  drawGlyph(uniCode, poX, poY);//, *cursor); //ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
+			  //poX += symbolSpace +
+					  drawGlyph(uniCode, poX + symbolSpace, poY);//, *cursor); //ToDo: modify it to make able return text-imagebuffer for next drawing with Graphics
+			  //n++;
 			}
 			sumX += cwidth;
 			//fontFile.close();
@@ -1273,7 +1204,7 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 			while (n < len)
 			{
 			  uint16_t uniCode = decodeUTF8((uint8_t*)string, &n, len - n);
-			  sumX += drawChar(uniCode, poX+sumX, poY, font);
+			  sumX += symbolSpace + drawChar(uniCode, poX+sumX, poY, font);
 			}
 		  }
 
@@ -1353,7 +1284,7 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 		** Function name:           drawCentreString (deprecated, use setTextDatum())
 		** Descriptions:            draw string centred on dX
 		***************************************************************************************/
-		T_DispCoords Font::drawCentreString(const String& string, T_DispCoords dX, T_DispCoords poY, uint8_t font)
+		t_DispCoords Font::drawCentreString(const String& string, t_DispCoords dX, t_DispCoords poY, uint8_t font)
 		{
 		  int16_t len = string.length() + 2;
 		  char buffer[len];
@@ -1361,7 +1292,7 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 		  return drawCentreString(buffer, dX, poY, font);
 		}
 
-		T_DispCoords Font::drawCentreString(const char *string, T_DispCoords dX, T_DispCoords poY, uint8_t font)
+		t_DispCoords Font::drawCentreString(const char *string, t_DispCoords dX, t_DispCoords poY, uint8_t font)
 		{
 		  uint8_t tempdatum = textdatum;
 		  int32_t sumX = 0;
@@ -1376,7 +1307,7 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 		** Function name:           drawRightString (deprecated, use setTextDatum())
 		** Descriptions:            draw string right justified to dX
 		***************************************************************************************/
-		T_DispCoords Font::drawRightString(const String& string, T_DispCoords dX, T_DispCoords poY, uint8_t font)
+		t_DispCoords Font::drawRightString(const String& string, t_DispCoords dX, t_DispCoords poY, uint8_t font)
 		{
 		  int16_t len = string.length() + 2;
 		  char buffer[len];
@@ -1384,7 +1315,7 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 		  return drawRightString(buffer, dX, poY, font);
 		}
 
-		T_DispCoords Font::drawRightString(const char *string, T_DispCoords dX, T_DispCoords poY, uint8_t font)
+		t_DispCoords Font::drawRightString(const char *string, t_DispCoords dX, t_DispCoords poY, uint8_t font)
 		{
 		  uint8_t tempdatum = textdatum;
 		  int16_t sumX = 0;
@@ -1399,7 +1330,7 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 		** Function name:           drawNumber
 		** Description:             draw a long integer
 		***************************************************************************************/
-		T_DispCoords Font::drawNumber(long long_num, T_DispCoords poX, T_DispCoords poY)
+		t_DispCoords Font::drawNumber(long long_num, t_DispCoords poX, t_DispCoords poY)
 		{
 		  isDigits = true; // Eliminate jiggle in monospaced fonts
 		  char str[12];
@@ -1407,7 +1338,7 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 		  return drawString(str, poX, poY, textfont);
 		}
 
-		T_DispCoords Font::drawNumber(long long_num, T_DispCoords poX, T_DispCoords poY, uint8_t font)
+		t_DispCoords Font::drawNumber(long long_num, t_DispCoords poX, t_DispCoords poY, uint8_t font)
 		{
 		  isDigits = true; // Eliminate jiggle in monospaced fonts
 		  char str[12];
@@ -1422,12 +1353,12 @@ Serial.printf("[Font::drawGlyph] textcolor %u, color565 %u\n\n", (uint32_t) this
 		***************************************************************************************/
 		// Assemble and print a string, this permits alignment relative to a datum
 		// looks complicated but much more compact and actually faster than using print class
-		T_DispCoords Font::drawFloat(float floatNumber, uint8_t dp, T_DispCoords poX, T_DispCoords poY)
+		t_DispCoords Font::drawFloat(float floatNumber, uint8_t dp, t_DispCoords poX, t_DispCoords poY)
 		{
 		  return drawFloat(floatNumber, dp, poX, poY, textfont);
 		}
 
-		T_DispCoords Font::drawFloat(float floatNumber, uint8_t dp, T_DispCoords poX, T_DispCoords poY, uint8_t font)
+		t_DispCoords Font::drawFloat(float floatNumber, uint8_t dp, t_DispCoords poX, t_DispCoords poY, uint8_t font)
 		{
 		  isDigits = true;
 		  char str[14];               // Array to contain decimal string
@@ -1706,8 +1637,8 @@ Serial.printf("[Font::setFreeFont] GFXfont: \n");
 			  if (uniCode == '\n') uniCode+=22; // Make it a valid space character to stop errors
 			  else if (uniCode < 32) return 1;
 
-			  T_DispCoords width = 0;
-			  T_DispCoords height = 0;
+			  t_DispCoords width = 0;
+			  t_DispCoords height = 0;
 
 			//vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv DEBUG vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 			  //Serial.print((uint8_t) uniCode); // Debug line sends all printed TFT text to serial port
@@ -1828,14 +1759,15 @@ Serial.printf("[Font::setFreeFont] GFXfont: \n");
 			** Description:             draw a Unicode glyph onto the screen
 			***************************************************************************************/
 			  // Any UTF-8 decoding must be done before calling drawChar()
-			T_DispCoords Font::drawChar(uint16_t uniCode, T_DispCoords x, T_DispCoords y)
+			t_DispCoords Font::drawChar(uint16_t uniCode, t_DispCoords x, t_DispCoords y)
 			{
 			  return drawChar(uniCode, x, y, textfont);
 			}
 
 			  // Any UTF-8 decoding must be done before calling drawChar()
-			T_DispCoords Font::drawChar(uint16_t uniCode, T_DispCoords x, T_DispCoords y, uint8_t font)
+			t_DispCoords Font::drawChar(uint16_t uniCode, t_DispCoords x, t_DispCoords y, uint8_t font)
 			{
+//Serial.printf("[drawchar] font=%u uni=%u\n",font,uniCode);
 			  if (!uniCode) return 0;
 			  if (font==1)
 			  {
@@ -1876,9 +1808,10 @@ Serial.printf("[Font::setFreeFont] GFXfont: \n");
 			  }
 
 			  if ((font>1) && (font<9) && ((uniCode < 32) || (uniCode > 127))) return 0; //skip some codes for some fonts
+//Serial.printf("[drawchar] step 2 font=%u uni=%u\n",font,uniCode);
 
-			  T_DispCoords width  = 0;
-			  T_DispCoords height = 0;
+			  t_DispCoords width  = 0;
+			  t_DispCoords height = 0;
 			  uint32_t flash_address = 0;
 			  uniCode -= 32;
 
@@ -1886,6 +1819,7 @@ Serial.printf("[Font::setFreeFont] GFXfont: \n");
 			#ifdef LOAD_FONT2
 			  if (font == 2)
 			  {
+//Serial.printf("[drawchar] step 3! font=%u uni=%u\n",font,uniCode);
 				flash_address = pgm_read_dword(&chrtbl_f16[uniCode]);
 				width = pgm_read_byte(widtbl_f16 + uniCode);
 				height = chr_hgt_f16;
@@ -1925,8 +1859,9 @@ Serial.printf("[Font::setFreeFont] GFXfont: \n");
 #ifndef FONT_SCREEN_SCROLL
 #ifndef FONT_SCREEN_VROLL
 				// if printing char goes out of screen then return height of char
-				if ( y - height * textsize < 0 ) return height * textsize ;
-				if ( y >= (int16_t)Device::Display::Graphics::Graph->height()) return 0;
+				if ( y < 0 ) return 0 ;
+				if ( y + height * textsize  >= (int16_t)Device::Display::Graphics::Graph->height()) return height * textsize;
+
 #else
 
 #endif
@@ -1934,20 +1869,19 @@ Serial.printf("[Font::setFreeFont] GFXfont: \n");
 
 #endif
 
-				// ToDo: Make this to draw symbol with remade classes
+// ToDo: Check for full compatability with new class
 				if (bgfill) if (textcolor != textbgcolor) Device::Display::Graphics::Graph->fillRect(x, pY, width * textsize, height * textsize, textbgcolor);
 //				Device::Display::Driver->pushImage(px, py, px + ts, py + ts, data, alpha)
 
 //				if (textcolor == textbgcolor || textsize != 1) {
-
+// ToDo: Check commented lines for compatability and algo
 				for (int32_t i = 0; i < height; i++)
 				  {
-
 
 					for (int32_t k = 0; k < w; k++)
 					{
 					  line = pgm_read_byte((uint8_t *)flash_address + w * i + k);
-
+// ToDo: Need to make buffer, than draw buffer for fast draw
 					  if (line) {
 						if (textsize == 1) {
 						  pX = x + k * 8;
@@ -1978,6 +1912,7 @@ Serial.printf("[Font::setFreeFont] GFXfont: \n");
 
 //				}
 /*				else
+ * ToDo: Check actuality of code with new class. May be remove.
 				  // Faster drawing of characters and background using block write
 				{
 				  uint8_t mask;
@@ -2125,7 +2060,7 @@ Serial.printf("[Font::setFreeFont] GFXfont: \n");
 			** Function name:           drawChar
 			** Description:             draw a single character in the Adafruit GLCD font
 			***************************************************************************************/
-			void Font::drawChar(T_DispCoords x, T_DispCoords y, uint16_t c, uint32_t color, uint32_t bg, uint8_t size)
+			void Font::drawChar(t_DispCoords x, t_DispCoords y, uint16_t c, uint32_t color, uint32_t bg, uint8_t size)
 			{
 			  if ((x >= Device::Display::Graphics::Graph->width())            || // Clip right
 				  (y >= Device::Display::Graphics::Graph->height())           || // Clip bottom
@@ -2400,7 +2335,7 @@ Serial.printf("[Font::setFreeFont] GFXfont: \n");
 			** Description:
 			***************************************************************************************/
 
-			T_DispCoords c_TextBuffer::GetX(){
+			t_DispCoords c_TextBuffer::GetX(){
 				return x;
 			}
 
@@ -2409,7 +2344,7 @@ Serial.printf("[Font::setFreeFont] GFXfont: \n");
 			** Description:
 			***************************************************************************************/
 
-			T_DispCoords c_TextBuffer::GetY(){
+			t_DispCoords c_TextBuffer::GetY(){
 				return y;
 			}
 
@@ -2418,7 +2353,7 @@ Serial.printf("[Font::setFreeFont] GFXfont: \n");
 			** Description:
 			***************************************************************************************/
 
-			void c_TextBuffer::SetX(T_DispCoords coord){
+			void c_TextBuffer::SetX(t_DispCoords coord){
 				x=coord;
 			}
 
@@ -2427,7 +2362,7 @@ Serial.printf("[Font::setFreeFont] GFXfont: \n");
 			** Description:
 			***************************************************************************************/
 
-			void c_TextBuffer::SetY(T_DispCoords coord){
+			void c_TextBuffer::SetY(t_DispCoords coord){
 				y=coord;
 			}
 

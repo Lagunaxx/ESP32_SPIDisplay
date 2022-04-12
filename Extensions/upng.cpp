@@ -1307,7 +1307,7 @@ extern upng_error uz_inflate(unsigned char *out, unsigned long outsize, unsigned
 				return upng;
 			}
 
-			void c_uPNG::DrawFile(char *filename, T_DispCoords x, T_DispCoords y)
+			void c_uPNG::DrawFile(char *filename, t_DispCoords x, t_DispCoords y)
 			{
 				// Open and draw file
 

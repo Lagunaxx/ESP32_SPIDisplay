@@ -94,13 +94,13 @@ static bool _booted;    // init() or begin() has already run once
 // Class functions and variables
 class Screen {
 public:
-	Screen(T_DispCoords _W = TFT_WIDTH, T_DispCoords _H = TFT_HEIGHT);
+	Screen(t_DispCoords _W = TFT_WIDTH, t_DispCoords _H = TFT_HEIGHT);
 	virtual ~Screen();
 
 	//ToDo: move 'init' into constructor, remove 'begin'
 	void init(uint8_t tc = TAB_COLOUR), begin(uint8_t tc = TAB_COLOUR); // Same - begin included for backwards compatibility
 
-	T_DispCoords height(void), width(void);
+	t_DispCoords height(void), width(void);
 	uint8_t getRotation(void);
 	void setRotation(uint8_t r),		// Set display rotation
 	invertDisplay(boolean i);	// Set/reset color inversion
@@ -108,9 +108,9 @@ public:
 //protected:
 
 	void getSetup(T_DisplaySettings &tft_settings), // Sketch provides the instance to populate
-	setWindow(T_DispCoords xs, T_DispCoords ys, T_DispCoords xe,
-			T_DispCoords ye), setAddrWindow(T_DispCoords xs, T_DispCoords ys,
-			T_DispCoords w, T_DispCoords h),
+	setWindow(t_DispCoords xs, t_DispCoords ys, t_DispCoords xe,
+			t_DispCoords ye), setAddrWindow(t_DispCoords xs, t_DispCoords ys,
+			t_DispCoords w, t_DispCoords h),
 
 	// Write pixels to display SPI
 			writeBlock(uint16_t color, uint32_t repeat), // Fast block write prototype
@@ -122,47 +122,47 @@ public:
 			writeColor(uint16_t color, uint32_t len); // Write colors without transaction overhead
 
 	// These are virtual so the TFT_eSprite class can override them with sprite specific functions
-	virtual void drawPixel(T_DispCoords x, T_DispCoords y, uint32_t color),
-			drawLine(T_DispCoords x0, T_DispCoords y0, T_DispCoords x1,
-					T_DispCoords y1, uint32_t color), drawFastVLine(
-					T_DispCoords x, T_DispCoords y, T_DispCoords h,
-					uint32_t color), drawFastHLine(T_DispCoords x,
-					T_DispCoords y, T_DispCoords w, uint32_t color), fillRect(
-					T_DispCoords x, T_DispCoords y, T_DispCoords w,
-					T_DispCoords h, uint32_t color);
+	virtual void drawPixel(t_DispCoords x, t_DispCoords y, uint32_t color),
+			drawLine(t_DispCoords x0, t_DispCoords y0, t_DispCoords x1,
+					t_DispCoords y1, uint32_t color), drawFastVLine(
+					t_DispCoords x, t_DispCoords y, t_DispCoords h,
+					uint32_t color), drawFastHLine(t_DispCoords x,
+					t_DispCoords y, t_DispCoords w, uint32_t color), fillRect(
+					t_DispCoords x, t_DispCoords y, t_DispCoords w,
+					t_DispCoords h, uint32_t color);
 
 	// Read the color of a pixel at x,y and return value in 565 format
-	uint32_t readPixel(T_DispCoords x0, T_DispCoords y0);
+	uint32_t readPixel(t_DispCoords x0, t_DispCoords y0);
 
 	// The next functions can be used as a pair to copy screen blocks (or horizontal/vertical lines) to another location
 	// Read a block of pixels to a data buffer, buffer is 16 bit and the array size must be at least w * h
-	void readRect(T_DispCoords x0, T_DispCoords y0, T_DispCoords w,
-			T_DispCoords h, uint16_t *data);
+	void readRect(t_DispCoords x0, t_DispCoords y0, t_DispCoords w,
+			t_DispCoords h, uint16_t *data);
 	// Write a block of pixels to the screen
-	void pushRect(T_DispCoords x0, T_DispCoords y0, T_DispCoords w,
-			T_DispCoords h, uint16_t *data);
+	void pushRect(t_DispCoords x0, t_DispCoords y0, t_DispCoords w,
+			t_DispCoords h, uint16_t *data);
 
 	// These are used to render images or sprites stored in RAM arrays
-	void pushImage(T_DispCoords x0, T_DispCoords y0, T_DispCoords w,
-			T_DispCoords h, uint16_t *data);
-	void pushImage(T_DispCoords x0, T_DispCoords y0, T_DispCoords w,
-			T_DispCoords h, uint16_t *data, uint16_t transparent);
-	void pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
-			T_DispCoords h, uint16_t *data, uint8_t *alpha);
-	void pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
-			T_DispCoords h, uint16_t color, uint8_t *alpha);
+	void pushImage(t_DispCoords x0, t_DispCoords y0, t_DispCoords w,
+			t_DispCoords h, uint16_t *data);
+	void pushImage(t_DispCoords x0, t_DispCoords y0, t_DispCoords w,
+			t_DispCoords h, uint16_t *data, uint16_t transparent);
+	void pushImage(t_DispCoords x, t_DispCoords y, t_DispCoords w,
+			t_DispCoords h, uint16_t *data, uint8_t *alpha);
+	void pushImage(t_DispCoords x, t_DispCoords y, t_DispCoords w,
+			t_DispCoords h, uint16_t color, uint8_t *alpha);
 	/*	*/			// These are used to render images stored in FLASH (PROGMEM)
-	void pushImage(T_DispCoords x0, T_DispCoords y0, T_DispCoords w,
-			T_DispCoords h, const uint16_t *data, uint16_t transparent);
-	void pushImage(T_DispCoords x0, T_DispCoords y0, T_DispCoords w,
-			T_DispCoords h, const uint16_t *data);
+	void pushImage(t_DispCoords x0, t_DispCoords y0, t_DispCoords w,
+			t_DispCoords h, const uint16_t *data, uint16_t transparent);
+	void pushImage(t_DispCoords x0, t_DispCoords y0, t_DispCoords w,
+			t_DispCoords h, const uint16_t *data);
 	/**/
 	/*	*/				  // These are used by pushSprite for 1 and 8 bit colors
-	void pushImage(T_DispCoords x0, T_DispCoords y0, T_DispCoords w,
-			T_DispCoords h, uint8_t *data, uint32_t bitmap_fg,
+	void pushImage(t_DispCoords x0, t_DispCoords y0, t_DispCoords w,
+			t_DispCoords h, uint8_t *data, uint32_t bitmap_fg,
 			uint32_t bitmap_bg, bool bpp8 = true);
-	void pushImage(T_DispCoords x0, T_DispCoords y0, T_DispCoords w,
-			T_DispCoords h, uint8_t *data, uint32_t bitmap_fg,
+	void pushImage(t_DispCoords x0, t_DispCoords y0, t_DispCoords w,
+			t_DispCoords h, uint8_t *data, uint32_t bitmap_fg,
 			uint8_t transparent, bool bpp8 = true);
 	/**/
 	// Swap the byte order for pushImage() - corrects endianness
@@ -172,8 +172,8 @@ public:
 	// This next function has been used successfully to dump the TFT screen to a PC for documentation purposes
 	// It reads a screen area and returns the RGB 8 bit color values of each pixel
 	// Set w and h to 1 to read 1 pixel's color. The data buffer must be at least w * h * 3 bytes
-	void readRectRGB(T_DispCoords x0, T_DispCoords y0, T_DispCoords w,
-			T_DispCoords h, uint8_t *data);
+	void readRectRGB(t_DispCoords x0, t_DispCoords y0, t_DispCoords w,
+			t_DispCoords h, uint8_t *data);
 
 	//END protected//
 private:
@@ -191,7 +191,7 @@ private:
 	void
 	// Display configuration
 
-	readAddrWindow(int32_t xs, int32_t ys, T_DispCoords w, T_DispCoords h); //define an area to read a stream of pixels
+	readAddrWindow(int32_t xs, int32_t ys, t_DispCoords w, t_DispCoords h); //define an area to read a stream of pixels
 	bool SPIStartWrite(void),			// Begin SPI transaction
 	SPIStartRead(void);
 	void SPIEndWrite(void),				// End SPI transaction
@@ -213,8 +213,8 @@ private:
 
 	uint32_t lastColor; // = 0xFFFF;
 
-	T_DispCoords _init_width, _init_height; // Display w/h as input, used by setRotation()
-	T_DispCoords _width, _height; // Display w/h as modified by current rotation
+	t_DispCoords _init_width, _init_height; // Display w/h as input, used by setRotation()
+	t_DispCoords _width, _height; // Display w/h as modified by current rotation
 
 #ifdef TFT_SDA_READ
   #if defined (ESP8266) && defined (TFT_SDA_READ)
@@ -243,7 +243,7 @@ private:
 // End of class Screen
 // Next code for initializing class in memory
 static Screen *Driver;
-void init(T_DispCoords _W, T_DispCoords _H, uint8_t R
+void init(t_DispCoords _W, t_DispCoords _H, uint8_t R
 #ifdef ST7735_DRIVER
 		, uint8_t tc
 #endif

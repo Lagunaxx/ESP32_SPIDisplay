@@ -115,7 +115,7 @@ uint8_t Screen::tabcolor, Screen::colstart, Screen::rowstart;
  *******************************************************************************/
 //Screen* Driver;
 // Next code for initializing class in memory
-void init(T_DispCoords _W, T_DispCoords _H, uint8_t _R
+void init(t_DispCoords _W, t_DispCoords _H, uint8_t _R
 #ifdef ST7735_DRIVER
  , uint8_t tc
  #endif
@@ -133,8 +133,8 @@ void init(uint8_t R
  , uint8_t tc
  #endif
 		) {
-	init((T_DispCoords)TFT_WIDTH,
-	(T_DispCoords)TFT_HEIGHT, R
+	init((t_DispCoords)TFT_WIDTH,
+	(t_DispCoords)TFT_HEIGHT, R
 #ifdef ST7735_DRIVER
  , tc
  #endif
@@ -167,7 +167,7 @@ void Screen::PrintError(const char message[]) {
  ** Function name:           Screen
  ** Description:             Constructor , we must use hardware SPI pins
  ***************************************************************************************/
-Screen::Screen(T_DispCoords w, T_DispCoords h) // @suppress("Class members should be properly initialized")
+Screen::Screen(t_DispCoords w, t_DispCoords h) // @suppress("Class members should be properly initialized")
 		{
 
 	// The control pins are deliberately set to the inactive state (CS high) as setup()
@@ -637,7 +637,7 @@ uint32_t Screen::readcommand32(uint8_t cmd_function, uint8_t index) {
  ** Function name:           read pixel (for SPI Interface II i.e. IM [3:0] = "1101")
  ** Description:             Read 565 pixel colors from a pixel
  ***************************************************************************************/
-uint32_t Screen::readPixel(T_DispCoords x0, T_DispCoords y0) {
+uint32_t Screen::readPixel(t_DispCoords x0, t_DispCoords y0) {
 #if defined(ESP32_PARALLEL)
 
   readAddrWindow(x0, y0, 1, 1); // Sets CS low
@@ -782,8 +782,8 @@ uint32_t Screen::readPixel(T_DispCoords x0, T_DispCoords y0) {
  ** Function name:           read rectangle (for SPI Interface II i.e. IM [3:0] = "1101")
  ** Description:             Read 565 pixel colors from a defined area
  ***************************************************************************************/
-void Screen::readRect(T_DispCoords x, T_DispCoords y, T_DispCoords w,
-		T_DispCoords h, uint16_t *data) {
+void Screen::readRect(t_DispCoords x, t_DispCoords y, t_DispCoords w,
+		t_DispCoords h, uint16_t *data) {
 	if ((x > _width) || (y > _height) || (w == 0) || (h == 0))
 		return;
 
@@ -951,8 +951,8 @@ void Screen::readRect(T_DispCoords x, T_DispCoords y, T_DispCoords w,
  ** Function name:           push rectangle (for SPI Interface II i.e. IM [3:0] = "1101")
  ** Description:             push 565 pixel colors into a defined area
  ***************************************************************************************/
-void Screen::pushRect(T_DispCoords x, T_DispCoords y, T_DispCoords w,
-		T_DispCoords h, uint16_t *data) {
+void Screen::pushRect(t_DispCoords x, t_DispCoords y, t_DispCoords w,
+		t_DispCoords h, uint16_t *data) {
 	// Function deprecated, remains for backwards compatibility
 	// pushImage() is better as it will crop partly off-screen image blocks
 	pushImage(x, y, w, h, data);
@@ -962,8 +962,8 @@ void Screen::pushRect(T_DispCoords x, T_DispCoords y, T_DispCoords w,
  ** Function name:           pushImage
  ** Description:             plot 16 bit color sprite or image onto TFT
  ***************************************************************************************/
-void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
-		T_DispCoords h, uint16_t *data) {
+void Screen::pushImage(t_DispCoords x, t_DispCoords y, t_DispCoords w,
+		t_DispCoords h, uint16_t *data) {
 
 	if ((x >= _width) || (y >= _height))
 		return;
@@ -1011,8 +1011,8 @@ void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
  ** Function name:           pushImage
  ** Description:             plot 16 bit sprite or image with 1 color being transparent
  ***************************************************************************************/
-void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
-		T_DispCoords h, uint16_t *data, uint16_t transp) {
+void Screen::pushImage(t_DispCoords x, t_DispCoords y, t_DispCoords w,
+		t_DispCoords h, uint16_t *data, uint16_t transp) {
 
 	if ((x >= _width) || (y >= _height))
 		return;
@@ -1092,8 +1092,8 @@ void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
  ** Function name:           pushImage
  ** Description:             plot 16 bit sprite or image with alpha data
  ***************************************************************************************/
-void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
-		T_DispCoords h, uint16_t *data, uint8_t *alpha) {
+void Screen::pushImage(t_DispCoords x, t_DispCoords y, t_DispCoords w,
+		t_DispCoords h, uint16_t *data, uint8_t *alpha) {
 
 	if ((x >= _width) || (y >= _height))
 		return;
@@ -1173,8 +1173,8 @@ void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
  ** Function name:           pushImage
  ** Description:             plot 16 bit color with alpha data
  ***************************************************************************************/
-void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
-		T_DispCoords h, uint16_t color, uint8_t *alpha) {
+void Screen::pushImage(t_DispCoords x, t_DispCoords y, t_DispCoords w,
+		t_DispCoords h, uint16_t color, uint8_t *alpha) {
 
 	if ((x >= _width) || (y >= _height))
 		return;
@@ -1245,8 +1245,8 @@ void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
  ** Function name:           pushImage - for FLASH (PROGMEM) stored images
  ** Description:             plot 16 bit image
  ***************************************************************************************/
-void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
-		T_DispCoords h, const uint16_t *data) {
+void Screen::pushImage(t_DispCoords x, t_DispCoords y, t_DispCoords w,
+		t_DispCoords h, const uint16_t *data) {
 #ifdef ESP32
 	pushImage(x, y, w, h, (uint16_t*) data);
 #else
@@ -1309,8 +1309,8 @@ void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
  ** Function name:           pushImage - for FLASH (PROGMEM) stored images
  ** Description:             plot 16 bit image with 1 color being transparent
  ***************************************************************************************/
-void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
-		T_DispCoords h, const uint16_t *data, uint16_t transp) {
+void Screen::pushImage(t_DispCoords x, t_DispCoords y, t_DispCoords w,
+		t_DispCoords h, const uint16_t *data, uint16_t transp) {
 #ifdef ESP32
 	pushImage(x, y, w, h, (uint16_t*) data, transp);
 #else
@@ -1387,8 +1387,8 @@ void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
  ** Function name:           pushImage
  ** Description:             plot 8 bit image or sprite using a line buffer
  ***************************************************************************************/
-void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
-		T_DispCoords h, uint8_t *data, uint32_t bitmap_fg, uint32_t bitmap_bg,
+void Screen::pushImage(t_DispCoords x, t_DispCoords y, t_DispCoords w,
+		t_DispCoords h, uint8_t *data, uint32_t bitmap_fg, uint32_t bitmap_bg,
 		bool bpp8) {
 	if ((x >= _width) || (y >= (int32_t) _height))
 		return;
@@ -1505,8 +1505,8 @@ void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
  ** Function name:           pushImage
  ** Description:             plot 8 or 1 bit image or sprite with a transparent color
  ***************************************************************************************/
-void Screen::pushImage(T_DispCoords x, T_DispCoords y, T_DispCoords w,
-		T_DispCoords h, uint8_t *data, uint32_t bitmap_fg, uint8_t transp,
+void Screen::pushImage(t_DispCoords x, t_DispCoords y, t_DispCoords w,
+		t_DispCoords h, uint8_t *data, uint32_t bitmap_fg, uint8_t transp,
 		bool bpp8) {
 	if ((x >= _width) || (y >= _height))
 		return;
@@ -1671,8 +1671,8 @@ bool Screen::getSwapBytes(void) {
  ** Description:             Read RGB pixel colors from a defined area
  ***************************************************************************************/
 // If w and h are 1, then 1 pixel is read, *data array size must be 3 bytes per pixel
-void Screen::readRectRGB(T_DispCoords x0, T_DispCoords y0, T_DispCoords w,
-		T_DispCoords h, uint8_t *data) {
+void Screen::readRectRGB(t_DispCoords x0, t_DispCoords y0, t_DispCoords w,
+		t_DispCoords h, uint8_t *data) {
 #if defined(ESP32_PARALLEL)
 
 		  // ESP32 parallel bus supported yet
@@ -1743,7 +1743,7 @@ uint8_t Screen::getRotation(void) {
  ** Description:             Return the pixel width of display (per current rotation)
  ***************************************************************************************/
 // Return the size of the display (per current rotation)
-T_DispCoords Screen::width(void) {
+t_DispCoords Screen::width(void) {
 	return _width;
 }
 
@@ -1751,7 +1751,7 @@ T_DispCoords Screen::width(void) {
  ** Function name:           height
  ** Description:             Return the pixel height of display (per current rotation)
  ***************************************************************************************/
-T_DispCoords Screen::height(void) {
+t_DispCoords Screen::height(void) {
 	return _height;
 }
 
@@ -1760,8 +1760,8 @@ T_DispCoords Screen::height(void) {
  ** Description:             define an area to receive a stream of pixels
  ***************************************************************************************/
 // Chip select is high at the end of this function
-void Screen::setAddrWindow(T_DispCoords x0, T_DispCoords y0, T_DispCoords w,
-		T_DispCoords h) {
+void Screen::setAddrWindow(t_DispCoords x0, t_DispCoords y0, t_DispCoords w,
+		t_DispCoords h) {
 	if (SPIStartWrite()) {
 		setWindow(x0, y0, x0 + w - 1, y0 + h - 1);
 		SPIEndWrite();
@@ -1891,7 +1891,7 @@ void Screen::setAddrWindow(T_DispCoords x0, T_DispCoords y0, T_DispCoords w,
 		#else
 
 #if defined (ESP8266) && defined (RPI_ILI9486_DRIVER) // This is for the RPi display that needs 16 bits
-		void Screen::setWindow(T_DispCoords x0, T_DispCoords y0, T_DispCoords x1, T_DispCoords y1)
+		void Screen::setWindow(t_DispCoords x0, t_DispCoords y0, t_DispCoords x1, t_DispCoords y1)
 		{
 
 		  SPI1U1 = (CMD_BITS << SPILMOSI) | (CMD_BITS << SPILMISO);
@@ -1963,8 +1963,8 @@ void Screen::setAddrWindow(T_DispCoords x0, T_DispCoords y0, T_DispCoords w,
 
 		#else // This is for the ESP32
 
-void Screen::setWindow(T_DispCoords x0, T_DispCoords y0, T_DispCoords x1,
-		T_DispCoords y1) {
+void Screen::setWindow(t_DispCoords x0, t_DispCoords y0, t_DispCoords x1,
+		t_DispCoords y1) {
 
 	addr_col = 0xFFFF;
 	addr_row = 0xFFFF;
@@ -2020,7 +2020,7 @@ void Screen::setWindow(T_DispCoords x0, T_DispCoords y0, T_DispCoords x1,
  ***************************************************************************************/
 // Chip select stays low
 #if defined (ESP8266) && !defined (RPI_WRITE_STROBE)
-		void Screen::readAddrWindow(int32_t xs, int32_t ys, T_DispCoords w, T_DispCoords h)
+		void Screen::readAddrWindow(int32_t xs, int32_t ys, t_DispCoords w, t_DispCoords h)
 		{
 
 		  int32_t xe = xs + w - 1;
@@ -2084,8 +2084,8 @@ void Screen::setWindow(T_DispCoords x0, T_DispCoords y0, T_DispCoords x1,
 
 		#else //ESP32
 
-void Screen::readAddrWindow(int32_t xs, int32_t ys, T_DispCoords w,
-		T_DispCoords h) {
+void Screen::readAddrWindow(int32_t xs, int32_t ys, t_DispCoords w,
+		t_DispCoords h) {
 
 	int32_t xe = xs + w - 1;
 	int32_t ye = ys + h - 1;
@@ -2133,7 +2133,7 @@ void Screen::readAddrWindow(int32_t xs, int32_t ys, T_DispCoords w,
  ** Description:             push a single pixel at an arbitrary position
  ***************************************************************************************/
 #if defined (ESP8266) && !defined (RPI_WRITE_STROBE)
-		void Screen::drawPixel(T_DispCoords x, T_DispCoords y, uint32_t color)
+		void Screen::drawPixel(t_DispCoords x, t_DispCoords y, uint32_t color)
 		{
 		  // Range checking
 		  if ((x < 0) || (y < 0) ||(x >= _width) || (y >= _height)) return;
@@ -2230,7 +2230,7 @@ void Screen::readAddrWindow(int32_t xs, int32_t ys, T_DispCoords w,
 
 #if defined (ESP8266) && defined (RPI_ILI9486_DRIVER) // This is for the RPi display that needs 16 bits
 
-		void Screen::drawPixel(T_DispCoords x, T_DispCoords y, uint32_t color)
+		void Screen::drawPixel(t_DispCoords x, t_DispCoords y, uint32_t color)
 		{
 		  // Range checking
 		  if ((x < 0) || (y < 0) ||(x >= _width) || (y >= _height)) return;
@@ -2314,7 +2314,7 @@ void Screen::readAddrWindow(int32_t xs, int32_t ys, T_DispCoords w,
 
 		#else // ESP32
 
-void Screen::drawPixel(T_DispCoords x, T_DispCoords y, uint32_t color) {
+void Screen::drawPixel(t_DispCoords x, t_DispCoords y, uint32_t color) {
 	// Range checking
 	if ((x < 0) || (y < 0) || (x >= _width) || (y >= _height))
 		return;
@@ -2641,8 +2641,8 @@ void Screen::pushColors(uint16_t *data, uint32_t len, bool swap) {
 // an efficient FastH/V Line draw routine for line segments of 2 pixels or more
 #if defined (RPI_ILI9486_DRIVER) || defined (ESP32) || defined (RPI_WRITE_STROBE) || defined (HX8357D_DRIVER) || defined (ILI9488_DRIVER)
 
-void Screen::drawLine(T_DispCoords x0, T_DispCoords y0, T_DispCoords x1,
-		T_DispCoords y1, uint32_t color) {
+void Screen::drawLine(t_DispCoords x0, t_DispCoords y0, t_DispCoords x1,
+		t_DispCoords y1, uint32_t color) {
 
 	if (SPIStartWrite()) {
 
@@ -2711,7 +2711,7 @@ void Screen::drawLine(T_DispCoords x0, T_DispCoords y0, T_DispCoords x1,
 #else
 
 		// This is a weeny bit faster
-		void Screen::drawLine(T_DispCoords x0, T_DispCoords y0, T_DispCoords x1, T_DispCoords y1, uint32_t color)
+		void Screen::drawLine(t_DispCoords x0, t_DispCoords y0, t_DispCoords x1, t_DispCoords y1, uint32_t color)
 		{
 
 		  boolean steep = abs(y1 - y0) > abs(x1 - x0);
@@ -2825,7 +2825,7 @@ void Screen::drawLine(T_DispCoords x0, T_DispCoords y0, T_DispCoords x1,
  ** Description:             draw a vertical line
  ***************************************************************************************/
 #if defined (ESP8266) && !defined (RPI_WRITE_STROBE)
-		void Screen::drawFastVLine(T_DispCoords x, T_DispCoords y, T_DispCoords h, uint32_t color)
+		void Screen::drawFastVLine(t_DispCoords x, t_DispCoords y, t_DispCoords h, uint32_t color)
 		{
 		  // Clipping
 		  if ((x < 0) || (x >= _width) || (y >= _height)) return;
@@ -2851,7 +2851,7 @@ void Screen::drawLine(T_DispCoords x0, T_DispCoords y0, T_DispCoords x1,
 
 		#else
 
-void Screen::drawFastVLine(T_DispCoords x, T_DispCoords y, T_DispCoords h,
+void Screen::drawFastVLine(t_DispCoords x, t_DispCoords y, t_DispCoords h,
 		uint32_t color) {
 	// Clipping
 	if ((x < 0) || (x >= _width) || (y >= _height))
@@ -2903,7 +2903,7 @@ void Screen::drawFastVLine(T_DispCoords x, T_DispCoords y, T_DispCoords h,
  ** Description:             draw a horizontal line
  ***************************************************************************************/
 #if defined (ESP8266) && !defined (RPI_WRITE_STROBE)
-		void Screen::drawFastHLine(T_DispCoords x, T_DispCoords y, T_DispCoords w, uint32_t color)
+		void Screen::drawFastHLine(t_DispCoords x, t_DispCoords y, t_DispCoords w, uint32_t color)
 		{
 		  // Clipping
 		  if ((y < 0) || (x >= _width) || (y >= _height)) return;
@@ -2926,7 +2926,7 @@ void Screen::drawFastVLine(T_DispCoords x, T_DispCoords y, T_DispCoords h,
 
 		#else
 
-void Screen::drawFastHLine(T_DispCoords x, T_DispCoords y, T_DispCoords w,
+void Screen::drawFastHLine(t_DispCoords x, t_DispCoords y, t_DispCoords w,
 		uint32_t color) {
 	// Clipping
 	if ((y < 0) || (x >= _width) || (y >= _height))
@@ -2975,7 +2975,7 @@ void Screen::drawFastHLine(T_DispCoords x, T_DispCoords y, T_DispCoords w,
  ** Description:             draw a filled rectangle
  ***************************************************************************************/
 #if defined (ESP8266) && !defined (RPI_WRITE_STROBE)
-		void Screen::fillRect(T_DispCoords x, T_DispCoords y, T_DispCoords w, T_DispCoords h, uint32_t color)
+		void Screen::fillRect(t_DispCoords x, t_DispCoords y, t_DispCoords w, t_DispCoords h, uint32_t color)
 		{
 		  // Clipping
 		  if ((x >= _width) || (y >= _height)) return;
@@ -3003,8 +3003,8 @@ void Screen::drawFastHLine(T_DispCoords x, T_DispCoords y, T_DispCoords w,
 
 		#else
 
-void Screen::fillRect(T_DispCoords x, T_DispCoords y, T_DispCoords w,
-		T_DispCoords h, uint32_t color) {
+void Screen::fillRect(t_DispCoords x, t_DispCoords y, t_DispCoords w,
+		t_DispCoords h, uint32_t color) {
 	// Clipping
 	if ((x >= _width) || (y >= _height))
 		return;

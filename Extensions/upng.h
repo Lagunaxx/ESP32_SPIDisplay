@@ -106,7 +106,7 @@ namespace Device {
 
 			class c_uPNG{
 			public:
-				void DrawFile(char *filename, T_DispCoords x, T_DispCoords y); // Open and draw file
+				void DrawFile(char *filename, t_DispCoords x, t_DispCoords y); // Open and draw file
 //			private:
 				#ifndef UPNG_USE_STDIO
 				upng_t*		upng_new_from_file	 (char* path);

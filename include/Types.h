@@ -24,18 +24,18 @@ namespace Device{
 	// Need to be be defined in User_Settings/display-type.h depends on TFT_WIDTH and TFT_HEIGHT values.
 	// Mostly 8b for screens wtih less then 256 px for both values
 #ifdef COORDINATES_8b
-	typedef uint8_t T_DispCoords;
+	typedef uint8_t t_DispCoords;
 #else
 	#ifdef COORDINATES_16b
-		typedef uint16_t T_DispCoords;
+		typedef uint16_t t_DispCoords;
 	#else
 		#ifdef COORDINATES_32b
-			typedef uint32_t T_DispCoords;
+			typedef uint32_t t_DispCoords;
 		#else
 			#ifdef COORDINATES_64b
-				typedef uint64_t T_DispCoords;
+				typedef uint64_t t_DispCoords;
 			#else
-				typedef uint64_t T_DispCoords; //by default using 64bit coordinates
+				typedef uint64_t t_DispCoords; //by default using 64bit coordinates
 				#warning "COORDINATES_Xb Need to be be defined in User_Settings/display-type.h depends on TFT_WIDTH and TFT_HEIGHT values.\
 					(X=8,16,32,64). By default used int64_t for T_DispCoords"
 			#endif
@@ -44,9 +44,9 @@ namespace Device{
 #endif
 
 	struct st_Size3D{
-		T_DispCoords width;
-		T_DispCoords height;
-		T_DispCoords deep;
+		t_DispCoords width;
+		t_DispCoords height;
+		t_DispCoords deep;
 	};
 
 

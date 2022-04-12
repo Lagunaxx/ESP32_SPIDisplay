@@ -25,19 +25,19 @@
 					Cursor& operator=(const Cursor &other);
 					Cursor& operator=(Cursor &&other);
 	*/
-					void			Set(T_DispCoords x, T_DispCoords y);					//	Set cursor in x,y position (do not change z position)
+					void			Set(t_DispCoords x, t_DispCoords y);					//	Set cursor in x,y position (do not change z position)
 //									Set(T_DispCoords x, T_DispCoords y, T_DispCoords z);	//	Set cursor to x,y,z position (for 3D space)
 
-					T_DispCoords		X(),		//	Get X coordinate
+					t_DispCoords		X(),		//	Get X coordinate
 									Y();		//	Get Y coordinate
 //									Z();		//	Get Z coordinate
 
-					void			X(T_DispCoords coord),		//	Set X coordinate
-									Y(T_DispCoords coord);		//	Set Y coordinate
+					void			X(t_DispCoords coord),		//	Set X coordinate
+									Y(t_DispCoords coord);		//	Set Y coordinate
 //									Z(T_DispCoords coord);		//	Set Z coordinate
 
-					bool			MoveX(T_DispCoords coord),		//	Move X coordinate by coord
-									MoveY(T_DispCoords coord);		//	Move Y coordinate by coord
+					bool			MoveX(t_DispCoords coord),		//	Move X coordinate by coord
+									MoveY(t_DispCoords coord);		//	Move Y coordinate by coord
 //									MoveZ(T_DispCoords coord);		//	Move Z coordinate by coord
 
 					//virtual
@@ -46,7 +46,7 @@
 					void Redraw();
 
 				private:
-					T_DispCoords			x, y;//, z;					//Cursor's coordinates
+					t_DispCoords			x, y;//, z;					//Cursor's coordinates
 					bool			visible;				//Does cursor visible
 				};
 			}	/* namespace Cursor */

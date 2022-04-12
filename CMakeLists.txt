@@ -12,6 +12,7 @@ set(CORE_SRCS
   Extensions/Touch.cpp
   Extensions/upng_inflate.cpp
   Extensions/upng.cpp
+  Extensions/TextBlock.cpp
   )
 
 # exampl from arduino-esp32 project
