@@ -13,6 +13,7 @@ set(CORE_SRCS
   Extensions/upng_inflate.cpp
   Extensions/upng.cpp
   Extensions/TextBlock.cpp
+  Extensions/Hardware/Hardware.cpp
   )
 
 # exampl from arduino-esp32 project

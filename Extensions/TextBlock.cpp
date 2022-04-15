@@ -159,8 +159,15 @@ void TextBlock::setText(const char *string){
 /***************************************************************************************
 ** Function name:			Draw
 ** Description :			Draw TextBlock content
+** Args:
+** 				posx - from what symbol start to print (horizontal scrolling, enabled when
+** 						text prints into one line)
+** 				posy - from what line start to print (vertical scrolling)
 ***************************************************************************************/
 void TextBlock::Draw(){
+	this->Draw(0);
+}
+void TextBlock::Draw(t_DispCoords posx, t_DispCoords posy){
 	char* line;
 	t_DispCoords lettersFit = 0;
 	t_DispCoords cnt = 0;
@@ -170,7 +177,7 @@ void TextBlock::Draw(){
 	// Calculate simbols that fits in line
 
 	while(lettersPrinted < bufLength) {
-		if (lineNumber >= textHeightFit()) break;
+		if ((lineNumber - posy) >= textHeightFit()) break;
 		lettersFit = textWidthFit(lettersPrinted);
 		if (skipFirstSpace) {
 			cnt = 0;
@@ -201,8 +208,8 @@ void TextBlock::Draw(){
 
 //			if (lineNumber >= textHeightFit()) {if(line)free(line); break;}
 
-			if ((y + (lineNumber * fontHeight()) < Graph->height()) && (y + (lineNumber * fontHeight()) > 0))
-				drawString(line, x, y + (lineNumber * (fontHeight() + ( (lineNumber == 0) ? 0 : lineSpace ) ) ) );
+			if ((y + ((lineNumber - posy) * fontHeight()) < Graph->height()) && (y + ((lineNumber - posy) * fontHeight()) > 0))
+				if(lineNumber>=posy)drawString(line, x, y + ((lineNumber - posy) * (fontHeight() + ( ((lineNumber - posy) == 0) ? 0 : lineSpace ) ) ) );
 			free(line);
 			lineNumber++;
 			lettersPrinted+=lettersFit;

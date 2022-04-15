@@ -59,7 +59,7 @@
 
 
 
-				using namespace Cursor;
+//				using namespace Cursor;
 
 				// Use GLCD font in error case where user requests a smooth font file
 				// that does not exist (this is a temporary fix to stop ESP32 reboot)
@@ -252,12 +252,6 @@
 					virtual ~Font();
 
 					uint16_t fontsLoaded(void);
-
-					//virtual c_Cursor* Cursor();
-					//virtual void Cursor(c_Cursor& _cursor);
-					//virtual t_DispCoords __width();
-					//virtual t_DispCoords __height();
-
 
 					virtual t_DispCoords	drawChar(uint16_t uniCode, t_DispCoords x, t_DispCoords y, uint8_t font),
 											drawChar(uint16_t uniCode, t_DispCoords x, t_DispCoords y);

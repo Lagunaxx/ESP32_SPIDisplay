@@ -327,7 +327,6 @@ namespace Device {
 			***************************************************************************************/
 			void Graphics::fillScreen(uint32_t color)
 			{
-Serial.printf("[Graphics::fillScreen] width=%u; height=%u", width(), height());
 			  fillRect(0, 0, width(), height(), color);
 			}
 
