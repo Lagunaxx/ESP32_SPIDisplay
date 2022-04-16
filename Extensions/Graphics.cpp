@@ -58,10 +58,13 @@ namespace Device {
 				bitmap_bg = TFT_BLACK;
 				_xpivot = 0;
 				_ypivot = 0;
+				numPainters = 0;
+				pointersPainters = 0;
 			}
 
 			Graphics::~Graphics() {
 				// TODO Auto-generated destructor stub
+				if(pointersPainters)free(pointersPainters);
 			}
 
 
@@ -550,7 +553,7 @@ namespace Device {
 			** Function name:           getPivotX
 			** Description:             Get the x pivot position
 			***************************************************************************************/
-			int16_t Graphics::getPivotX(void)
+			t_DispCoords Graphics::getPivotX(void)
 			{
 			  return _xpivot;
 			}
@@ -560,7 +563,7 @@ namespace Device {
 			** Function name:           getPivotY
 			** Description:             Get the y pivot position
 			***************************************************************************************/
-			int16_t Graphics::getPivotY(void)
+			t_DispCoords Graphics::getPivotY(void)
 			{
 			  return _ypivot;
 			}
@@ -786,12 +789,55 @@ namespace Device {
 			  void Graphics::_bitmap_bg(uint32_t c){
 				  bitmap_bg=c;
 			  }
-			  t_DispCoords Graphics::__xpivot(){
-				  return _xpivot;
-			  }
-			  t_DispCoords Graphics::__ypivot(){
-				  return _xpivot;
-			  }
+
+			/***************************************************************************************
+			** Function name:			registerHandler
+			** Description :			registers handler for graphics redrawing. When some part of code
+			** 						redraws some part of screen, it can call function Graph->Redraw(...)
+			** 						to initialize redrawing of same part of screen by other registered
+			** 						handlers.
+			** Args:
+			**			Painter - Structure to register handler. ID may be anithing.
+			***************************************************************************************/
+			uint8_t Graphics::registerHandler(t_Graphics* Painter) {
+				if(numPainters > GRAPH_HANDLER_MAXID) return GRAPH_HANDLER_BUISY;
+//				uint8_t tmp_num = 0;
+				t_Graphics* tmp_Painter = new(t_Graphics);
+				memcpy(tmp_Painter, Painter, sizeof(t_Graphics));
+				tmp_Painter->ID = numPainters;
+//				  tmp_Painter->callbackHandler = Painter->callbackHandler;
+
+Serial.printf("[registerHandler]: compare %u ID %u\n", Painter->ID, tmp_Painter->ID);
+Serial.printf("[registerHandler]: compare %u x %u\n", Painter->position.x, tmp_Painter->position.x);
+Serial.printf("[registerHandler]: compare %u y %u\n", Painter->position.y, tmp_Painter->position.y);
+Serial.printf("[registerHandler]: compare %u w %u\n", Painter->size.width, tmp_Painter->size.width);
+Serial.printf("[registerHandler]: compare %u h %u\n", Painter->size.height, tmp_Painter->size.height);
+Serial.printf("[registerHandler]: compare %u call %u\n", (unsigned int) Painter->callbackHandler, (unsigned int) tmp_Painter->callbackHandler);
+				return GRAPH_HANDLER_ERROR;
+			}
+
+			/***************************************************************************************
+			** Function name:			redraw
+			** Description :			Send messages for all registered handlers, that have same area
+			** 						with initializer.
+			** Args:
+			**			arg1 - value
+			***************************************************************************************/
+			void	Graphics::redraw(t_Graphics* Initializer) {
+				for (uint8_t tmp_id = 0; tmp_id < numPainters; tmp_id++){
+					// skip if found initializer
+					if(pointersPainters[tmp_id].ID == Initializer->ID) continue;
+
+					// skip if area out of rectangle
+					if((pointersPainters[tmp_id].position.x + pointersPainters[tmp_id].size.width) <= Initializer->position.x) continue;
+					if((Initializer->position.x + Initializer->size.width) <= pointersPainters[tmp_id].position.x) continue;
+					if((pointersPainters[tmp_id].position.y + pointersPainters[tmp_id].size.height) <= Initializer->position.y) continue;
+					if((Initializer->position.y + Initializer->size.height) <= pointersPainters[tmp_id].position.y) continue;
+
+					(*pointersPainters[tmp_id].callbackHandler)(Initializer);
+
+				}
+			}
 
 		} /* namespace Graphics */
 	} /* namespace Display */

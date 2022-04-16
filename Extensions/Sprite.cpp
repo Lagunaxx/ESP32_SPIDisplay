@@ -300,10 +300,10 @@ namespace Device{
 			  getRotatedBounds(sinra, cosra, width(), height(), _xpivot, _ypivot, &min_x, &min_y, &max_x, &max_y);
 
 			  // Move bounding box so source Sprite pivot coincides with TFT pivot
-			  min_x += Device::Display::Graphics::Graph->__xpivot();
-			  max_x += Device::Display::Graphics::Graph->__xpivot();
-			  min_y += Device::Display::Graphics::Graph->__ypivot();
-			  max_y += Device::Display::Graphics::Graph->__ypivot();
+			  min_x += Device::Display::Graphics::Graph->getPivotX();
+			  max_x += Device::Display::Graphics::Graph->getPivotX();
+			  min_y += Device::Display::Graphics::Graph->getPivotY();
+			  max_y += Device::Display::Graphics::Graph->getPivotY();
 
 			  // Test only to show bounding box on TFT
 			  // Device::Display::Graphics::Graph->drawRect(min_x, min_y, max_x - min_x + 1, max_y - min_y + 1, TFT_GREEN);
@@ -324,12 +324,12 @@ namespace Device{
 
 			  // Scan destination bounding box and fetch transformed pixels from source Sprite
 			  for (t_DispCoords x = min_x; x <= max_x; x++) {
-				  t_DispCoords xt = x - Device::Display::Graphics::Graph->__xpivot();
+				  t_DispCoords xt = x - Device::Display::Graphics::Graph->getPivotX();
 				float cxt = cosra * xt + _xpivot;
 				float sxt = sinra * xt + _ypivot;
 				bool column_drawn = false;
 				for (t_DispCoords y = min_y; y <= max_y; y++) {
-					t_DispCoords yt = y - Device::Display::Graphics::Graph->__ypivot();
+					t_DispCoords yt = y - Device::Display::Graphics::Graph->getPivotY();
 					t_DispCoords xs = (int32_t)round(cxt - sinra * yt);
 				  // Do not calculate ys unless xs is in bounds
 				  if (xs >= 0 && xs < width())

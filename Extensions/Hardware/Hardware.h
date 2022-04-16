@@ -15,6 +15,7 @@
 #include "ESP32_SPIDisplay.h"
 //#include "esp_pthread.h"
 
+
 // Defining default system messages values
 #define MSG_SYS_NOP			0	// no operation
 
@@ -139,7 +140,7 @@ protected:
 extern Hardware* Bus;
 bool init();
 bool remove();
-
+void Handle();
 
 } /* namespace Hardware */
 } /* namespace Device */

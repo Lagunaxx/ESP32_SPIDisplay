@@ -12,6 +12,10 @@ namespace Hardware {
 
 Hardware* Bus;
 
+void Handle(){
+	delay(1);
+	Bus->run();
+}
 /***************************************************************************************
 ** Function name:           init
 ** Description:             initialize Hardware module
@@ -74,9 +78,9 @@ Hardware::~Hardware() {
 ***************************************************************************************/
 uint8_t Hardware::addDI(uint8_t pin, void callbackHandler(t_Data*)) {
 	uint8_t id=0;
-Serial.printf("HW addDI pin=%u\n", pin);
+
 	if (!callbackHandler) return 0; // check for null-pointer
-Serial.printf("HW addDI go:\n");
+
 	while (id<40) {
 		if (Devices[id].pin == pin) return 0; // if pin initialized then exit
 		id++;
@@ -93,7 +97,7 @@ Serial.printf("HW addDI go:\n");
 	Devices[id].deviceType = HW_TYPE_DI;
 	Devices[id].callbackHandler = callbackHandler;
 	pinMode(pin, INPUT);
-Serial.printf("HW addID id=%u",id);
+
 	return id;
 }
 
@@ -107,7 +111,6 @@ void Hardware::run() {
 	int rv;
 	// Check every initiate pin
 
-Serial.printf("HW run()\n");
 	for (uint8_t id = 0; id < 40; id++){
 		if(Devices[id].pin != GPIO_NOTDEFINED) {
 			// check pin type

@@ -49,6 +49,10 @@
 #include "Definations.h"
 #include "Types.h"
 
+// Defining for handler functions
+#define handler_type void static
+
+
 /*********************************************************
  * Adding Extensions                                     *
  *********************************************************/
