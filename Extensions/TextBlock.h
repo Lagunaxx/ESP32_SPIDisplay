@@ -52,6 +52,8 @@ public:
 			Draw(t_DispCoords posx, t_DispCoords posy=0),
 			Clear();
 
+	t_DispCoords getWidth();
+
 protected:
 	const char * buffer;
 

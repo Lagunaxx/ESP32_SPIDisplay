@@ -354,6 +354,14 @@ void TextBlock::Clear() {
 }
 
 /***************************************************************************************
+** Function name:			getWidth
+** Description :			return width of string in pixels
+***************************************************************************************/
+t_DispCoords TextBlock::getWidth() {
+	return this->textWidth(buffer) + this->symbolSpace * (this->bufLength + 2);
+}
+
+/***************************************************************************************
 ** Function name:			name
 ** Description :			desc
 ** Args:
