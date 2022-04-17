@@ -345,6 +345,15 @@ void TextBlock::setSkipFistSpace(bool skip) {
 }
 
 /***************************************************************************************
+** Function name:			Clear
+** Description :			Fill block with background color
+***************************************************************************************/
+void TextBlock::Clear() {
+	Graph->fillRect((t_DispCoords)this->x, (t_DispCoords)this->y, (t_DispCoords)this->TBwidth, (t_DispCoords)this->TBheight,
+			textbgcolor);
+}
+
+/***************************************************************************************
 ** Function name:			name
 ** Description :			desc
 ** Args:

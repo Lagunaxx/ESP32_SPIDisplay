@@ -48,8 +48,9 @@ public:
 
 	void setText(const char *string);
 
-	void Draw();
-	void Draw(t_DispCoords posx, t_DispCoords posy=0);
+	void	Draw(),
+			Draw(t_DispCoords posx, t_DispCoords posy=0),
+			Clear();
 
 protected:
 	const char * buffer;
