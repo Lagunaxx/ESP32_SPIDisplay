@@ -100,6 +100,30 @@ uint8_t Hardware::addDI(uint8_t pin, void callbackHandler(t_Data*)) {
 
 	return id;
 }
+uint8_t Hardware::addAI(uint8_t pin, void callbackHandler(t_Data*)) {
+	uint8_t id=0;
+
+	if (!callbackHandler) return 0; // check for null-pointer
+
+	while (id<40) {
+		if (Devices[id].pin == pin) return 0; // if pin initialized then exit
+		id++;
+	}
+
+	id = 0;
+	while (true) {
+		if (Devices[id].pin == GPIO_NOTDEFINED)break;
+		id++;
+		if(id == 40) return 0; // all pins are buizy
+	}
+
+	Devices[id].pin = pin;
+	Devices[id].deviceType = HW_TYPE_AI;
+	Devices[id].callbackHandler = callbackHandler;
+	pinMode(pin, INPUT);
+
+	return id;
+}
 
 /***************************************************************************************
 ** Function name:			run
@@ -126,10 +150,25 @@ void Hardware::run() {
 				free(rvalue->data);
 				delete(rvalue);
 			}
+			if(Devices[id].deviceType == HW_TYPE_AI) {
+				// check input
+				rvalue=new(t_Data);
+				rvalue->data = malloc(sizeof(int));
+				rvalue->deviceType=Devices[id].deviceType;
+				rvalue->pin=Devices[id].pin;
+				rv = analogRead(Devices[id].pin);
+				memcpy(rvalue->data,(const void *)&rv,sizeof(int));
+				(*Devices[id].callbackHandler)( rvalue);
+				free(rvalue->data);
+				delete(rvalue);
+			}
+
 		}
+
 	}
 
 
+	delay(5);
 }
 // Default function to work with devices
 uint8_t Hardware::msg(uint8_t deviceID, uint8_t msg, void * payload){

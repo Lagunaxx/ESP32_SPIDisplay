@@ -23,6 +23,7 @@
 #define HW_TYPE_NOP		0	// not defined
 #define HW_TYPE_DI		1	// digital input
 #define HW_TYPE_DO		2	// digital output
+#define HW_TYPE_AI		3	// analog input
 
 // Define pins
 #define GPIO0	0
@@ -127,7 +128,8 @@ public:
 	virtual ~Hardware();
 
 	void run();		// Run root driver (hwControl())
-	uint8_t addDI(uint8_t pin, void callbackHandler(t_Data*));	// Add new device
+	uint8_t addDI(uint8_t pin, void callbackHandler(t_Data*));	// Add new DI device
+	uint8_t addAI(uint8_t pin, void callbackHandler(t_Data*));	// Add new AI device
 	virtual uint8_t msg(uint8_t deviceID, uint8_t msg, void * payload); // Send data to device
 
 protected:

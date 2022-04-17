@@ -59,7 +59,7 @@ namespace Device {
 				_xpivot = 0;
 				_ypivot = 0;
 				numPainters = 0;
-				pointersPainters = 0;
+				pointersPainters = (Device::Display::Graphics::t_Graphics*) malloc(sizeof(t_Graphics) * GRAPH_HANDLER_MAXID);
 			}
 
 			Graphics::~Graphics() {
@@ -800,20 +800,14 @@ namespace Device {
 			**			Painter - Structure to register handler. ID may be anithing.
 			***************************************************************************************/
 			uint8_t Graphics::registerHandler(t_Graphics* Painter) {
+				if((pointersPainters == 0) || (Painter == 0)) return GRAPH_HANDLER_ERROR;
 				if(numPainters > GRAPH_HANDLER_MAXID) return GRAPH_HANDLER_BUISY;
-//				uint8_t tmp_num = 0;
-				t_Graphics* tmp_Painter = new(t_Graphics);
-				memcpy(tmp_Painter, Painter, sizeof(t_Graphics));
-				tmp_Painter->ID = numPainters;
-//				  tmp_Painter->callbackHandler = Painter->callbackHandler;
 
-Serial.printf("[registerHandler]: compare %u ID %u\n", Painter->ID, tmp_Painter->ID);
-Serial.printf("[registerHandler]: compare %u x %u\n", Painter->position.x, tmp_Painter->position.x);
-Serial.printf("[registerHandler]: compare %u y %u\n", Painter->position.y, tmp_Painter->position.y);
-Serial.printf("[registerHandler]: compare %u w %u\n", Painter->size.width, tmp_Painter->size.width);
-Serial.printf("[registerHandler]: compare %u h %u\n", Painter->size.height, tmp_Painter->size.height);
-Serial.printf("[registerHandler]: compare %u call %u\n", (unsigned int) Painter->callbackHandler, (unsigned int) tmp_Painter->callbackHandler);
-				return GRAPH_HANDLER_ERROR;
+				memcpy((void*)&pointersPainters[numPainters], (const void *)Painter, sizeof(t_Graphics));
+				pointersPainters[numPainters].ID = numPainters;
+				numPainters++;
+
+				return pointersPainters[numPainters].ID;
 			}
 
 			/***************************************************************************************
@@ -823,7 +817,7 @@ Serial.printf("[registerHandler]: compare %u call %u\n", (unsigned int) Painter-
 			** Args:
 			**			arg1 - value
 			***************************************************************************************/
-			void	Graphics::redraw(t_Graphics* Initializer) {
+			void	Graphics::redraw(t_Graphics* Initializer) { // ToDo: make operate with ID only as Args
 				for (uint8_t tmp_id = 0; tmp_id < numPainters; tmp_id++){
 					// skip if found initializer
 					if(pointersPainters[tmp_id].ID == Initializer->ID) continue;
@@ -837,6 +831,27 @@ Serial.printf("[registerHandler]: compare %u call %u\n", (unsigned int) Painter-
 					(*pointersPainters[tmp_id].callbackHandler)(Initializer);
 
 				}
+			}
+
+			void	Graphics::redraw(uint8_t ID) { // ToDo: make operate with ID only as Args
+				for (uint8_t tmp_id = 0; tmp_id < numPainters; tmp_id++){
+					if(pointersPainters[tmp_id].ID == ID) this->redraw(&pointersPainters[tmp_id]);
+				}
+
+	/*
+				for (uint8_t tmp_id = 0; tmp_id < numPainters; tmp_id++){
+					// skip if found initializer
+					if(pointersPainters[tmp_id].ID == ID) continue;
+
+					// skip if area out of rectangle
+					if((pointersPainters[tmp_id].position.x + pointersPainters[tmp_id].size.width) <= Initializer->position.x) continue;
+					if((Initializer->position.x + Initializer->size.width) <= pointersPainters[tmp_id].position.x) continue;
+					if((pointersPainters[tmp_id].position.y + pointersPainters[tmp_id].size.height) <= Initializer->position.y) continue;
+					if((Initializer->position.y + Initializer->size.height) <= pointersPainters[tmp_id].position.y) continue;
+
+					(*pointersPainters[tmp_id].callbackHandler)(Initializer);
+
+				}*/
 			}
 
 		} /* namespace Graphics */

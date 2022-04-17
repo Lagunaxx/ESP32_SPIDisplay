@@ -115,8 +115,10 @@ namespace Device {
 						color_R6G6B6touint16(uint16_t *dst, t_color_r6g6b6 *src),				//Converts 18bit-color(r6,g6,b6) into uint16_t
 						color_R5G6B5touint16(uint16_t *dst, t_color_r5g6b5 *src);				//Converts 16bit-color(r5,g6,b5) into uint16_t
 
-				uint8_t	registerHandler(t_Graphics* Painter);	// Register hendler for redrawing
-				void	redraw(t_Graphics* Initializer);		// Initialize redraw // ToDo: make as pthread
+				uint8_t	registerHandler(t_Graphics* Painter),	// Register hendler for redrawing
+						registerHandler(uint8_t ID);
+				void	redraw(t_Graphics* Initializer),		// Initialize redraw // ToDo: make as pthread
+						redraw(uint8_t ID);
 
 				void	_bitmap_fg(uint32_t c),
 						_bitmap_bg(uint32_t c);
